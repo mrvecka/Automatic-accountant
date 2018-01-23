@@ -17,5 +17,7 @@ namespace Bakalarska_praca.Classes
         public string DIC { get; set; }
 
 
+
+
     }
 }
