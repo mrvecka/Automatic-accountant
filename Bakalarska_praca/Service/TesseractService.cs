@@ -1,6 +1,9 @@
 ﻿using Bakalarska_praca.Classes;
 using Leptonica;
+using OpenCvSharp;
+using OpenCvSharp.UserInterface;
 using System;
+using System.Runtime.InteropServices;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -41,10 +44,16 @@ namespace Bakalarska_praca.Service
 
             using (engine = new TessBaseAPI(@".\tessdata", _lang,OcrEngineMode.TESSERACT_LSTM_COMBINED))
             {
-                var pix = Pix.Read(path);              
+                            
+                Mat rotated = GetMatImageForTesseract(path);
+
+                Bitmap bmp = OpenCvSharp.Extensions.BitmapConverter.ToBitmap(rotated);
+                img = bmp;
+
                 engine.InitForAnalysePage();
                 engine.Init(null, _lang);
-                engine.SetInputImage(pix);
+                //engine.SetInputImage(pix);
+                engine.SetImage(new UIntPtr(BitConverter.ToUInt64(BitConverter.GetBytes(rotated.Data.ToInt64()), 0)), rotated.Size().Width, rotated.Size().Height, rotated.Channels(), (int)rotated.Step1());
                 engine.Recognize();
                 ResultIterator iterator = engine.GetIterator();
 
@@ -58,22 +67,22 @@ namespace Bakalarska_praca.Service
             //DRAW
             Pen myPen;
             System.Drawing.Graphics newGraphics = System.Drawing.Graphics.FromImage(img);
-            if (_blocks != null)
-            {
-                myPen = new Pen(Color.Blue, 3);
-                foreach (TextLine block in _blocks)
-                {
-                    newGraphics.DrawRectangle(myPen, block.Bounds);
-                }
-            }
-            if (_paras != null)
-            {
-                myPen = new Pen(Color.Green, 2);
-                foreach (TextLine para in _paras)
-                {
-                    newGraphics.DrawRectangle(myPen, para.Bounds);
-                }
-            }
+            //if (_blocks != null)
+            //{
+            //    myPen = new Pen(Color.Blue, 3);
+            //    foreach (TextLine block in _blocks)
+            //    {
+            //        newGraphics.DrawRectangle(myPen, block.Bounds);
+            //    }
+            //}
+            //if (_paras != null)
+            //{
+            //    myPen = new Pen(Color.Green, 2);
+            //    foreach (TextLine para in _paras)
+            //    {
+            //        newGraphics.DrawRectangle(myPen, para.Bounds);
+            //    }
+            //}
             if (_textLines != null)
             {
                 Pen myPenline = new Pen(Color.Violet, 1.5f);
@@ -88,26 +97,34 @@ namespace Bakalarska_praca.Service
                     }
                 }
             }
-            if (_words != null)
-            {
-                myPen = new Pen(Color.Red, 1);
-                foreach (TextLine word in _words)
-                {
-                    newGraphics.DrawRectangle(myPen, word.Bounds);
-                }
-            }
-            if (_symbols != null)
-            {
-                myPen = new Pen(Color.DarkBlue, 0.5f);
-                foreach (TextLine symbol in _symbols)
-                {
-                    newGraphics.DrawRectangle(myPen, symbol.Bounds);
-                }
-            }
+            //if (_words != null)
+            //{
+            //    myPen = new Pen(Color.Red, 1);
+            //    foreach (TextLine word in _words)
+            //    {
+            //        newGraphics.DrawRectangle(myPen, word.Bounds);
+            //    }
+            //}
+            //if (_symbols != null)
+            //{
+            //    myPen = new Pen(Color.DarkBlue, 0.5f);
+            //    foreach (TextLine symbol in _symbols)
+            //    {
+            //        newGraphics.DrawRectangle(myPen, symbol.Bounds);
+            //    }
+            //}
 
             ProcessLines(img.Width);
 
             return img;
+        }
+
+        private Mat GetMatImageForTesseract(string path)
+        {
+            Mat original = Cv2.ImRead(path);
+            Mat rotated = new Mat();
+            RotateImage(original, rotated, 0, 1);
+            return rotated;
         }
 
         private void IterateFullPage(ResultIterator iter, ref List<TextLine> _blocks, ref List<TextLine> _paras, ref List<TextLine> _textLines, ref List<TextLine> _words, ref List<TextLine> _symbols)
@@ -162,7 +179,15 @@ namespace Bakalarska_praca.Service
             }
 
         }
+        private void RotateImage(Mat src, Mat dst, double angle, double scale)
+        {
+            var imageCenter = new Point2f(src.Cols / 2f, src.Rows / 2f);
+            var rotationMat = Cv2.GetRotationMatrix2D(imageCenter, angle, scale);
+            Cv2.WarpAffine(src, dst, rotationMat, src.Size());
+        }
     }
+
+
 
 
 }

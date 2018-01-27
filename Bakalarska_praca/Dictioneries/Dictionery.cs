@@ -23,7 +23,7 @@ namespace Bakalarska_praca.Dictioneries
         {
             InitHeader();
             columns = new Dictionary<string, string>();
-            columns.Add("Dodávateľ", "Supplier");
+            columns.Add("Dodávateľ", "Client");
             columns.Add("Odberateľ","Client");
             columns.Add("Konečný príjemca", "Client");
             columns.Add("Poštová adresa", "Client");
@@ -54,19 +54,15 @@ namespace Bakalarska_praca.Dictioneries
         {
             header = new Dictionary<string, string>();
             header.Add("Variabilný symbol(uveďte pri platbe)", "VariabilSymbol");
-            header.Add("Var. symbol", "VariabilSymbol");
             header.Add("Konšt.symbol", "KonstSymbol");
-            header.Add("Konštantný symbol", "KonstSymbol");
-            header.Add("Faktúra č.", "EvidenceNumber");
             header.Add("Faktúra - daňový doklad č.", "EvidenceNumber");
-            header.Add("Doklad č.", "EvidenceNumber");
             header.Add("Zákaznícke číslo", "ClientNumber");
-            header.Add("Doprava", "Transport");
-            header.Add("Úhrada", "RefundMethode");
-            header.Add("Banka", "Bank");
-            header.Add("Číslo účtu", "AccountNumber");
-            header.Add("IBAN", "IBAN");
-            header.Add("SWIFT", "SWIFT");
+            header.Add("Dátum vystavenia dokladu", "DocumentCreateDate");
+            header.Add("Dátum zdaniteľného plnenia", "DateOfTax");
+            header.Add("Miesto plnenia", "PlaceOfSupply");
+            header.Add("Dátum splatnosti", "DateOfPayment");
+
+
 
 
 
