@@ -10,7 +10,7 @@ namespace Bakalarska_praca
         private System.ComponentModel.IContainer components = null;
         private Button button1;
         private RichTextBox richTextBox1;
-        private TextBox textBox1;
+        private TextBox txtCoinfidence;
         private Panel panel1;
         private PictureBox pictureBox1;
         private Label label2;
@@ -41,14 +41,14 @@ namespace Bakalarska_praca
         {
             this.button1 = new System.Windows.Forms.Button();
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
-            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.txtCoinfidence = new System.Windows.Forms.TextBox();
             this.panel1 = new System.Windows.Forms.Panel();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.panel3 = new System.Windows.Forms.Panel();
             this.panel4 = new System.Windows.Forms.Panel();
-            this.textBox2 = new System.Windows.Forms.TextBox();
+            this.txtLang = new System.Windows.Forms.TextBox();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.panel3.SuspendLayout();
@@ -75,13 +75,13 @@ namespace Bakalarska_praca
             this.richTextBox1.TabIndex = 1;
             this.richTextBox1.Text = "";
             // 
-            // textBox1
+            // txtCoinfidence
             // 
-            this.textBox1.Location = new System.Drawing.Point(129, 6);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.ReadOnly = true;
-            this.textBox1.Size = new System.Drawing.Size(110, 20);
-            this.textBox1.TabIndex = 2;
+            this.txtCoinfidence.Location = new System.Drawing.Point(129, 6);
+            this.txtCoinfidence.Name = "txtCoinfidence";
+            this.txtCoinfidence.ReadOnly = true;
+            this.txtCoinfidence.Size = new System.Drawing.Size(110, 20);
+            this.txtCoinfidence.TabIndex = 2;
             // 
             // panel1
             // 
@@ -133,10 +133,10 @@ namespace Bakalarska_praca
             // panel4
             // 
             this.panel4.BackColor = System.Drawing.Color.Transparent;
-            this.panel4.Controls.Add(this.textBox2);
+            this.panel4.Controls.Add(this.txtLang);
             this.panel4.Controls.Add(this.label2);
             this.panel4.Controls.Add(this.button1);
-            this.panel4.Controls.Add(this.textBox1);
+            this.panel4.Controls.Add(this.txtCoinfidence);
             this.panel4.Controls.Add(this.label3);
             this.panel4.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel4.Location = new System.Drawing.Point(0, 0);
@@ -144,13 +144,13 @@ namespace Bakalarska_praca
             this.panel4.Size = new System.Drawing.Size(1297, 32);
             this.panel4.TabIndex = 12;
             // 
-            // textBox2
+            // txtLang
             // 
-            this.textBox2.Location = new System.Drawing.Point(340, 6);
-            this.textBox2.Name = "textBox2";
-            this.textBox2.ReadOnly = true;
-            this.textBox2.Size = new System.Drawing.Size(100, 20);
-            this.textBox2.TabIndex = 9;
+            this.txtLang.Location = new System.Drawing.Point(340, 6);
+            this.txtLang.Name = "txtLang";
+            this.txtLang.ReadOnly = true;
+            this.txtLang.Size = new System.Drawing.Size(100, 20);
+            this.txtLang.TabIndex = 9;
             // 
             // Form1
             // 
@@ -174,7 +174,7 @@ namespace Bakalarska_praca
 
         #endregion
 
-        private TextBox textBox2;
+        private TextBox txtLang;
     }
 }
 

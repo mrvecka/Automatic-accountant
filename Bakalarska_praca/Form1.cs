@@ -31,6 +31,7 @@ namespace Bakalarska_praca
         private Label selectedLabel;
         private const int fontSize = 13;
 
+
         public Form1(PreviewObject file)
         {
             InitializeComponent();
