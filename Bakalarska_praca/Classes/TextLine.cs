@@ -8,7 +8,7 @@ using Tesseract;
 
 namespace Bakalarska_praca.Classes
 {
-    class TextLine
+    public class TextLine
     {
         public PageIteratorLevel Level { get; set; }
         public Rectangle Bounds { get; set; }

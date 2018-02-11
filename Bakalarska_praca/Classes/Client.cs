@@ -18,11 +18,15 @@ namespace Bakalarska_praca.Classes
         public string Phone { get; set; }
         public string Email { get; set; }
         public string Transport { get; set; }
-        public string RefundMethode { get; set; }
         public string Bank { get; set; }
         public string AccountNumber { get; set; }
         public string IBAN { get; set; }
         public string SWIFT { get; set; }
         public string ClientNumber { get; set; }
+        public string Fax { get; set; }
+        public string Web { get; set; }
+        public string BankCode { get; set; }
+
+
     }
 }

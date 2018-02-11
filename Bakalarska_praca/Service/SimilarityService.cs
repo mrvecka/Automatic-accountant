@@ -1,28 +1,24 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Bakalarska_praca.Service
 {
     class SimilarityService
     {
-
+        private static int percent = 100;
         public static int GetSimilarity(string string1, string string2)
         {
             if (string2.Contains(string1))
             {
-                return 100;
+                return percent;
             }
             float dis = ComputeDistance(string1, string2);
             float maxLen = string1.Length;
             if (maxLen < string2.Length)
                 maxLen = string2.Length;
             if (maxLen == 0.0F)
-                return (int)(1.0F *100);
+                return (int)(1.0F * percent);
             else
-                return (int)((1.0F - dis / maxLen)*100);
+                return (int)((1.0F - dis / maxLen)* percent);
         }
 
         private static int ComputeDistance(string s, string t)

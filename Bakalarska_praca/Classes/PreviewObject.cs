@@ -7,9 +7,13 @@ using System.Threading.Tasks;
 
 namespace Bakalarska_praca.Classes
 {
-    public class Word
+    public class PreviewObject
     {
-        public string Text { get; set; }
-        public Rectangle Bounds { get; set; }
+        public Image img;
+        public string confidence;
+        public List<TextLine> Lines;
+        public string path;
+        public string lang;
+
     }
 }

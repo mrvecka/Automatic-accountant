@@ -17,6 +17,7 @@ namespace Bakalarska_praca.Classes
         public List<String> Words { get; set; }
         public int FirstLineInColumn { get; set; } = 1;
         public bool Completed { get; set; } = false;
+        public bool Blocked { get; set; } = false; // ak sa stlpec nachadza nad inym tak je true
 
 
     }

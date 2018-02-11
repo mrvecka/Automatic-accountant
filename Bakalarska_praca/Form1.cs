@@ -26,100 +26,66 @@ namespace Bakalarska_praca
     public partial class Form1 : Form
     {
 
-        
-        static string testImagePath = "./phototest.tif";
-        Bitmap originalBmp = null;
         OpenCvSharp.Mat img;
-        OpenCvSharp.Mat grayImg;
+        private System.Drawing.Image newImage;
+        private Label selectedLabel;
+        private const int fontSize = 13;
 
-        public Form1()
+        public Form1(PreviewObject file)
         {
             InitializeComponent();
-            comboBox1.SelectedIndex = 0;
+
             panel1.AutoScroll = true;
             pictureBox1.SizeMode = PictureBoxSizeMode.AutoSize;
-
+            pictureBox1.Image = (Bitmap)file.img;
+            txtCoinfidence.Text = file.confidence;
+            txtLang.Text = file.lang;
+            newImage = file.img;
+            FillListView(file.Lines);
         }
 
 
-        void loadImg()
+
+        private void FillListView(List<TextLine> lines)
         {
-            if (originalBmp == null)
+            int loc = 0;
+            foreach (TextLine line in lines)
             {
-                originalBmp = new Bitmap(System.Drawing.Image.FromFile(testImagePath));
+                var l = new Label { Text = line.text };
+                l.SetBounds(0, loc, panel3.Width, 30);
+                l.Click += delegate { AddRectangle(line,l); };
+                panel3.Controls.Add(l);
+                loc += l.Height;
             }
-            pictureBox1.Image = new Bitmap(originalBmp);
-            panel1.AutoScrollMinSize = pictureBox1.Image.Size;
+
+            panel3.AutoScrollMinSize = new System.Drawing.Size(0, panel3.Height);
         }
 
-        
-
-        private void button3_Click_1(object sender, EventArgs e)
+        private void AddRectangle(TextLine line,Label l)
         {
-            //load
-            OpenFileDialog open = new OpenFileDialog();
-            open.Filter = "Image Files(*.jpg; *.jpeg; *.gif; *.bmp; *.png)|*.jpg; *.jpeg; *.gif; *.bmp; *.png";
-            if (open.ShowDialog() == DialogResult.OK)
+            if (selectedLabel != null)
             {
-                textBox2.Text = open.FileName;
-                originalBmp = new Bitmap(open.FileName);
-                grayImg = Cv2.ImRead(open.FileName, ImreadModes.GrayScale);
-                open.RestoreDirectory = true;
-                loadImg();
+                selectedLabel.BackColor = Color.Transparent;
+                selectedLabel.Font = l.Font;
             }
-        }
-
-        private void button1_Click_1(object sender, EventArgs e)
-        {
-            //start
-            loadImg();
-            richTextBox1.Text = "";
-            textBox1.Text = "";
-            pictureBox1.Refresh();
-            richTextBox1.Refresh();
-            textBox1.Refresh();
+            l.BackColor = Color.FromArgb(102,140,255);
+            l.Font = new Font(FontFamily.GenericSerif,fontSize,FontStyle.Bold);
+            selectedLabel = l;
+            ClearImageAndText();
+            System.Drawing.Image img = (System.Drawing.Image)newImage.Clone();
+            Pen myPenword = new Pen(Color.Blue, 2f);
+            System.Drawing.Graphics newGraphics = System.Drawing.Graphics.FromImage(img);
 
 
-            // List<Word> words = IteratePage(page).ToList();
-
-            List<TextLine> blocks = new List<TextLine>();
-            List<TextLine> paras = new List<TextLine>();
-            List<TextLine> textLines = new List<TextLine>();
-            List<TextLine> words = new List<TextLine>();
-            List<TextLine> symbols = new List<TextLine>();
-
-            if (!checkBox1.Checked)
-            {
-                blocks = null;
-            }
-            if (!checkBox2.Checked)
-            {
-                paras = null;
-            }
-
-            if (!checkBox4.Checked)
-            {
-                words = null;
-            }
-            if (!checkBox5.Checked)
-            {
-                symbols = null;
-            }          
-
-            //OCR
-            string lang = comboBox1.SelectedItem.ToString();
-
-
-            TesseractService tess = new TesseractService(blocks, paras, textLines, words, symbols, lang);
-            System.Drawing.Image img = tess.ProcessImage(textBox2.Text, pictureBox1.Image);
-
-            richTextBox1.Text = tess.text;
-            textBox1.Text = tess.confidence;
+            newGraphics.DrawRectangle(myPenword, line.Bounds);
             pictureBox1.Image = img;
-            pictureBox1.Refresh();
-
+        }
+        private void ClearImageAndText()
+        {
+            pictureBox1.Image = newImage;
 
         }
+
     }
 
 }

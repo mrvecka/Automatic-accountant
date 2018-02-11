@@ -17,35 +17,24 @@ namespace Bakalarska_praca.Service
     {
         private string _lang;
         private TessBaseAPI engine;
-        private List<TextLine> _blocks;
-        private List<TextLine> _paras;
         private List<TextLine> _textLines;
-        private List<TextLine> _words;
-        private List<TextLine> _symbols;
         public string confidence;
         public string text;
 
-        public TesseractService(List<TextLine> blocks, List<TextLine> paras, List<TextLine> textLines, List<TextLine> words, List<TextLine> symbols, string lang)
+        public TesseractService(string lang)
         {
-            _blocks = blocks;
-            _paras = paras;
-            _textLines = textLines;
-            _words = words;
-            _symbols = symbols;
+            _textLines = new List<TextLine>();
             _lang = lang;
-
-
         }
 
-        public Image ProcessImage(string path,Image img)
+        public PreviewObject ProcessImage(FileToProcess file, IProgress<int> progress)
         {
-
-            float sim = SimilarityService.GetSimilarity("test","tes");
-
+            PreviewObject p = new PreviewObject();
+            Image img = null;
             using (engine = new TessBaseAPI(@".\tessdata", _lang,OcrEngineMode.TESSERACT_LSTM_COMBINED))
             {
                             
-                Mat rotated = GetMatImageForTesseract(path);
+                Mat rotated = GetMatImageForTesseract(file.path);
 
                 Bitmap bmp = OpenCvSharp.Extensions.BitmapConverter.ToBitmap(rotated);
                 img = bmp;
@@ -57,66 +46,24 @@ namespace Bakalarska_praca.Service
                 engine.Recognize();
                 ResultIterator iterator = engine.GetIterator();
 
-                IterateFullPage(iterator, ref _blocks, ref _paras, ref _textLines, ref _words, ref _symbols);
+                IterateFullPage(iterator, ref _textLines);
 
                 confidence = ((Double)(engine.MeanTextConf) / 100).ToString("P2");
                 iterator.Dispose();
 
-            }
+                p.confidence = confidence;
+                p.img = img;
+                p.Lines = _textLines;
+                p.lang = _lang;
 
-            //DRAW
-            Pen myPen;
-            System.Drawing.Graphics newGraphics = System.Drawing.Graphics.FromImage(img);
-            //if (_blocks != null)
-            //{
-            //    myPen = new Pen(Color.Blue, 3);
-            //    foreach (TextLine block in _blocks)
-            //    {
-            //        newGraphics.DrawRectangle(myPen, block.Bounds);
-            //    }
-            //}
-            //if (_paras != null)
-            //{
-            //    myPen = new Pen(Color.Green, 2);
-            //    foreach (TextLine para in _paras)
-            //    {
-            //        newGraphics.DrawRectangle(myPen, para.Bounds);
-            //    }
-            //}
-            if (_textLines != null)
+            }
+            progress.Report(40);
+            if (img != null)
             {
-                Pen myPenline = new Pen(Color.Violet, 1.5f);
-                Pen myPenword = new Pen(Color.Blue, 1.5f);
-
-                foreach (TextLine textLine in _textLines)
-                {
-                    newGraphics.DrawRectangle(myPenline, textLine.Bounds);
-                    foreach (Word w in textLine.Words)
-                    {
-                        newGraphics.DrawRectangle(myPenword, w.Bounds);
-                    }
-                }
+                ProcessLines(p,file,progress);
             }
-            //if (_words != null)
-            //{
-            //    myPen = new Pen(Color.Red, 1);
-            //    foreach (TextLine word in _words)
-            //    {
-            //        newGraphics.DrawRectangle(myPen, word.Bounds);
-            //    }
-            //}
-            //if (_symbols != null)
-            //{
-            //    myPen = new Pen(Color.DarkBlue, 0.5f);
-            //    foreach (TextLine symbol in _symbols)
-            //    {
-            //        newGraphics.DrawRectangle(myPen, symbol.Bounds);
-            //    }
-            //}
 
-            ProcessLines(img.Width);
-
-            return img;
+            return p;
         }
 
         private Mat GetMatImageForTesseract(string path)
@@ -127,7 +74,7 @@ namespace Bakalarska_praca.Service
             return rotated;
         }
 
-        private void IterateFullPage(ResultIterator iter, ref List<TextLine> _blocks, ref List<TextLine> _paras, ref List<TextLine> _textLines, ref List<TextLine> _words, ref List<TextLine> _symbols)
+        private void IterateFullPage(ResultIterator iter, ref List<TextLine> _textLines)
         {
             int left, top, right, bottom;
 
@@ -139,6 +86,7 @@ namespace Bakalarska_praca.Service
             {
                 TextLine l = new TextLine();
                 t = iter.GetUTF8Text(level);
+                
                 ss.Append(t);
                 iter.BoundingBox(level, out left, out top, out right, out bottom);
 
@@ -171,13 +119,12 @@ namespace Bakalarska_praca.Service
 
         }
 
-        private void ProcessLines(int width)
+        private void ProcessLines(PreviewObject p,FileToProcess file, IProgress<int> progress)
         {
             using (DictionaryService dict = new DictionaryService())
             {
-            dict.MakeObjectsFromLines(_textLines,width);
+                dict.MakeObjectsFromLines(p,file,progress);
             }
-
         }
         private void RotateImage(Mat src, Mat dst, double angle, double scale)
         {
