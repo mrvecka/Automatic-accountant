@@ -4,7 +4,7 @@ using System.IO;
 
 namespace Bakalarska_praca.Service
 {
-    public class FindFileService
+    public class FileService
     {
 
 

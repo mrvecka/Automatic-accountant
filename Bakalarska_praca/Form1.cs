@@ -36,9 +36,9 @@ namespace Bakalarska_praca
         {
             InitializeComponent();
 
+            pictureBox1.Image = (Bitmap)file.img;
             panel1.AutoScroll = true;
             pictureBox1.SizeMode = PictureBoxSizeMode.AutoSize;
-            pictureBox1.Image = (Bitmap)file.img;
             txtCoinfidence.Text = file.confidence;
             txtLang.Text = file.lang;
             newImage = file.img;
@@ -60,6 +60,8 @@ namespace Bakalarska_praca
             }
 
             panel3.AutoScrollMinSize = new System.Drawing.Size(0, panel3.Height);
+            panel3.Refresh();
+
         }
 
         private void AddRectangle(TextLine line,Label l)

@@ -31,6 +31,7 @@ namespace Bakalarska_praca.Dictioneries
             columns.Add("Poštová adresa", "Client");
             columns.Add("Adresa", "Client");
             columns.Add("Sídlo firmy", "Client");
+            columns.Add("Korešpondenčná adresa","Client");
 
 
             clients = new Dictionary<string, string>();
@@ -71,12 +72,14 @@ namespace Bakalarska_praca.Dictioneries
             header.Add("KS", "KonstSymbol");
             header.Add("Faktúra - daňový doklad č.", "EvidenceNumber");
             header.Add("Predfaktura č.", "EvidenceNumber");
+            header.Add("Faktúra číslo.", "EvidenceNumber");
             header.Add("Doklad číslo", "EvidenceNumber");
             header.Add("Faktúra č.", "EvidenceNumber");
             header.Add("Faktúra", "EvidenceNumber");
             header.Add("Dodací list číslo", "DeliveryNumber");
             header.Add("Číslo dod. listu", "DeliveryNumber");
             header.Add("Číslo objednávky", "OrderNumber");
+            header.Add("Objednávka číslo", "OrderNumber");
             header.Add("Objednávka č.", "OrderNumber");
             header.Add("Miesto plnenia", "PlaceOfSupply");
             header.Add("Miesto určenia", "PlaceOfDelivery");

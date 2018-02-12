@@ -18,9 +18,11 @@ namespace Bakalarska_praca.Service
         private List<Client> listOfClients;
         private List<string> keysToDelete;
         private Dictionary dic;
+        private PreviewObject _p;
         private KeyValuePair<string, string> pair;
         private Evidence eud;
-        private char[] charsToTrim = { ' ', ':', ';', '/', '\\', '|' };
+        private char[] charsToTrim = {':','/'};
+        private char[] charsToTrimLine = { ' ', ';', '/', '\\', '|','\n',')','(','!','&','=','´','%','ˇ','+', '“','$','?'};
         private int pictureWidth;
         public void Dispose()
         {
@@ -35,6 +37,7 @@ namespace Bakalarska_praca.Service
         /// <returns></returns>
         public void MakeObjectsFromLines(PreviewObject p, FileToProcess file,IProgress<int> progress)
         {
+            _p = p;
             int Step = p.Lines.Count / 60;
             pictureWidth = p.img.Width;
             dic = new Dictionary();
@@ -46,6 +49,7 @@ namespace Bakalarska_praca.Service
             keysToDelete = new List<string>();
             foreach (TextLine line in p.Lines)
             {
+                line.text = line.text.Trim(charsToTrimLine);
                 keysInRow = 0;
                 listOfColumns.AddRange(TempListOfColumn);
                 TempListOfColumn.Clear();
@@ -104,7 +108,7 @@ namespace Bakalarska_praca.Service
 
                     stringKey = lineText.Substring(firstCharindex, keyLength); // toto by mal byt kluc z textu ktory som rozpoznal
                     similarity = SimilarityService.GetSimilarity(key.Key.ToLower(), stringKey.ToLower());
-                    if (similarity > CONSTANTS.SIMILARITY)
+                    if (similarity > CONSTANTS.SIMILARITY && !IsInMiddleOfWord(lineText,firstCharindex,keyLength,key.Key[0],key.Key[key.Key.Length-1],stringKey))
                     {
                         if (col != null && type == eud.GetType())
                         {
@@ -264,6 +268,10 @@ namespace Bakalarska_praca.Service
                 {
                     keysToDelete.Add(key.Value);
                 }
+                stringKeyValue = stringKeyValue.Trim(charsToTrim);
+                //if (string.IsNullOrEmpty(stringKeyValue) && SETTINGS.GoInColumnForValue)
+                //    stringKeyValue = FindValueInColumn(line,stringKey);
+
                 SaveData(ref keyFound, isColumn, type, key, data, stringKeyValue, ref lineText, firstCharIndex);
 
                 if (pair.Value != "" && lookingForRight)
@@ -298,7 +306,10 @@ namespace Bakalarska_praca.Service
                 keyFound = true;
             }
             prop = type.GetProperty(key.Value);
-            prop.SetValue(data, stringKeyValue, null);
+            if (prop.GetValue(data) == null)
+            {
+                prop.SetValue(data, stringKeyValue, null);
+            }
             lineText = lineText.Replace(lineText.Substring(firstCharIndex), "");
         }
 
@@ -319,7 +330,10 @@ namespace Bakalarska_praca.Service
             }
 
         }
-
+        /// <summary>
+        /// Methode mark column as blocked if current column is under him
+        /// </summary>
+        /// <param name="col">Current column</param>
         private void EndRelativeColumn(Column col)
         {
             foreach (Column c in listOfColumns)
@@ -333,8 +347,103 @@ namespace Bakalarska_praca.Service
         }
 
         /// <summary>
+        /// Methode determine if the found key is in middle of word or not
+        /// if true it's not a key else it's key
+        /// </summary>
+        /// <param name="text">Text where looking for key</param>
+        /// <param name="firstChar">Index of first cahracter of key</param>
+        /// <param name="keyLength">Length of key</param>
+        /// <param name="ch">First character</param>
+        /// <param name="c">Last character</param>
+        /// <param name="stringKey">Orginal key</param>
+        /// <returns></returns>
+        private bool IsInMiddleOfWord(string text,int firstChar,int keyLength,char ch,char c,string stringKey)
+        {
+            string sub = "";
+            int length = 0;
+            if (firstChar == 0)
+            {
+                if (text.Length - firstChar >= keyLength + 1)
+                {
+                    sub = text.Substring(firstChar, keyLength + 1);
+                    if (sub[sub.Length - 1] == ' ' || sub[sub.Length - 1] == '.' || sub[sub.Length - 1] == ',' || sub[sub.Length - 1] == ':' || sub[sub.Length - 1] == ';' || sub[sub.Length - 1] == c)
+                        return false;
+                }
+            }
+            else
+            {
+                if (text.Length - firstChar - 1 >= keyLength + 2)
+                {
+                    length = keyLength + 2;
+                }
+                else if (text.Length - firstChar - 1 >= keyLength + 1)
+                {
+                    length = keyLength + 1;
+                }
+                else
+                {
+                    length = keyLength;
+                }
+                    sub = text.Substring(firstChar-1, length).Trim(charsToTrimLine);
+                    if (sub.Length - stringKey.Length <= 1)
+                        return false;
+
+                    if ((sub[0] == ' ' || sub[0] == ch) && (sub[sub.Length - 1] == ' ' || sub[sub.Length - 1] == '.' || sub[sub.Length - 1] == ',' || sub[sub.Length - 1] == ':' || sub[sub.Length - 1] == ';' || sub[sub.Length - 1] == c))
+                        return false;
+                
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Methode look for value to key in column
+        /// </summary>
+        /// <param name="line">Current line</param>
+        /// <param name="foundKey">Current key</param>
+        /// <returns></returns>
+        private string FindValueInColumn(TextLine line,string foundKey)
+        {
+            int x1 = 0, x2 = 0;
+            string firstWord = GetFirstWordOfPhrase(foundKey);
+            string lastWord = GetLastWordOfPhrase(foundKey);
+            string res = "";
+            if (firstWord.Equals(lastWord))
+            {
+                Word w = line.Words.Where(c => c.Text.Trim(charsToTrim).Equals(foundKey)).FirstOrDefault();
+                x1 = w.Bounds.Left;
+                x2 = w.Bounds.Right;
+            }
+            else
+            {
+                Word w = line.Words.Where(c => c.Text.Trim(charsToTrim).Equals(lastWord)).FirstOrDefault();
+                Word w2 = line.Words[line.Words.IndexOf(w)-1];
+                if (!w2.Text.Trim(charsToTrim).Equals(firstWord))
+                {
+                     w2 = line.Words[line.Words.IndexOf(w2) - 1];
+                }
+
+                x1 = w2.Bounds.Left;
+                x2 = w.Bounds.Right;
+            }
+
+            try
+            {
+                TextLine t = _p.Lines[_p.Lines.IndexOf(line) + 1];
+                res = GetWordsForColumn(new Column { Left = x1, Right = x2 }, t);
+            }
+            catch (IndexOutOfRangeException e)
+            {
+                
+            }
+            return res;
+        }
+
+
+
+        /// <summary>
         /// Methode try to get right X position of Column
-        /// if there is text in line after column methode GetDataFromLine is called on dictionary of general info
+        /// if there is text in line after column, methode GetDataFromLine is called on dictionary of general info
         /// if found left X position of found key is returned 
         /// else look for text for client and width of paper is returned 
         /// </summary>
@@ -382,6 +491,11 @@ namespace Bakalarska_praca.Service
 
         }
 
+        /// <summary>
+        /// Methode set right edge of column by existing colum (if exists)
+        /// </summary>
+        /// <param name="col">Current column</param>
+        /// <returns></returns>
         private bool SetRightXByExistingColumn(Column col)
         {
             if (listOfColumns.Count > 0)
@@ -424,7 +538,7 @@ namespace Bakalarska_praca.Service
         {
             Column c = new Column();
             c.Id = id;
-            GetFirstWordOfPhrase(ref text);
+            text = GetFirstWordOfPhrase(text);
             foreach (Word w in line.Words)
             {
                 w.Text = (w.Text.Trim(charsToTrim));
@@ -440,13 +554,34 @@ namespace Bakalarska_praca.Service
 
         }
 
-        private void GetFirstWordOfPhrase(ref string text)
+        /// <summary>
+        /// Methode return first word in text
+        /// </summary>
+        /// <param name="text">Input text</param>
+        /// <returns></returns>
+        private string GetFirstWordOfPhrase(string text)
         {
             text = text.Trim();
             if (text.Contains(" "))
             {
                 text = text.Substring(0, text.IndexOf(" "));
             }
+            return text;
+        }
+
+        /// <summary>
+        /// Methode return last word in text
+        /// </summary>
+        /// <param name="text">Input text</param>
+        /// <returns></returns>
+        private string GetLastWordOfPhrase(string text)
+        {
+            text = text.Trim();
+            if (text.Contains(" "))
+            {
+                text = text.Substring(text.LastIndexOf(" "));
+            }
+            return text;
         }
 
         /// <summary>
@@ -560,6 +695,9 @@ namespace Bakalarska_praca.Service
                 {
                     if (((w.Bounds.Left <= col.Left && w.Bounds.Right > col.Left) || w.Bounds.Left >= col.Left) && w.Bounds.Right < col.Right)
                     {
+                        if (col.Left > w.Bounds.Right)
+                            col.Left = w.Bounds.Right;
+
                         a += w.Text + " ";
 
                     }

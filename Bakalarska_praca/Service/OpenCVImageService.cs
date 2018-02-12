@@ -49,17 +49,6 @@ namespace Bakalarska_praca.Service
 
             }
 
-            //foreach (LineSegmentPoint s in verticalLines)
-            //{
-            //    imgOutP.Line(s.P1, s.P2, Scalar.White, 1, LineTypes.AntiAlias, 0);
-            //}
-            //foreach (LineSegmentPoint s in horizontalLines)
-            //{
-            //    imgOutP.Line(s.P1, s.P2, Scalar.White, 1, LineTypes.AntiAlias, 0);
-            //}
-
-
-
             //Bitmap m = imgOutP.ToBitmap();
             //m.Save(@"lines.png");
         }

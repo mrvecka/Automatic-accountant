@@ -25,6 +25,11 @@ namespace Bakalarska_praca
         {
             InitializeComponent();
             _filesToProcess = new List<FileToProcess>();
+            txtPath.Text = @"C:\Users\Lukáš\Pictures\2018-02-01 faktura\vyskusane";
+            List<string> lng = new List<string>() {"slk", "eng" };
+
+            comboBox1.DataSource = lng;
+
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -40,7 +45,7 @@ namespace Bakalarska_praca
                 }
             }
 
-            _files = FindFileService.FindFiles(txtPath.Text);
+            _files = FileService.FindFiles(txtPath.Text);
             if (_files != null)
             {
                 if (_files.Count == 0)
@@ -64,19 +69,17 @@ namespace Bakalarska_praca
                 MessageBox.Show("Directory on that path does no exists!!!", "Invalid path", MessageBoxButtons.OK);
             }
 
-
-
-
         }
 
         private async void btnStart_Click(object sender, EventArgs e)
         {
             btnStart.Enabled = false;
             //prepare service
-            service = new ThreadService(_filesToProcess,"slk");
+            service = new ThreadService(_filesToProcess,comboBox1.SelectedText);
             await service.StartService();
             _previewObjects = service.Preview;
             btnStart.Enabled = true;
+            SETTINGS.GoInColumnForValue = checkBox1.Checked;
         }
 
         private void FillPanel()

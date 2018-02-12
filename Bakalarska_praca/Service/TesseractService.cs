@@ -1,14 +1,9 @@
 ﻿using Bakalarska_praca.Classes;
-using Leptonica;
 using OpenCvSharp;
-using OpenCvSharp.UserInterface;
 using System;
-using System.Runtime.InteropServices;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using Tesseract;
 
 namespace Bakalarska_praca.Service
