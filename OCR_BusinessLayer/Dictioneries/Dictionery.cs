@@ -12,6 +12,7 @@ namespace Bakalarska_praca.Dictioneries
         public Dictionary<string, string> columns;
         public Dictionary<string, string> clients;
         public List<string> canDeleteKeys;
+        public List<string> valueInColumn;
         public Dictionary()
         {
             Init();
@@ -24,6 +25,7 @@ namespace Bakalarska_praca.Dictioneries
 
             InitHeader();
             InitCanDeleteKeys();
+            InitValueInColumn();
             columns = new Dictionary<string, string>();
             columns.Add("Dodávateľ", "Client");
             columns.Add("Odberateľ","Client");
@@ -111,6 +113,7 @@ namespace Bakalarska_praca.Dictioneries
             header.Add("Dátum vzniku daňovej povinnosti", "DateOfTax");
             header.Add("Dátum zdaniteľného plnenia", "DateOfTax");
             header.Add("Daňová povinnosť", "DateOfTax");
+            header.Add("Dodanie tovaru/služby", "DateOfDelivery");        
             header.Add("Dátum dodania/pzp", "DateOfDelivery");
             header.Add("Expedicia", "DateOfDelivery");
             header.Add("Dátum objednania", "DateOfOrder");
@@ -135,6 +138,20 @@ namespace Bakalarska_praca.Dictioneries
             canDeleteKeys.Add("DateOfDelivery");
             canDeleteKeys.Add("DateOfOrder");
 
+
+        }
+
+        private void InitValueInColumn()
+        {
+            valueInColumn = new List<string>();
+            valueInColumn.Add("DateOfDelivery");
+            valueInColumn.Add("DateOfOrder");
+            valueInColumn.Add("DocumentCreateDate");
+            valueInColumn.Add("DateOfTax");
+            valueInColumn.Add("DateOfPayment");
+            valueInColumn.Add("DateOfCreate");
+            valueInColumn.Add("KonstSymbol");
+            valueInColumn.Add("VariabilSymbol");
 
         }
 

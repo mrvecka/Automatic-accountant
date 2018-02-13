@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Bakalarska_praca.Service
+namespace OCR_BusinessLayer.Service
 {
     class SimilarityService
     {

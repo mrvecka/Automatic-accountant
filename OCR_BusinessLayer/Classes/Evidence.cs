@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Bakalarska_praca.Classes
+﻿namespace OCR_BusinessLayer.Classes
 {
-    class Evidence
+    public class Evidence
     {
         public string VariabilSymbol { get; set; }
         public string KonstSymbol { get; set; }
@@ -25,7 +19,6 @@ namespace Bakalarska_praca.Classes
         public string RefundMethode { get; set; }
         public string CreatorName { get; set; }
         public string DateOfDelivery { get; set; }
-        public string DocumentCreateDay { get; set; }
         public string DateOfOrder { get; set; }
 
 

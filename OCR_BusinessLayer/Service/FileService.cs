@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 
-namespace Bakalarska_praca.Service
+namespace OCR_BusinessLayer.Service
 {
     public class FileService
     {

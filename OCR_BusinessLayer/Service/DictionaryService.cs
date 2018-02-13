@@ -1,18 +1,19 @@
-﻿using Bakalarska_praca.Classes;
-using Bakalarska_praca.Dictioneries;
+﻿using Bakalarska_praca.Dictioneries;
+using OCR_BusinessLayer.Classes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 
-namespace Bakalarska_praca.Service
+namespace OCR_BusinessLayer.Service
 {
     class DictionaryService : IDisposable
     {
         private int keysInRow = 0;
         private bool nextLineIsColumn = false;
         private int columnsCount = 0;
+        private const bool LUKOJESEF = true;
         private List<Column> listOfColumns;
         private List<Column> TempListOfColumn;
         private List<Client> listOfClients;
@@ -21,8 +22,6 @@ namespace Bakalarska_praca.Service
         private PreviewObject _p;
         private KeyValuePair<string, string> pair;
         private Evidence eud;
-        private char[] charsToTrim = {':','/'};
-        private char[] charsToTrimLine = { ' ', ';', '/', '\\', '|','\n',')','(','!','&','=','´','%','ˇ','+', '“','$','?'};
         private int pictureWidth;
         public void Dispose()
         {
@@ -35,7 +34,7 @@ namespace Bakalarska_praca.Service
         /// <param name="lines">List of lines</param>
         /// <param name="width">Width of document</param>
         /// <returns></returns>
-        public void MakeObjectsFromLines(PreviewObject p, FileToProcess file,IProgress<int> progress)
+        public void MakeObjectsFromLines(PreviewObject p, FileToProcess file, IProgress<int> progress)
         {
             _p = p;
             int Step = p.Lines.Count / 60;
@@ -49,7 +48,7 @@ namespace Bakalarska_praca.Service
             keysToDelete = new List<string>();
             foreach (TextLine line in p.Lines)
             {
-                line.text = line.text.Trim(charsToTrimLine);
+                line.text = line.text.Trim(CONSTANTS.charsToTrimLine);
                 keysInRow = 0;
                 listOfColumns.AddRange(TempListOfColumn);
                 TempListOfColumn.Clear();
@@ -71,6 +70,7 @@ namespace Bakalarska_praca.Service
 
                 progress.Report(Step);
             }
+            ValidationService.Validate(ref eud);
         }
 
         private bool GoLikeColumn()
@@ -108,7 +108,7 @@ namespace Bakalarska_praca.Service
 
                     stringKey = lineText.Substring(firstCharindex, keyLength); // toto by mal byt kluc z textu ktory som rozpoznal
                     similarity = SimilarityService.GetSimilarity(key.Key.ToLower(), stringKey.ToLower());
-                    if (similarity > CONSTANTS.SIMILARITY && !IsInMiddleOfWord(lineText,firstCharindex,keyLength,key.Key[0],key.Key[key.Key.Length-1],stringKey))
+                    if (similarity > CONSTANTS.SIMILARITY && !IsInMiddleOfWord(lineText, firstCharindex, keyLength, key.Key[0], key.Key[key.Key.Length - 1], stringKey))
                     {
                         if (col != null && type == eud.GetType())
                         {
@@ -116,7 +116,7 @@ namespace Bakalarska_praca.Service
                             col.Completed = true;
                             col.Bottom = line.Words[0].Bounds.Top;
                         }
-                        res = jahoda(line, key, stringKey, ref lineText, firstCharindex, dictionary, type, data, ref keyFound, lookingForRight,ref isColumn,col);
+                        res = jahoda(line, key, stringKey, ref lineText, firstCharindex, dictionary, type, data, ref keyFound, lookingForRight, ref isColumn, col);
                         if (res == CONSTANTS.Result.Continue) { break; }
                         else if (res == CONSTANTS.Result.True) { return true; }
                         else if (res == CONSTANTS.Result.False) { return false; }
@@ -134,7 +134,7 @@ namespace Bakalarska_praca.Service
                         if (index == 0)
                             IndexIsNull = true;
 
-                        firstCharindex += index+1;
+                        firstCharindex += index + 1;
                     }
 
 
@@ -167,12 +167,12 @@ namespace Bakalarska_praca.Service
                 if (keysInRow == 0)
                 {
                     Client client = (Client)data;
-                    string s = lineText.Trim(charsToTrim);
+                    string s = lineText.Trim(CONSTANTS.charsToTrim);
                     if (!string.IsNullOrEmpty(s) && s.Length >= 5)
                     {
                         switch (col.FirstLineInColumn)
                         {
-                            case 1:                                                        
+                            case 1:
                                 client.Name = lineText;
                                 col.FirstLineInColumn++;
                                 break;
@@ -204,14 +204,14 @@ namespace Bakalarska_praca.Service
 
         private CONSTANTS.Result jahoda(TextLine line, KeyValuePair<string, string> key, string stringKey, ref string lineText, int firstCharIndex,
                                         Dictionary<string, string> dictionary, Type type, Object data, ref bool keyFound, bool lookingForRight,
-                                        ref bool isColumn,Column col)
+                                        ref bool isColumn, Column col)
         {
             string stringKeyValue = "";
             if (lookingForRight)
             {
-                
+
                 pair = key;
-                
+
             }
             if (dic.columns.ContainsKey(key.Key))
             {
@@ -227,15 +227,15 @@ namespace Bakalarska_praca.Service
                 Client n = new Client();
                 EndRelativeColumn(column);
                 var s = line.text;
-                TryGetRightXOfColumn(column, line,ref s, stringKey, n);
+                TryGetRightXOfColumn(column, line, ref s, stringKey, n);
                 TempListOfColumn.Add(column);
                 lineText = lineText.Replace(key.Key, "");
                 listOfClients.Add(n);
-                s = s.Trim(charsToTrim);
+                s = s.Trim(CONSTANTS.charsToTrim);
                 if (!(string.IsNullOrEmpty(s) || s.Length < 5)) // uz aktualny riadok moze byt stlpec tak to tu poriesim
                 {
                     s = s.Replace(stringKey, "");
-                    GetDataFromLine(line, ref s, dictionary, type, n,true,column,false); // ak mam za klucovym slovom (Odberatel) nejaky text a nie su tam ine klucove slova
+                    GetDataFromLine(line, ref s, dictionary, type, n, true, column, false); // ak mam za klucovym slovom (Odberatel) nejaky text a nie su tam ine klucove slova
                 }
 
                 return CONSTANTS.Result.Break;
@@ -261,16 +261,17 @@ namespace Bakalarska_praca.Service
             var dict = dictionary.ToDictionary(entry => entry.Key,
                                                entry => entry.Value);
             dict.Remove(key.Key);
-            if (!GetDataFromLine(line, ref stringKeyValue, dict, type, data,isColumn,col))
+            stringKeyValue = stringKeyValue.Trim(CONSTANTS.charsToTrimLine);
+            if (!GetDataFromLine(line, ref stringKeyValue, dict, type, data, isColumn, col))
             {
                 //keyFound = false; // ak mam v riadku dve a viac klucovych slov tak to nastavim na false aby mi to v predchadzajucom volani vbehlo sem a nastavila sa hodnota 
                 if (dic.canDeleteKeys.Contains(key.Value))
                 {
                     keysToDelete.Add(key.Value);
                 }
-                stringKeyValue = stringKeyValue.Trim(charsToTrim);
-                //if (string.IsNullOrEmpty(stringKeyValue) && SETTINGS.GoInColumnForValue)
-                //    stringKeyValue = FindValueInColumn(line,stringKey);
+                stringKeyValue = stringKeyValue.Trim(CONSTANTS.charsToTrim);
+                if (string.IsNullOrEmpty(stringKeyValue) && SETTINGS.GoInColumnForValue && dic.valueInColumn.Contains(key.Value))
+                    stringKeyValue = FindValueInColumn(line, stringKey);
 
                 SaveData(ref keyFound, isColumn, type, key, data, stringKeyValue, ref lineText, firstCharIndex);
 
@@ -357,7 +358,7 @@ namespace Bakalarska_praca.Service
         /// <param name="c">Last character</param>
         /// <param name="stringKey">Orginal key</param>
         /// <returns></returns>
-        private bool IsInMiddleOfWord(string text,int firstChar,int keyLength,char ch,char c,string stringKey)
+        private bool IsInMiddleOfWord(string text, int firstChar, int keyLength, char ch, char c, string stringKey)
         {
             string sub = "";
             int length = 0;
@@ -365,10 +366,16 @@ namespace Bakalarska_praca.Service
             {
                 if (text.Length - firstChar >= keyLength + 1)
                 {
-                    sub = text.Substring(firstChar, keyLength + 1);
-                    if (sub[sub.Length - 1] == ' ' || sub[sub.Length - 1] == '.' || sub[sub.Length - 1] == ',' || sub[sub.Length - 1] == ':' || sub[sub.Length - 1] == ';' || sub[sub.Length - 1] == c)
-                        return false;
+                    length = keyLength + 1;
                 }
+                else
+                {
+                    length = keyLength;
+                }
+
+                sub = text.Substring(firstChar, length);
+                if (sub[sub.Length - 1] == ' ' || sub[sub.Length - 1] == '.' || sub[sub.Length - 1] == ',' || sub[sub.Length - 1] == ':' || sub[sub.Length - 1] == ';' || sub[sub.Length - 1] == c)
+                    return false;
             }
             else
             {
@@ -384,13 +391,13 @@ namespace Bakalarska_praca.Service
                 {
                     length = keyLength;
                 }
-                    sub = text.Substring(firstChar-1, length).Trim(charsToTrimLine);
-                    if (sub.Length - stringKey.Length <= 1)
-                        return false;
+                sub = text.Substring(firstChar - 1, length).Trim(CONSTANTS.charsToTrimLine);
+                if (sub.Length - stringKey.Length <= 1)
+                    return false;
 
-                    if ((sub[0] == ' ' || sub[0] == ch) && (sub[sub.Length - 1] == ' ' || sub[sub.Length - 1] == '.' || sub[sub.Length - 1] == ',' || sub[sub.Length - 1] == ':' || sub[sub.Length - 1] == ';' || sub[sub.Length - 1] == c))
-                        return false;
-                
+                if ((sub[0] == ' ' || sub[0] == ch) && (sub[sub.Length - 1] == ' ' || sub[sub.Length - 1] == '.' || sub[sub.Length - 1] == ',' || sub[sub.Length - 1] == ':' || sub[sub.Length - 1] == ';' || sub[sub.Length - 1] == c))
+                    return false;
+
             }
 
             return true;
@@ -402,25 +409,25 @@ namespace Bakalarska_praca.Service
         /// <param name="line">Current line</param>
         /// <param name="foundKey">Current key</param>
         /// <returns></returns>
-        private string FindValueInColumn(TextLine line,string foundKey)
+        private string FindValueInColumn(TextLine line, string foundKey)
         {
             int x1 = 0, x2 = 0;
-            string firstWord = GetFirstWordOfPhrase(foundKey);
-            string lastWord = GetLastWordOfPhrase(foundKey);
+            string firstWord = GetFirstWordOfPhrase(foundKey).Trim();
+            string lastWord = GetLastWordOfPhrase(foundKey).Trim();
             string res = "";
             if (firstWord.Equals(lastWord))
             {
-                Word w = line.Words.Where(c => c.Text.Trim(charsToTrim).Equals(foundKey)).FirstOrDefault();
+                Word w = line.Words.Where(c => c.Text.Trim(CONSTANTS.charsToTrim).Equals(foundKey.Trim())).FirstOrDefault();
                 x1 = w.Bounds.Left;
                 x2 = w.Bounds.Right;
             }
             else
             {
-                Word w = line.Words.Where(c => c.Text.Trim(charsToTrim).Equals(lastWord)).FirstOrDefault();
-                Word w2 = line.Words[line.Words.IndexOf(w)-1];
-                if (!w2.Text.Trim(charsToTrim).Equals(firstWord))
+                Word w = line.Words.Where(c => c.Text.Trim(CONSTANTS.charsToTrim).Equals(lastWord)).FirstOrDefault();
+                Word w2 = line.Words[line.Words.IndexOf(w) - 1];
+                if (!w2.Text.Trim(CONSTANTS.charsToTrim).Equals(firstWord))
                 {
-                     w2 = line.Words[line.Words.IndexOf(w2) - 1];
+                    w2 = line.Words[line.Words.IndexOf(w2) - 1];
                 }
 
                 x1 = w2.Bounds.Left;
@@ -429,12 +436,17 @@ namespace Bakalarska_praca.Service
 
             try
             {
-                TextLine t = _p.Lines[_p.Lines.IndexOf(line) + 1];
-                res = GetWordsForColumn(new Column { Left = x1, Right = x2 }, t);
+                for (int i = 1; i <= 2; i++)
+                {
+                    TextLine t = _p.Lines[_p.Lines.IndexOf(line) + i];
+                    res = GetWordsForColumn(new Column { Left = x1, Right = x2 }, t);
+                    if (!string.IsNullOrWhiteSpace(res))
+                        break;
+                }
             }
             catch (IndexOutOfRangeException e)
             {
-                
+
             }
             return res;
         }
@@ -452,7 +464,7 @@ namespace Bakalarska_praca.Service
         /// <param name="stringKey">Found key</param>
         /// <param name="n">Object of Client</param>
         /// <returns></returns>
-        private void TryGetRightXOfColumn(Column col, TextLine a,ref string line, string stringKey, Client n)
+        private void TryGetRightXOfColumn(Column col, TextLine a, ref string line, string stringKey, Client n)
         {
 
             if (!SetRightXByExistingColumn(col))
@@ -541,9 +553,9 @@ namespace Bakalarska_praca.Service
             text = GetFirstWordOfPhrase(text);
             foreach (Word w in line.Words)
             {
-                w.Text = (w.Text.Trim(charsToTrim));
+                w.Text = (w.Text.Trim(CONSTANTS.charsToTrim));
                 c.Text = w.Text;
-                if (w.Text.Equals(text.Trim(charsToTrim)))
+                if (w.Text.Equals(text.Trim(CONSTANTS.charsToTrim)))
                 {
                     c.Left = w.Bounds.Left;
                     c.Top = w.Bounds.Top;
@@ -599,7 +611,7 @@ namespace Bakalarska_praca.Service
                 if (!col.Blocked)
                 {
                     client = listOfClients[col.Id - 1];
-                    string text = GetWordsForColumn(col, line).Trim(charsToTrim);
+                    string text = GetWordsForColumn(col, line).Trim(CONSTANTS.charsToTrim);
                     if (!col.Completed)
                     {
                         keysInRow = 0;
@@ -625,7 +637,7 @@ namespace Bakalarska_praca.Service
                     }
                 }
             }
-            otherText = otherText.Trim(charsToTrim);
+            otherText = otherText.Trim(CONSTANTS.charsToTrim);
             if (!string.IsNullOrEmpty(otherText) || otherText.Length > 3)
                 GetDataFromLine(line, ref otherText, dic.header, eud.GetType(), eud, false, null);
 
@@ -691,9 +703,10 @@ namespace Bakalarska_praca.Service
 
             foreach (Word w in line.Words)
             {
-                if (w.Bounds.Left < col.Right)
+                if (w.Bounds.Left < col.Right && w.Bounds.Width < 300)
                 {
-                    if (((w.Bounds.Left <= col.Left && w.Bounds.Right > col.Left) || w.Bounds.Left >= col.Left) && w.Bounds.Right < col.Right)
+                    if (((w.Bounds.Left <= col.Left && w.Bounds.Right > col.Left) || w.Bounds.Left >= col.Left) && ((w.Bounds.Right >= col.Right && w.Bounds.Left < col.Right) || w.Bounds.Right <= col.Right))
+
                     {
                         if (col.Left > w.Bounds.Right)
                             col.Left = w.Bounds.Right;

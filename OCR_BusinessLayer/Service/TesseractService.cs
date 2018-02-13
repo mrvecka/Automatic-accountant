@@ -1,12 +1,12 @@
-﻿using Bakalarska_praca.Classes;
-using OpenCvSharp;
+﻿using OpenCvSharp;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Text;
 using Tesseract;
+using OCR_BusinessLayer.Classes;
 
-namespace Bakalarska_praca.Service
+namespace OCR_BusinessLayer.Service
 {
     class TesseractService
     {

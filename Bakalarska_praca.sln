@@ -3,7 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26730.16
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bakalarska_praca", "Bakalarska_praca\Bakalarska_praca.csproj", "{4B7DF536-8EE1-4F27-A50A-96EBCB074028}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OCR", "Bakalarska_praca\OCR.csproj", "{4B7DF536-8EE1-4F27-A50A-96EBCB074028}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Validations_UnitTests", "Validations_UnitTests\Validations_UnitTests.csproj", "{3D8E4D15-391A-4203-B92B-30B31D1C024C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OCR_BusinessLayer", "OCR_BusinessLayer\OCR_BusinessLayer.csproj", "{D7542A24-5AFF-4AE2-9E6F-6E262474E475}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +25,22 @@ Global
 		{4B7DF536-8EE1-4F27-A50A-96EBCB074028}.Release|Any CPU.Build.0 = Release|Any CPU
 		{4B7DF536-8EE1-4F27-A50A-96EBCB074028}.Release|x86.ActiveCfg = Release|x86
 		{4B7DF536-8EE1-4F27-A50A-96EBCB074028}.Release|x86.Build.0 = Release|x86
+		{3D8E4D15-391A-4203-B92B-30B31D1C024C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3D8E4D15-391A-4203-B92B-30B31D1C024C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3D8E4D15-391A-4203-B92B-30B31D1C024C}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{3D8E4D15-391A-4203-B92B-30B31D1C024C}.Debug|x86.Build.0 = Debug|Any CPU
+		{3D8E4D15-391A-4203-B92B-30B31D1C024C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3D8E4D15-391A-4203-B92B-30B31D1C024C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3D8E4D15-391A-4203-B92B-30B31D1C024C}.Release|x86.ActiveCfg = Release|Any CPU
+		{3D8E4D15-391A-4203-B92B-30B31D1C024C}.Release|x86.Build.0 = Release|Any CPU
+		{D7542A24-5AFF-4AE2-9E6F-6E262474E475}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D7542A24-5AFF-4AE2-9E6F-6E262474E475}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D7542A24-5AFF-4AE2-9E6F-6E262474E475}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{D7542A24-5AFF-4AE2-9E6F-6E262474E475}.Debug|x86.Build.0 = Debug|Any CPU
+		{D7542A24-5AFF-4AE2-9E6F-6E262474E475}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D7542A24-5AFF-4AE2-9E6F-6E262474E475}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D7542A24-5AFF-4AE2-9E6F-6E262474E475}.Release|x86.ActiveCfg = Release|Any CPU
+		{D7542A24-5AFF-4AE2-9E6F-6E262474E475}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

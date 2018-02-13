@@ -1,13 +1,9 @@
-﻿using Bakalarska_praca.Classes;
+﻿using OCR_BusinessLayer.Classes;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 
-namespace Bakalarska_praca.Service
+namespace OCR_BusinessLayer.Service
 {
     public class ThreadService
     {

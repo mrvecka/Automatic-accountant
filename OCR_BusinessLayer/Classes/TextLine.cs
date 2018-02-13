@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Tesseract;
 
-namespace Bakalarska_praca.Classes
+namespace OCR_BusinessLayer.Classes
 {
     public class TextLine
     {

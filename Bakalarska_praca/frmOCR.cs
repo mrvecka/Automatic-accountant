@@ -1,14 +1,10 @@
-﻿using Bakalarska_praca.Classes;
-using Bakalarska_praca.Service;
+﻿using OCR_BusinessLayer;
+using OCR_BusinessLayer.Classes;
+using OCR_BusinessLayer.Service;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
-using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Bakalarska_praca
@@ -75,7 +71,7 @@ namespace Bakalarska_praca
         {
             btnStart.Enabled = false;
             //prepare service
-            service = new ThreadService(_filesToProcess,comboBox1.SelectedText);
+            service = new ThreadService(_filesToProcess,comboBox1.SelectedItem.ToString());
             await service.StartService();
             _previewObjects = service.Preview;
             btnStart.Enabled = true;

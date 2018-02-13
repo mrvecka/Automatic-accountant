@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Bakalarska_praca.Classes
+namespace OCR_BusinessLayer.Classes
 {
     public class Client
     {

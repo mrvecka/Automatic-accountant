@@ -1,6 +1,6 @@
 ﻿using System.Windows.Forms;
 
-namespace Bakalarska_praca.Classes
+namespace OCR_BusinessLayer.Classes
 {
     public class FileToProcess
     {
