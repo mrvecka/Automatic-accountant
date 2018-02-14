@@ -8,57 +8,57 @@ namespace OCR_BusinessLayer.Service
     {
         private static List<char> numbersOnly;
 
-        public static void Validate(ref Evidence e)
+        public static void Validate( Evidence e)
         {
             Initialization();
-            ValidateEvidence(ref e);
+            ValidateEvidence( e);
         }
 
-        public static void Validate(ref Client c)
+        public static void Validate(Client c)
         {
             Initialization();
-            ValidateClient(ref c);
+            ValidateClient(c);
         }
 
-        private static void ValidateEvidence(ref Evidence e)
+        private static void ValidateEvidence( Evidence e)
         {
-            Validate_ValiabilSymbol(ref e);
-            Validate_KonstSymbol(ref e);
-            Validate_EvidenceNumber(ref e);
-            Validate_DeliveryNumber(ref e);
-            Validate_OrderNumber(ref e);
-            Validate_ClientNumber(ref e);
-            Validate_CreatorName(ref e);
-            Validate_PlaceOfSupply(ref e);
-            Validate_PlaceOfDelivery(ref e);
-            Validate_RefundMethode(ref e);
-            Validate_Transpport(ref e);
-            Validate_DocumentCreateDate(ref e);
-            Validate_DateOfTax(ref e);
-            Validate_DateOfPayment(ref e);
-            Validate_DateOfCreate(ref e);
-            Validate_DateOfDelivery(ref e);
-            Validate_DateOfOrder(ref e);
+            Validate_ValiabilSymbol( e);
+            Validate_KonstSymbol( e);
+            Validate_EvidenceNumber( e);
+            Validate_DeliveryNumber( e);
+            Validate_OrderNumber( e);
+            Validate_ClientNumber( e);
+            Validate_CreatorName( e);
+            Validate_PlaceOfSupply( e);
+            Validate_PlaceOfDelivery( e);
+            Validate_RefundMethode( e);
+            Validate_Transpport( e);
+            Validate_DocumentCreateDate( e);
+            Validate_DateOfTax( e);
+            Validate_DateOfPayment( e);
+            Validate_DateOfCreate( e);
+            Validate_DateOfDelivery( e);
+            Validate_DateOfOrder( e);
         }
 
-        private static void ValidateClient(ref Client c)
+        private static void ValidateClient(Client c)
         {
-            Validate_Name(ref c);
-            //street
-            //psc
-            //state
-            Validate_ICO(ref c);
-            Validate_DIC(ref c);
-            Validate_ICDPH(ref c);
-            Validate_Phone(ref c);
-            Validate_Email(ref c);
-            Validate_Transport(ref c);
-            Validate_Bank(ref c);
-            Validate_AccountNumber(ref c);
-            Validate_BankCode(ref c);
-            Validate_IBAN(ref c);
-            Validate_SWIFT(ref c);
-            Validate_Web(ref c);
+            Validate_Name( c);
+            Validate_Street( c);
+            Validate_PSC( c);
+            Validate_State( c);
+            Validate_ICO(c);
+            Validate_DIC( c);
+            Validate_ICDPH( c);
+            Validate_Phone( c);
+            Validate_Email( c);
+            Validate_Transport( c);
+            Validate_Bank( c);
+            Validate_AccountNumber( c);
+            Validate_BankCode( c);
+            Validate_IBAN( c);
+            Validate_SWIFT( c);
+            Validate_Web( c);
         }
 
         #region Initialization
@@ -73,7 +73,7 @@ namespace OCR_BusinessLayer.Service
 
         #region Validations Evidence
 
-        private static void Validate_ValiabilSymbol(ref Evidence e)
+        private static void Validate_ValiabilSymbol( Evidence e)
         {
             string symbol = "";
             if (e.VariabilSymbol != null)
@@ -86,7 +86,7 @@ namespace OCR_BusinessLayer.Service
         }
 
 
-        private static void Validate_KonstSymbol(ref Evidence e)
+        private static void Validate_KonstSymbol( Evidence e)
         {
             string symbol = "";
             if (e.KonstSymbol != null)
@@ -101,7 +101,7 @@ namespace OCR_BusinessLayer.Service
             e.KonstSymbol = symbol;
 
         }
-        private static void Validate_EvidenceNumber(ref Evidence e)
+        private static void Validate_EvidenceNumber( Evidence e)
         {
             string symbol = "";
             if (e.EvidenceNumber != null)
@@ -127,7 +127,7 @@ namespace OCR_BusinessLayer.Service
             e.EvidenceNumber = symbol.Trim();
         }
 
-        private static void Validate_OrderNumber(ref Evidence e)
+        private static void Validate_OrderNumber( Evidence e)
         {
             string symbol = "";
             if (e.OrderNumber != null)
@@ -139,7 +139,7 @@ namespace OCR_BusinessLayer.Service
 
         }
 
-        private static void Validate_DeliveryNumber(ref Evidence e)
+        private static void Validate_DeliveryNumber( Evidence e)
         {
             string symbol = "";
             if (e.DeliveryNumber != null)
@@ -151,7 +151,7 @@ namespace OCR_BusinessLayer.Service
 
         }
 
-        private static void Validate_ClientNumber(ref Evidence e)
+        private static void Validate_ClientNumber( Evidence e)
         {
             string symbol = "";
             if (e.ClientNumber != null)
@@ -163,7 +163,7 @@ namespace OCR_BusinessLayer.Service
 
         }
 
-        private static void Validate_Transpport(ref Evidence e)
+        private static void Validate_Transpport( Evidence e)
         {
             string symbol = "";
             if (e.Transport != null)
@@ -175,7 +175,7 @@ namespace OCR_BusinessLayer.Service
 
         }
 
-        private static void Validate_PlaceOfSupply(ref Evidence e)
+        private static void Validate_PlaceOfSupply( Evidence e)
         {
             string symbol = "";
             if (e.PlaceOfSupply != null)
@@ -187,7 +187,7 @@ namespace OCR_BusinessLayer.Service
 
         }
 
-        private static void Validate_PlaceOfDelivery(ref Evidence e)
+        private static void Validate_PlaceOfDelivery( Evidence e)
         {
             string symbol = "";
             if (e.PlaceOfDelivery != null)
@@ -199,7 +199,7 @@ namespace OCR_BusinessLayer.Service
 
         }
 
-        private static void Validate_RefundMethode(ref Evidence e)
+        private static void Validate_RefundMethode( Evidence e)
         {
             string symbol = "";
             if (e.RefundMethode != null)
@@ -210,7 +210,7 @@ namespace OCR_BusinessLayer.Service
             e.RefundMethode = symbol;
 
         }
-        private static void Validate_CreatorName(ref Evidence e)
+        private static void Validate_CreatorName( Evidence e)
         {
             string symbol = "";
             if (e.CreatorName != null)
@@ -221,7 +221,7 @@ namespace OCR_BusinessLayer.Service
             e.CreatorName = symbol;
 
         }
-        private static void Validate_DocumentCreateDate(ref Evidence e)
+        private static void Validate_DocumentCreateDate( Evidence e)
         {
             string symbol = "";
             if (e.DocumentCreateDate != null)
@@ -235,7 +235,7 @@ namespace OCR_BusinessLayer.Service
             e.DocumentCreateDate = symbol;
 
         }
-        private static void Validate_DateOfTax(ref Evidence e)
+        private static void Validate_DateOfTax( Evidence e)
         {
             string symbol = "";
             if (e.DateOfTax != null)
@@ -249,7 +249,7 @@ namespace OCR_BusinessLayer.Service
             e.DateOfTax = symbol;
 
         }
-        private static void Validate_DateOfPayment(ref Evidence e)
+        private static void Validate_DateOfPayment( Evidence e)
         {
             string symbol = "";
             if (e.DateOfPayment != null)
@@ -263,7 +263,7 @@ namespace OCR_BusinessLayer.Service
             e.DateOfPayment = symbol;
 
         }
-        private static void Validate_DateOfCreate(ref Evidence e)
+        private static void Validate_DateOfCreate( Evidence e)
         {
             string symbol = "";
             if (e.DateOfCreate != null)
@@ -277,7 +277,7 @@ namespace OCR_BusinessLayer.Service
             e.DateOfCreate = symbol;
 
         }
-        private static void Validate_DateOfDelivery(ref Evidence e)
+        private static void Validate_DateOfDelivery( Evidence e)
         {
             string symbol = "";
             if (e.DateOfDelivery != null)
@@ -291,7 +291,7 @@ namespace OCR_BusinessLayer.Service
             e.DateOfDelivery = symbol;
 
         }
-        private static void Validate_DateOfOrder(ref Evidence e)
+        private static void Validate_DateOfOrder( Evidence e)
         {
             string symbol = "";
             if (e.DateOfOrder != null)
@@ -312,7 +312,7 @@ namespace OCR_BusinessLayer.Service
 
         #region Validations Client
 
-        private static void Validate_Name(ref Client c)
+        private static void Validate_Name( Client c)
         {
             string symbol = "";
             if (c.Name != null)
@@ -322,8 +322,35 @@ namespace OCR_BusinessLayer.Service
             }
             c.Name = symbol;
         }
+        private static void Validate_Street( Client c)
+        {
+            string symbol = "";
+            if (c.Street != null)
+            {
+                symbol = c.Street.Trim(CONSTANTS.charsToTrimLine);
+            }
+            c.Street = symbol;
+        }
+        private static void Validate_PSC( Client c)
+        {
+            string symbol = "";
+            if (c.PSCCity != null)
+            {
+                symbol = c.PSCCity.Trim(CONSTANTS.charsToTrimLine);
+            }
+            c.PSCCity = symbol;
+        }
+        private static void Validate_State( Client c)
+        {
+            string symbol = "";
+            if (c.State != null)
+            {
+                symbol = c.State.Trim(CONSTANTS.charsToTrimLine);
+            }
+            c.State = symbol;
+        }
 
-        private static void Validate_ICO(ref Client c)
+        private static void Validate_ICO(Client c)
         {
             string symbol = "";
             if (c.ICO != null)
@@ -334,7 +361,7 @@ namespace OCR_BusinessLayer.Service
             c.ICO = symbol;
         }
 
-        private static void Validate_DIC(ref Client c)
+        private static void Validate_DIC( Client c)
         {
             string symbol = "";
             if (c.DIC != null)
@@ -345,7 +372,7 @@ namespace OCR_BusinessLayer.Service
             c.DIC = symbol;
         }
 
-        private static void Validate_ICDPH(ref Client c)
+        private static void Validate_ICDPH( Client c)
         {
             string symbol = "";
             int countOfLetters = 0;
@@ -376,7 +403,7 @@ namespace OCR_BusinessLayer.Service
             c.ICDPH = symbol;
         }
 
-        private static void Validate_Phone(ref Client c)
+        private static void Validate_Phone( Client c)
         {
            
             string symbol = "";
@@ -397,7 +424,7 @@ namespace OCR_BusinessLayer.Service
             c.Phone = symbol;
         }
 
-        private static void Validate_Email(ref Client c)
+        private static void Validate_Email( Client c)
         {
 
             string symbol = "";
@@ -418,7 +445,7 @@ namespace OCR_BusinessLayer.Service
             c.Email = symbol;
         }
 
-        private static void Validate_Transport(ref Client c)
+        private static void Validate_Transport( Client c)
         {
 
             string symbol = "";
@@ -432,7 +459,7 @@ namespace OCR_BusinessLayer.Service
         }
 
 
-        private static void Validate_Bank(ref Client c)
+        private static void Validate_Bank( Client c)
         {
             string symbol = "";
             if (c.Bank != null)
@@ -444,7 +471,7 @@ namespace OCR_BusinessLayer.Service
             c.Bank = symbol;
         }
 
-        private static void Validate_AccountNumber(ref Client c)
+        private static void Validate_AccountNumber( Client c)
         {
             string symbol = "";
             if (c.AccountNumber != null)
@@ -471,7 +498,7 @@ namespace OCR_BusinessLayer.Service
             }
             c.AccountNumber = symbol;
         }
-        private static void Validate_BankCode(ref Client c)
+        private static void Validate_BankCode( Client c)
         {
             string symbol = "";
             if (c.BankCode != null)
@@ -483,7 +510,7 @@ namespace OCR_BusinessLayer.Service
             c.BankCode = symbol;
         }
 
-        private static void Validate_IBAN(ref Client c)
+        private static void Validate_IBAN( Client c)
         {
             string symbol = "";
             int countOfLetters = 0;
@@ -514,7 +541,7 @@ namespace OCR_BusinessLayer.Service
             c.IBAN = symbol;
         }
 
-        private static void Validate_SWIFT(ref Client c)
+        private static void Validate_SWIFT( Client c)
         {
             string symbol = "";
             if (c.SWIFT != null)
@@ -526,7 +553,7 @@ namespace OCR_BusinessLayer.Service
             c.SWIFT = symbol;
         }
 
-        private static void Validate_Web(ref Client c)
+        private static void Validate_Web( Client c)
         {
             string symbol = "";
             if (c.Web != null)
@@ -568,6 +595,8 @@ namespace OCR_BusinessLayer.Service
             }
             return symbol;
         }
+
+
 
         private static string LettersOnly(string symbol)
         {

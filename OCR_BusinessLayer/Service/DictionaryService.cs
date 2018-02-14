@@ -10,19 +10,18 @@ namespace OCR_BusinessLayer.Service
 {
     class DictionaryService : IDisposable
     {
-        private int keysInRow = 0;
-        private bool nextLineIsColumn = false;
-        private int columnsCount = 0;
-        private const bool LUKOJESEF = true;
-        private List<Column> listOfColumns;
-        private List<Column> TempListOfColumn;
-        private List<Client> listOfClients;
-        private List<string> keysToDelete;
-        private Dictionary dic;
+        private int _keysInRow = 0;
+        private bool _nextLineIsColumn = false;
+        private int _columnsCount = 0;
+        private List<Column> _listOfColumns;
+        private List<Column> _TempListOfColumn;
+        private List<Client> _listOfClients;
+        private List<string> _keysToDelete;
+        private Dictionary _dic;
         private PreviewObject _p;
-        private KeyValuePair<string, string> pair;
-        private Evidence eud;
-        private int pictureWidth;
+        private KeyValuePair<string, string> _pair;
+        private Evidence _eud;
+
         public void Dispose()
         {
 
@@ -38,25 +37,26 @@ namespace OCR_BusinessLayer.Service
         {
             _p = p;
             int Step = p.Lines.Count / 60;
-            pictureWidth = p.img.Width;
-            dic = new Dictionary();
-            eud = new Evidence();
-            Type type = eud.GetType();
-            listOfColumns = new List<Column>();
-            TempListOfColumn = new List<Column>();
-            listOfClients = new List<Client>();
-            keysToDelete = new List<string>();
+            _dic = new Dictionary();
+            _eud = new Evidence();
+            Type type = _eud.GetType();
+            _listOfColumns = new List<Column>();
+            _TempListOfColumn = new List<Column>();
+            _listOfClients = new List<Client>();
+            _keysToDelete = new List<string>();
+            _p.listOfKeyPossitions = new List<PossitionOfWord>();
+            _p.listOfValuePossitions = new List<PossitionOfWord>();
             foreach (TextLine line in p.Lines)
             {
                 line.text = line.text.Trim(CONSTANTS.charsToTrimLine);
-                keysInRow = 0;
-                listOfColumns.AddRange(TempListOfColumn);
-                TempListOfColumn.Clear();
-                foreach (var item in dic.header.Where(c => keysToDelete.Contains(c.Value)).ToList())
+                _keysInRow = 0;
+                _listOfColumns.AddRange(_TempListOfColumn);
+                _TempListOfColumn.Clear();
+                foreach (var item in _dic.header.Where(c => _keysToDelete.Contains(c.Value)).ToList())
                 {
-                    dic.header.Remove(item.Key);
+                    _dic.header.Remove(item.Key);
                 }
-                keysToDelete.Clear();
+                _keysToDelete.Clear();
 
                 if (GoLikeColumn())
                 {
@@ -64,18 +64,22 @@ namespace OCR_BusinessLayer.Service
                     continue;
                 }
                 string t = line.text;
-                GetDataFromLine(line, ref t, dic.header, type, eud);
+                GetDataFromLine(line, ref t, _dic.header, type, _eud);
 
 
 
                 progress.Report(Step);
             }
-            ValidationService.Validate(ref eud);
+            ValidationService.Validate(_eud);
+            foreach (Client c in _listOfClients)
+            {
+                ValidationService.Validate(c);
+            }
         }
 
         private bool GoLikeColumn()
         {
-            var col = listOfColumns.Where(c => c.Completed == false).FirstOrDefault();
+            var col = _listOfColumns.Where(c => c.Completed == false).FirstOrDefault();
             return col == null ? false : true;
         }
 
@@ -110,7 +114,7 @@ namespace OCR_BusinessLayer.Service
                     similarity = SimilarityService.GetSimilarity(key.Key.ToLower(), stringKey.ToLower());
                     if (similarity > CONSTANTS.SIMILARITY && !IsInMiddleOfWord(lineText, firstCharindex, keyLength, key.Key[0], key.Key[key.Key.Length - 1], stringKey))
                     {
-                        if (col != null && type == eud.GetType())
+                        if (col != null && type == _eud.GetType())
                         {
                             // aktualny stlpec skoncil
                             col.Completed = true;
@@ -149,22 +153,22 @@ namespace OCR_BusinessLayer.Service
             if (isColumn && !keyFound && col != null && col.FirstLineInColumn > 4)
             {
                 // skus iny slovnik
-                if (type == eud.GetType())
+                if (type == _eud.GetType())
                 {
-                    foreach (Column c in listOfColumns)
-                        GetDataFromLine(line, ref lineText, dic.clients, c.GetType(), listOfClients[c.Id - 1], false, col, false);
+                    foreach (Column c in _listOfColumns)
+                        GetDataFromLine(line, ref lineText, _dic.clients, c.GetType(), _listOfClients[c.Id - 1], false, col, false);
                 }
                 else
                 {
-                    GetDataFromLine(line, ref lineText, dic.header, eud.GetType(), eud, false, col, false);
+                    GetDataFromLine(line, ref lineText, _dic.header, _eud.GetType(), _eud, false, col, false);
                 }
 
             }
 
             if (isColumn && col != null && !keyFound)
             {
-                GetDataFromLine(line, ref lineText, dic.header, eud.GetType(), eud, false, col, false);
-                if (keysInRow == 0)
+                GetDataFromLine(line, ref lineText, _dic.header, _eud.GetType(), _eud, false, col, false);
+                if (_keysInRow == 0)
                 {
                     Client client = (Client)data;
                     string s = lineText.Trim(CONSTANTS.charsToTrim);
@@ -195,7 +199,7 @@ namespace OCR_BusinessLayer.Service
             }
 
 
-            if (keysInRow >= 2)
+            if (_keysInRow >= 2)
                 return false;
 
             return keyFound;
@@ -210,15 +214,15 @@ namespace OCR_BusinessLayer.Service
             if (lookingForRight)
             {
 
-                pair = key;
+                _pair = key;
 
             }
-            if (dic.columns.ContainsKey(key.Key))
+            if (_dic.columns.ContainsKey(key.Key))
             {
                 // je to stlpec
-                nextLineIsColumn = true;
-                columnsCount++;
-                Column column = GetColumnParam(columnsCount, stringKey, line);
+                _nextLineIsColumn = true;
+                _columnsCount++;
+                Column column = GetColumnParam(_columnsCount, stringKey, line);
                 column.Text = key.Key;
                 if (ColumnAlreadyExists(column))
                 {
@@ -228,9 +232,9 @@ namespace OCR_BusinessLayer.Service
                 EndRelativeColumn(column);
                 var s = line.text;
                 TryGetRightXOfColumn(column, line, ref s, stringKey, n);
-                TempListOfColumn.Add(column);
+                _TempListOfColumn.Add(column);
                 lineText = lineText.Replace(key.Key, "");
-                listOfClients.Add(n);
+                _listOfClients.Add(n);
                 s = s.Trim(CONSTANTS.charsToTrim);
                 if (!(string.IsNullOrEmpty(s) || s.Length < 5)) // uz aktualny riadok moze byt stlpec tak to tu poriesim
                 {
@@ -242,7 +246,7 @@ namespace OCR_BusinessLayer.Service
             }
 
             keyFound = true;
-            if (isColumn && type == eud.GetType())
+            if (isColumn && type == _eud.GetType())
             {
                 stringKeyValue = line.text.Substring(firstCharIndex + stringKey.Length);
             }
@@ -250,12 +254,12 @@ namespace OCR_BusinessLayer.Service
             {
                 stringKeyValue = lineText.Substring(firstCharIndex + stringKey.Length);
             }
-            if (!isColumn && listOfClients.Count > 0 && type == listOfClients[0]?.GetType())
+            if (!isColumn && _listOfClients.Count > 0 && type == _listOfClients[0]?.GetType())
             {
                 isColumn = true;
             }
 
-            keysInRow++;
+            _keysInRow++;
             // nasiel som nejaky kluc v riadku, toto by mala byt jeho hodnota ale moze obsahovat este nejaky iny kluc tak sa radsej pozriem                                                       
             // pozriem sa ci je este nejaky kluc za nim, ak ano tak opakujem ak nie tak dany string je hodnota
             var dict = dictionary.ToDictionary(entry => entry.Key,
@@ -265,23 +269,26 @@ namespace OCR_BusinessLayer.Service
             if (!GetDataFromLine(line, ref stringKeyValue, dict, type, data, isColumn, col))
             {
                 //keyFound = false; // ak mam v riadku dve a viac klucovych slov tak to nastavim na false aby mi to v predchadzajucom volani vbehlo sem a nastavila sa hodnota 
-                if (dic.canDeleteKeys.Contains(key.Value))
+                if (_dic.canDeleteKeys.Contains(key.Value))
                 {
-                    keysToDelete.Add(key.Value);
+                    _keysToDelete.Add(key.Value);
                 }
-                stringKeyValue = stringKeyValue.Trim(CONSTANTS.charsToTrim);
-                if (string.IsNullOrEmpty(stringKeyValue) && SETTINGS.GoInColumnForValue && dic.valueInColumn.Contains(key.Value))
-                    stringKeyValue = FindValueInColumn(line, stringKey);
+                bool saved = false;
+                stringKeyValue = stringKeyValue.Trim(CONSTANTS.charsToTrimLine);
+                if (string.IsNullOrEmpty(stringKeyValue) && SETTINGS.GoInColumnForValue && _dic.valueInColumn.Contains(key.Value))                
+                    stringKeyValue = FindValueInColumn(line, stringKey,key.Key,ref saved);
 
+                if(!saved)
+                    SavePossitionToLists(key.Key,stringKey, stringKeyValue, line,line);
                 SaveData(ref keyFound, isColumn, type, key, data, stringKeyValue, ref lineText, firstCharIndex);
 
-                if (pair.Value != "" && lookingForRight)
+                if (_pair.Value != "" && lookingForRight)
                     return CONSTANTS.Result.True;
 
                 if (lineText.Length < 5)
                     return CONSTANTS.Result.Break;
             }
-            if (pair.Value != "" && lookingForRight)
+            if (_pair.Value != "" && lookingForRight)
                 return CONSTANTS.Result.True;
 
             return CONSTANTS.Result.Break;
@@ -302,7 +309,7 @@ namespace OCR_BusinessLayer.Service
                                 Object data, string stringKeyValue, ref string lineText, int firstCharIndex)
         {
             PropertyInfo prop;
-            if (isColumn && type == eud.GetType())
+            if (isColumn && type == _eud.GetType())
             {
                 keyFound = true;
             }
@@ -314,6 +321,97 @@ namespace OCR_BusinessLayer.Service
             lineText = lineText.Replace(lineText.Substring(firstCharIndex), "");
         }
 
+        private void SavePossitionToLists(string key,string stringkey, string value, TextLine Keyline, TextLine valueLine,int x1 = 0,int x2 = 0)
+        {
+            List<Word> tmpKeyWords = new List<Word>();
+            List<Word> tmpValueWords = new List<Word>();
+            string a = "";
+            foreach (Word w in Keyline.Words)
+            {
+                if (stringkey.Contains(w.Text))
+                {
+                    tmpKeyWords.Add(w);
+                }
+
+            }
+            if (valueLine != null)
+            {
+                foreach (Word w in valueLine.Words)
+                {
+
+                    if (string.IsNullOrWhiteSpace(value) && value.Contains(w.Text))
+                    {
+                        tmpValueWords.Add(w);
+                    }
+                }
+            }
+
+            //key
+            PossitionOfWord pk = new PossitionOfWord();
+            var v = tmpKeyWords.First<Word>();
+            var vl = tmpKeyWords.Last<Word>();
+            pk.X = v.Bounds.X;
+            pk.Y = v.Bounds.Y;
+            pk.Width = v.Bounds.Left - tmpKeyWords.Last<Word>().Bounds.Right; ;
+            pk.Height = v.Bounds.Height;
+            pk.Key = key;
+            _p.listOfKeyPossitions.Add(pk);
+
+            //value
+            PossitionOfWord pv = new PossitionOfWord();
+            if (Keyline == valueLine)
+            {
+                //nie je to stlpec
+                if (!string.IsNullOrWhiteSpace(value))
+                {
+                    var w = tmpValueWords.First<Word>();
+                    pv.X = w.Bounds.X;
+                    pv.Y = w.Bounds.Y;
+                    pv.Width = w.Bounds.Left - tmpValueWords.Last<Word>().Bounds.Right;
+
+                }
+                else
+                {
+                    pv.X = vl.Bounds.Right;
+                    pv.Y = vl.Bounds.Y;
+                    try
+                    {
+                        pv.Width = Keyline.Words[Keyline.Words.IndexOf(vl) + 1].Bounds.Left - vl.Bounds.Right;
+                    }
+                    catch (ArgumentOutOfRangeException e)
+                    {
+                        pv.Width = vl.Bounds.Right + 50;
+                    }
+
+                }
+            }
+            else
+            {
+                //hladal som v stlpci
+                if (!string.IsNullOrWhiteSpace(value))
+                {
+                    var w = tmpValueWords.First<Word>();
+                    pv.X = w.Bounds.X;
+                    pv.Y = w.Bounds.Y;
+                    pv.Width = w.Bounds.Left - tmpValueWords.Last<Word>().Bounds.Right;
+
+                }
+                else
+                {
+                    pv.X = x1;
+                    pv.Y = valueLine.Bounds.Y;
+                    pv.Width = x2 - x1;
+                    
+                }
+            }
+
+
+            pv.Height = valueLine.Bounds.Height;
+            pv.Key = key;
+            _p.listOfValuePossitions.Add(pv);        
+        }
+
+
         /// <summary>
         /// Methode try to determine if column already exists, true if exists
         /// </summary>
@@ -321,12 +419,12 @@ namespace OCR_BusinessLayer.Service
         /// <returns></returns>
         private bool ColumnAlreadyExists(Column col)
         {
-            if (listOfColumns.Count == 0 && TempListOfColumn.Count == 0)
+            if (_listOfColumns.Count == 0 && _TempListOfColumn.Count == 0)
                 return false;
             else
             {
-                var match = listOfColumns.Where(c => c.Text.Equals(col.Text)).FirstOrDefault();
-                if (match == null) { match = TempListOfColumn.Where(c => c.Text.Equals(col.Text)).FirstOrDefault(); }
+                var match = _listOfColumns.Where(c => c.Text.Equals(col.Text)).FirstOrDefault();
+                if (match == null) { match = _TempListOfColumn.Where(c => c.Text.Equals(col.Text)).FirstOrDefault(); }
                 return match != null ? true : false;
             }
 
@@ -337,7 +435,7 @@ namespace OCR_BusinessLayer.Service
         /// <param name="col">Current column</param>
         private void EndRelativeColumn(Column col)
         {
-            foreach (Column c in listOfColumns)
+            foreach (Column c in _listOfColumns)
             {
                 if (c.Top < col.Top && Math.Abs(c.Left - col.Left) < 50)
                 {
@@ -409,7 +507,7 @@ namespace OCR_BusinessLayer.Service
         /// <param name="line">Current line</param>
         /// <param name="foundKey">Current key</param>
         /// <returns></returns>
-        private string FindValueInColumn(TextLine line, string foundKey)
+        private string FindValueInColumn(TextLine line, string foundKey, string key,ref bool saved)
         {
             int x1 = 0, x2 = 0;
             string firstWord = GetFirstWordOfPhrase(foundKey).Trim();
@@ -433,7 +531,7 @@ namespace OCR_BusinessLayer.Service
                 x1 = w2.Bounds.Left;
                 x2 = w.Bounds.Right;
             }
-
+            
             try
             {
                 for (int i = 1; i <= 2; i++)
@@ -441,13 +539,19 @@ namespace OCR_BusinessLayer.Service
                     TextLine t = _p.Lines[_p.Lines.IndexOf(line) + i];
                     res = GetWordsForColumn(new Column { Left = x1, Right = x2 }, t);
                     if (!string.IsNullOrWhiteSpace(res))
+                    {
+                        SavePossitionToLists(key, foundKey, res, line, t,x1,x2);
+                        saved = true;
                         break;
+                    }
+                    
                 }
             }
             catch (IndexOutOfRangeException e)
             {
 
             }
+            
             return res;
         }
 
@@ -470,13 +574,13 @@ namespace OCR_BusinessLayer.Service
             if (!SetRightXByExistingColumn(col))
             {
                 line = line.Substring(line.IndexOf(stringKey) + stringKey.Length);
-                if (GetDataFromLine(a, ref line, dic.header, eud.GetType(), eud, false, null, true))
+                if (GetDataFromLine(a, ref line, _dic.header, _eud.GetType(), _eud, false, null, true))
                 {
-                    int len = pair.Key.IndexOf(" ");
+                    int len = _pair.Key.IndexOf(" ");
                     if (len == -1)
-                        len = pair.Key.Length;
+                        len = _pair.Key.Length;
 
-                    string word = pair.Key.Substring(0, len);
+                    string word = _pair.Key.Substring(0, len);
                     if (!string.IsNullOrEmpty(word))
                     {
                         foreach (Word w in a.Words)
@@ -495,8 +599,8 @@ namespace OCR_BusinessLayer.Service
                 }
                 else
                 {
-                    GetDataFromLine(a, ref line, dic.clients, n.GetType(), n, false, null, true); // pozri ci dany text patri klientovi
-                    col.Right = pictureWidth;
+                    GetDataFromLine(a, ref line, _dic.clients, n.GetType(), n, false, null, true); // pozri ci dany text patri klientovi
+                    col.Right = _p.img.Width;
                 }
             }
 
@@ -510,9 +614,9 @@ namespace OCR_BusinessLayer.Service
         /// <returns></returns>
         private bool SetRightXByExistingColumn(Column col)
         {
-            if (listOfColumns.Count > 0)
+            if (_listOfColumns.Count > 0)
             {
-                foreach (Column c in listOfColumns)
+                foreach (Column c in _listOfColumns)
                 {
                     if (!c.Completed)
                     {
@@ -606,29 +710,29 @@ namespace OCR_BusinessLayer.Service
             string colText = "";
             Client client;
             bool stillColumn = false;
-            foreach (Column col in listOfColumns)
+            foreach (Column col in _listOfColumns)
             {
                 if (!col.Blocked)
                 {
-                    client = listOfClients[col.Id - 1];
+                    client = _listOfClients[col.Id - 1];
                     string text = GetWordsForColumn(col, line).Trim(CONSTANTS.charsToTrim);
                     if (!col.Completed)
                     {
-                        keysInRow = 0;
+                        _keysInRow = 0;
                         stillColumn = true;
                         colText += text; // najskor si tu dam to co som uz pouzil
 
                         if (!string.IsNullOrWhiteSpace(text))
                         {
                             Type type = client.GetType();
-                            GetDataFromLine(line, ref text, dic.clients, type, client, true, col);
+                            GetDataFromLine(line, ref text, _dic.clients, type, client, true, col);
 
                         }
                     }
                     else
                     {
                         Type type = client.GetType();
-                        GetDataFromLine(line, ref otherText, dic.clients, type, client, true, col);
+                        GetDataFromLine(line, ref otherText, _dic.clients, type, client, true, col);
                     }
                     if (!string.IsNullOrEmpty(colText))
                     {
@@ -639,11 +743,11 @@ namespace OCR_BusinessLayer.Service
             }
             otherText = otherText.Trim(CONSTANTS.charsToTrim);
             if (!string.IsNullOrEmpty(otherText) || otherText.Length > 3)
-                GetDataFromLine(line, ref otherText, dic.header, eud.GetType(), eud, false, null);
+                GetDataFromLine(line, ref otherText, _dic.header, _eud.GetType(), _eud, false, null);
 
 
-            if (!stillColumn && TempListOfColumn.Count > 0)
-                nextLineIsColumn = true;
+            if (!stillColumn && _TempListOfColumn.Count > 0)
+                _nextLineIsColumn = true;
 
         }
 
@@ -651,7 +755,7 @@ namespace OCR_BusinessLayer.Service
         private void ColumnFinished(Column col, TextLine line)
         {
             bool unfinishedColumn = false;
-            foreach (var column in listOfColumns)
+            foreach (var column in _listOfColumns)
             {
                 if (!column.Completed)
                     unfinishedColumn = true;
@@ -670,14 +774,14 @@ namespace OCR_BusinessLayer.Service
                         string[] lineText = text.Split(':');
                         if (lineText.Length % 2 != 0)
                         {
-                            lineText = RepairLineText(lineText, dic.clients);
+                            lineText = RepairLineText(lineText, _dic.clients);
                         }
                         int index = 0;
-                        Type type = eud.GetType();
+                        Type type = _eud.GetType();
                         while (index < lineText.Length)
                         {
 
-                            SearchInDictionary(lineText, ref index, dic.header, type, eud);
+                            SearchInDictionary(lineText, ref index, _dic.header, type, _eud);
                             index++;
                         }
 

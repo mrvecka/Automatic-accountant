@@ -70,6 +70,7 @@
     <Compile Include="Classes\Column.cs" />
     <Compile Include="Classes\Evidence.cs" />
     <Compile Include="Classes\FileToProcess.cs" />
+    <Compile Include="Classes\PossitionOfWord.cs" />
     <Compile Include="Classes\PreviewObject.cs" />
     <Compile Include="Classes\TextLine.cs" />
     <Compile Include="Classes\Word.cs" />
