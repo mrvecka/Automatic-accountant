@@ -45,7 +45,6 @@ namespace OCR_BusinessLayer.Service
             _listOfClients = new List<Client>();
             _keysToDelete = new List<string>();
             _p.listOfKeyPossitions = new List<PossitionOfWord>();
-            _p.listOfValuePossitions = new List<PossitionOfWord>();
             foreach (TextLine line in p.Lines)
             {
                 line.text = line.text.Trim(CONSTANTS.charsToTrimLine);
@@ -179,18 +178,22 @@ namespace OCR_BusinessLayer.Service
                             case 1:
                                 client.Name = lineText;
                                 col.FirstLineInColumn++;
+                                SavePossitionToLists("Name","",lineText,line,line);
                                 break;
                             case 2:
                                 client.Street = lineText;
                                 col.FirstLineInColumn++;
+                                SavePossitionToLists("Street", "", lineText, line, line);
                                 break;
                             case 3:
                                 client.PSCCity = lineText;
                                 col.FirstLineInColumn++;
+                                SavePossitionToLists("PSCCity", "", lineText, line, line);
                                 break;
                             case 4:
                                 client.State = lineText;
                                 col.FirstLineInColumn++;
+                                SavePossitionToLists("State", "", lineText, line, line);
                                 break;
 
                         }
@@ -279,7 +282,7 @@ namespace OCR_BusinessLayer.Service
                     stringKeyValue = FindValueInColumn(line, stringKey,key.Key,ref saved);
 
                 if(!saved)
-                    SavePossitionToLists(key.Key,stringKey, stringKeyValue, line,line);
+                    SavePossitionToLists(key.Key,stringKey.Trim(CONSTANTS.charsToTrim), stringKeyValue.Trim(CONSTANTS.charsToTrim), line,line);
                 SaveData(ref keyFound, isColumn, type, key, data, stringKeyValue, ref lineText, firstCharIndex);
 
                 if (_pair.Value != "" && lookingForRight)
@@ -326,89 +329,99 @@ namespace OCR_BusinessLayer.Service
             List<Word> tmpKeyWords = new List<Word>();
             List<Word> tmpValueWords = new List<Word>();
             string a = "";
-            foreach (Word w in Keyline.Words)
+            foreach (Word wk in Keyline.Words)
             {
-                if (stringkey.Contains(w.Text))
+                if (stringkey.Contains(wk.Text.Trim(CONSTANTS.charsToTrim)) || wk.Text.Contains(stringkey))
                 {
-                    tmpKeyWords.Add(w);
+                    tmpKeyWords.Add(wk);
                 }
 
             }
             if (valueLine != null)
             {
-                foreach (Word w in valueLine.Words)
+                foreach (Word wv in valueLine.Words)
                 {
 
-                    if (string.IsNullOrWhiteSpace(value) && value.Contains(w.Text))
+                    if (!string.IsNullOrWhiteSpace(value) && (value.Contains(wv.Text.Trim(CONSTANTS.charsToTrim)) || wv.Text.Contains(value)))
                     {
-                        tmpValueWords.Add(w);
+                        tmpValueWords.Add(wv);
                     }
                 }
             }
 
             //key
             PossitionOfWord pk = new PossitionOfWord();
-            var v = tmpKeyWords.First<Word>();
-            var vl = tmpKeyWords.Last<Word>();
-            pk.X = v.Bounds.X;
-            pk.Y = v.Bounds.Y;
-            pk.Width = v.Bounds.Left - tmpKeyWords.Last<Word>().Bounds.Right; ;
-            pk.Height = v.Bounds.Height;
+            if (stringkey != "")
+            {
+                var v = tmpKeyWords.First<Word>();
+                var vl = tmpKeyWords.Last<Word>();
+                pk.KeyBounds = new System.Drawing.Rectangle(v.Bounds.X,v.Bounds.Y, tmpKeyWords.Last<Word>().Bounds.Right - v.Bounds.Left, v.Bounds.Height);
+            }
             pk.Key = key;
-            _p.listOfKeyPossitions.Add(pk);
+            pk.Value = value;
 
             //value
-            PossitionOfWord pv = new PossitionOfWord();
-            if (Keyline == valueLine)
+            if (value == "")
             {
-                //nie je to stlpec
-                if (!string.IsNullOrWhiteSpace(value))
-                {
-                    var w = tmpValueWords.First<Word>();
-                    pv.X = w.Bounds.X;
-                    pv.Y = w.Bounds.Y;
-                    pv.Width = w.Bounds.Left - tmpValueWords.Last<Word>().Bounds.Right;
+                pk.ValueBounds = new System.Drawing.Rectangle(pk.KeyBounds.Right,pk.KeyBounds.Y,100,pk.KeyBounds.Height);
 
-                }
-                else
-                {
-                    pv.X = vl.Bounds.Right;
-                    pv.Y = vl.Bounds.Y;
-                    try
-                    {
-                        pv.Width = Keyline.Words[Keyline.Words.IndexOf(vl) + 1].Bounds.Left - vl.Bounds.Right;
-                    }
-                    catch (ArgumentOutOfRangeException e)
-                    {
-                        pv.Width = vl.Bounds.Right + 50;
-                    }
-
-                }
             }
             else
             {
-                //hladal som v stlpci
-                if (!string.IsNullOrWhiteSpace(value))
+                var w = tmpValueWords.First<Word>();
+                if (Keyline == valueLine)
                 {
-                    var w = tmpValueWords.First<Word>();
-                    pv.X = w.Bounds.X;
-                    pv.Y = w.Bounds.Y;
-                    pv.Width = w.Bounds.Left - tmpValueWords.Last<Word>().Bounds.Right;
+                    //nie je to stlpec
+                    if (!string.IsNullOrWhiteSpace(value))
+                    {
+                        pk.ValueBounds = new System.Drawing.Rectangle(w.Bounds.X, w.Bounds.Y, tmpValueWords.Last<Word>().Bounds.Right - w.Bounds.Left, w.Bounds.Height);
 
+                    }
+                    else
+                    {
+                        var x = w.Bounds.Right;
+                        var y = w.Bounds.Y;
+                        var width = 0;
+                        try
+                        {
+                            if (stringkey == "")
+                            {
+                                width = tmpValueWords.Last<Word>().Bounds.Right - w.Bounds.Left;
+                            }
+                            else
+                            {
+                                var vl = tmpKeyWords.Last<Word>();
+                                width = Keyline.Words[Keyline.Words.IndexOf(vl) + 1].Bounds.Left - vl.Bounds.Right;
+                            }
+                        }
+                        catch (ArgumentOutOfRangeException e)
+                        {
+                            width = w.Bounds.Right + 50;
+                        }
+                        pk.ValueBounds = new System.Drawing.Rectangle(x, y, width, w.Bounds.Height);
+
+
+                    }
                 }
                 else
                 {
-                    pv.X = x1;
-                    pv.Y = valueLine.Bounds.Y;
-                    pv.Width = x2 - x1;
-                    
+                    //hladal som v stlpci
+                    if (!string.IsNullOrWhiteSpace(value))
+                    {
+                        pk.ValueBounds = new System.Drawing.Rectangle(w.Bounds.X, w.Bounds.Y, tmpValueWords.Last<Word>().Bounds.Right - w.Bounds.Left, w.Bounds.Height);
+                    }
+                    else
+                    {
+                        pk.ValueBounds = new System.Drawing.Rectangle(x1, valueLine.Bounds.Y, x2 - x1, w.Bounds.Height);
+
+                    }
                 }
             }
+            
 
 
-            pv.Height = valueLine.Bounds.Height;
-            pv.Key = key;
-            _p.listOfValuePossitions.Add(pv);        
+            _p.listOfKeyPossitions.Add(pk);
+
         }
 
 
@@ -540,7 +553,7 @@ namespace OCR_BusinessLayer.Service
                     res = GetWordsForColumn(new Column { Left = x1, Right = x2 }, t);
                     if (!string.IsNullOrWhiteSpace(res))
                     {
-                        SavePossitionToLists(key, foundKey, res, line, t,x1,x2);
+                        SavePossitionToLists(key, foundKey.Trim(CONSTANTS.charsToTrim), res.Trim(CONSTANTS.charsToTrim), line, t,x1,x2);
                         saved = true;
                         break;
                     }

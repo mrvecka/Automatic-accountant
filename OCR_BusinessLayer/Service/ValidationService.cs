@@ -678,26 +678,36 @@ namespace OCR_BusinessLayer.Service
 
             //day
             int index = symbol.IndexOfAny(numbersOnly.ToArray());
-            var s = symbol.Substring(index, 2);
-            date += s;
-            date += ".";
-            symbol = symbol.Replace(s, "");
+            var s = "";
+            if (index != -1)
+            {
+                s = symbol.Substring(index, 2);
+                date += s;
+                date += ".";
+                symbol = symbol.Replace(s, "");
+            }
 
             // month
-            index = symbol.IndexOfAny(numbersOnly.ToArray());
-            s = symbol.Substring(index, 2);
-            date += s;
-            date += ". ";
-            symbol = symbol.Replace(s, "");
+            index = symbol.IndexOfAny(numbersOnly.ToArray()); // ak mam mesiac napr 01 a rok 2011 tak mi to vymaze aj z roku
+            if (index != -1)
+            {
+                s = symbol.Substring(index, 2);
+                date += s;
+                date += ". ";
+                symbol = symbol.Replace(s, "");
+            }
 
             //year
             index = symbol.IndexOfAny(numbersOnly.ToArray());
-            s = symbol.Substring(index);
-            if (s.Length == 2)
+            if (index != -1)
             {
-                date += "20";
+                s = symbol.Substring(index);
+                if (s.Length == 2)
+                {
+                    date += "20";
+                }
+                date += s;
             }
-            date += s;
 
 
             return date;

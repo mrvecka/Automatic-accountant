@@ -15,7 +15,6 @@ namespace OCR_BusinessLayer.Classes
         public string path;
         public string lang;
         public List<PossitionOfWord> listOfKeyPossitions;
-        public List<PossitionOfWord> listOfValuePossitions;
 
     }
 }

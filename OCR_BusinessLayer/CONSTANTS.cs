@@ -4,7 +4,7 @@
     {
         public static int SIMILARITY = 70;
         public static int PROXIMITY = 20;
-        public static char[] charsToTrim = { ':', '/' };
+        public static char[] charsToTrim = { ':', '/',' ' };
         public static char[] charsToTrimLine = { ' ','\'', ';', '/', '\\', '|', '\n', ')', '(', '!', '&', '=', '´', '%', 'ˇ', '+', '“', '$', '?' };
         public static char[] charsToTrimAccountNumber = { ' ', '\'', ';', '\\', '|', '\n', ')', '(', '!', '&', '=', '´', '%', 'ˇ', '+', '“', '$', '?' };
 

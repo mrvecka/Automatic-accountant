@@ -24,19 +24,19 @@ namespace Bakalarska_praca
             txtCoinfidence.Text = file.confidence;
             txtLang.Text = file.lang;
             newImage = file.img;
-            FillListView(file.Lines);
+            FillListView(file);
         }
 
 
 
-        private void FillListView(List<TextLine> lines)
+        private void FillListView(PreviewObject prew)
         {
             int loc = 0;
-            foreach (TextLine line in lines)
+            foreach (PossitionOfWord key in prew.listOfKeyPossitions)
             {
-                var l = new Label { Text = line.text };
+                var l = new Label { Text = key.Key + " : " + key.Value  };
                 l.SetBounds(0, loc, panel3.Width, 30);
-                l.Click += delegate { AddRectangle(line,l); };
+                l.Click += delegate { AddRectangle(key,l); };
                 panel3.Controls.Add(l);
                 loc += l.Height;
             }
@@ -46,7 +46,7 @@ namespace Bakalarska_praca
 
         }
 
-        private void AddRectangle(TextLine line,Label l)
+        private void AddRectangle(PossitionOfWord key,Label l)
         {
             if (selectedLabel != null)
             {
@@ -62,7 +62,9 @@ namespace Bakalarska_praca
             System.Drawing.Graphics newGraphics = System.Drawing.Graphics.FromImage(img);
 
 
-            newGraphics.DrawRectangle(myPenword, line.Bounds);
+            newGraphics.DrawRectangle(myPenword, key.KeyBounds);
+            newGraphics.DrawRectangle(myPenword, key.ValueBounds);
+
             pictureBox1.Image = img;
         }
         private void ClearImageAndText()
