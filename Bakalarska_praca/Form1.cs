@@ -1,39 +1,45 @@
-﻿using OCR_BusinessLayer.Classes;
+﻿using OCR_BusinessLayer;
+using OCR_BusinessLayer.Classes;
+using OCR_BusinessLayer.Service;
 using System.Collections.Generic;
+using System.Data.OleDb;
+using System.Data.SqlClient;
 using System.Drawing;
 using System.Windows.Forms;
+using static OCR_BusinessLayer.CONSTANTS;
 
 namespace Bakalarska_praca
 {
     public partial class Form1 : Form
     {
 
-        private const int fontSize = 13;
-        OpenCvSharp.Mat img;
-        private System.Drawing.Image newImage;
-        private System.Drawing.Image OrgImg;
-        private Label selectedLabel;
-        private bool isMouseDown = false;
-        private bool firstMove = true;
+        private const int _fontSize = 13;
+        private System.Drawing.Image _newImage;
+        private Label _selectedLabel;
+        private PreviewObject _def;
+        private bool _isMouseDown = false;
+        private bool _firstMove = true;
+        private bool _resizingRight = false;
+        private bool _resizingBottom = false;
         private PreviewObject _p;
-        private Rectangle newRect;
-        private Rectangle oldRect;
-        int deltaX = 0;
-        int deltaY = 0;
-        System.Drawing.Graphics newGraphics;
-        Pen myPenword;
+        private Rectangle _newRect;
+        private Rectangle _oldRect;
+        private int _deltaX = 0;
+        private int _deltaY = 0;
+        private System.Drawing.Graphics _newGraphics;
+        private Pen _myPenword;
 
         public Form1(PreviewObject file)
         {
             InitializeComponent();
-
-            pictureBox1.Image = (Bitmap)file.img;
-            panel1.AutoScroll = true;
+            _def = file;
+            _myPenword = new Pen(Color.Blue, 2f);
+            pictureBox1.Image = (Bitmap)file.Img;
+            panel2.AutoScroll = true;
             pictureBox1.SizeMode = PictureBoxSizeMode.AutoSize;
-            txtCoinfidence.Text = file.confidence;
-            txtLang.Text = file.lang;
-            newImage = file.img;
-            OrgImg = newImage;
+            txtCoinfidence.Text = file.Confidence;
+            txtLang.Text = file.Lang;
+            _newImage = file.Img;
             _p = file;
             FillListView(file);
         }
@@ -41,7 +47,7 @@ namespace Bakalarska_praca
         private void FillListView(PreviewObject prew)
         {
             int loc = 0;
-            foreach (PossitionOfWord key in prew.listOfKeyPossitions)
+            foreach (PossitionOfWord key in prew.ListOfKeyPossitions)
             {
                 var l = new Label { Text = key.Key + " : " + key.Value  };
                 l.SetBounds(0, loc, panel3.Width, 30);
@@ -57,100 +63,127 @@ namespace Bakalarska_praca
 
         private void AddRectangle(PossitionOfWord key,Label l)
         {
-            if (selectedLabel != null)
+            if (_selectedLabel != null)
             {
-                selectedLabel.BackColor = Color.Transparent;
-                selectedLabel.Font = l.Font;
+                _selectedLabel.BackColor = Color.Transparent;
+                _selectedLabel.Font = l.Font;
             }
             l.BackColor = Color.FromArgb(102,140,255);
-            l.Font = new Font(FontFamily.GenericSerif,fontSize,FontStyle.Bold);
-            selectedLabel = l;
+            l.Font = new Font(FontFamily.GenericSerif,_fontSize,FontStyle.Bold);
+            _selectedLabel = l;
             ClearImageAndText();
-            System.Drawing.Image img = (System.Drawing.Image)newImage.Clone();
-            myPenword = new Pen(Color.Blue, 2f);
-            newGraphics = System.Drawing.Graphics.FromImage(img);
+            System.Drawing.Image img = (System.Drawing.Image)_newImage.Clone();            
+            _newGraphics = System.Drawing.Graphics.FromImage(img);
 
-
-            newGraphics.DrawRectangle(myPenword, key.KeyBounds);
-            newGraphics.DrawRectangle(myPenword, key.ValueBounds);
+            _p.ListOfKeyPossitions.ForEach(c => c.IsActive = false);
+            key.IsActive = true;
+            _newGraphics.DrawRectangle(_myPenword, key.KeyBounds);
+            _newGraphics.DrawRectangle(_myPenword, key.ValueBounds);
 
             pictureBox1.Image = img;
         }
         private void ClearImageAndText()
         {            
-            pictureBox1.Image = newImage;
+            pictureBox1.Image = _newImage;
+            pictureBox1.Refresh();
 
         }
 
         private void pictureBox1_MouseDown_1(object sender, MouseEventArgs e)
         {
-            isMouseDown = true;
-            newRect = oldRect = getRectangle(e);
+            _isMouseDown = true;
+            _newRect = _oldRect = getRectangle(e);
+            if (e.X > _newRect.Right - 4 && e.X < _newRect.Right + 4 && e.Y > _newRect.Top && e.Y < _newRect.Bottom)
+            {
+                _resizingRight = true;
+                Cursor.Current = Cursors.SizeWE;
+            }
+            if (e.Y > _newRect.Bottom - 4 && e.Y < _newRect.Bottom + 4 && e.X > _newRect.Left && e.X < _newRect.Right)
+            {
+                _resizingBottom = true;
+                Cursor.Current = Cursors.SizeNS;
+            }
         }
 
         private void pictureBox1_MouseMove_1(object sender, MouseEventArgs e)
         {
-            if (isMouseDown == true && oldRect.X != 0 && oldRect.Y != 0)
+            if (_isMouseDown == true && _oldRect.X != 0 && _oldRect.Y != 0)
             {
-              
-                if (firstMove)
+                if (_resizingBottom || _resizingRight)
                 {
-                    deltaX = e.Location.X - newRect.X;
-                    deltaY = e.Location.Y - newRect.Y;
-                    firstMove = false;
-                }
+                    if (_resizingBottom)
+                    {
+                        _newRect.Height += (_newRect.Bottom - e.Y) *-1;
+                    }
+                    if (_resizingRight)
+                    {
+                        _newRect.Width += (_newRect.Right - e.X) *-1;
+                    }
+                }                
+                else
+                {
+                    if (_firstMove)
+                    {
+                        _deltaX = e.Location.X - _newRect.X;
+                        _deltaY = e.Location.Y - _newRect.Y;
+                        _firstMove = false;
+                    }
 
-                newRect.Location = e.Location;
+                    _newRect.Location = e.Location;
 
-                    newRect.X -= deltaX;
-                    newRect.Y -= deltaY;
+                        _newRect.X -= _deltaX;
+                        _newRect.Y -= _deltaY;
 
 
-                if (newRect.Right > pictureBox1.Width)
-                {
-                    newRect.X = pictureBox1.Width - newRect.Width;
+                    if (_newRect.Right > pictureBox1.Width)
+                    {
+                        _newRect.X = pictureBox1.Width - _newRect.Width;
+                    }
+                    if (_newRect.Top < 0)
+                    {
+                        _newRect.Y = 0;
+                    }
+                    if (_newRect.Left < 0)
+                    {
+                        _newRect.X = 0;
+                    }
+                    if (_newRect.Bottom > pictureBox1.Height)
+                    {
+                        _newRect.Y = pictureBox1.Height - _newRect.Height;
+                    }
                 }
-                if (newRect.Top < 0)
-                {
-                    newRect.Y = 0;
-                }
-                if (newRect.Left < 0)
-                {
-                    newRect.X = 0;
-                }
-                if (newRect.Bottom > pictureBox1.Height)
-                {
-                    newRect.Y = pictureBox1.Height - newRect.Height;
-                }
-                Refresh();
+                pictureBox1.Invalidate();
+                panel1.Invalidate();
             }
         }
 
         private void pictureBox1_MouseUp_1(object sender, MouseEventArgs e)
         {
-            isMouseDown = false;
-            firstMove = true;
+            _isMouseDown = false;
+            _firstMove = true;
+            _resizingBottom = false;
+            _resizingRight = false;
             setRectangle();
 
 
         }
         private void pictureBox1_Paint(object sender, PaintEventArgs e)
         {
-            if (oldRect != null && newRect != null)
+            if (_oldRect != null && _newRect != null)
             {
-                e.Graphics.DrawRectangle(new Pen(Color.White, 2f), oldRect);
-                e.Graphics.DrawRectangle(new Pen(Color.Blue, 2f), newRect);
+                e.Graphics.DrawRectangle(new Pen(Color.White, 2f), _oldRect);
+                e.Graphics.DrawRectangle(new Pen(Color.Blue, 2f), _newRect);
             }
         }
         private Rectangle getRectangle(MouseEventArgs e)
         {
-            foreach (PossitionOfWord p in _p.listOfKeyPossitions)
+            foreach (PossitionOfWord p in _p.ListOfKeyPossitions)
             {
-                if (e.X > p.KeyBounds.X && e.X < p.KeyBounds.X + p.KeyBounds.Width && e.Y > p.KeyBounds.Y && e.Y < p.KeyBounds.Y + p.KeyBounds.Height)
+                if (e.X > p.KeyBounds.X && e.X < p.KeyBounds.X + p.KeyBounds.Width && e.Y > p.KeyBounds.Y && e.Y < p.KeyBounds.Y + p.KeyBounds.Height && p.IsActive)
                 {
                     return p.KeyBounds;
                 }
-                else if (e.X > p.ValueBounds.X && e.X < p.ValueBounds.X + p.ValueBounds.Width && e.Y > p.ValueBounds.Y && e.Y < p.ValueBounds.Y + p.ValueBounds.Height)
+                else if (e.X > p.ValueBounds.X && e.X < p.ValueBounds.X + p.ValueBounds.Width && e.Y > p.ValueBounds.Y && e.Y < p.ValueBounds.Y + p.ValueBounds.Height && p.IsActive)
                 {
                     return p.ValueBounds;
                 }
@@ -161,15 +194,15 @@ namespace Bakalarska_praca
         private void setRectangle()
         {
 
-            foreach (PossitionOfWord p in _p.listOfKeyPossitions)
+            foreach (PossitionOfWord p in _p.ListOfKeyPossitions)
             {
-                if (p.KeyBounds.Equals(oldRect))
+                if (p.KeyBounds.Equals(_oldRect))
                 {
-                    p.KeyBounds = newRect;
+                    p.KeyBounds = _newRect;
                 }
-                else if (p.ValueBounds.Equals(oldRect))
+                else if (p.ValueBounds.Equals(_oldRect))
                 {
-                    p.ValueBounds = newRect;
+                    p.ValueBounds = _newRect;
                 }
             }
         }
@@ -177,8 +210,50 @@ namespace Bakalarska_praca
         //save pattern
         private void button1_Click(object sender, System.EventArgs e)
         {
+            //SavePatternClick();
+        }
+        private void SavePatternClick()
+        {
+            Database db = new Database();
+
+            string table = "OCR_2018.dbo.T003_Possitions";
+            //if (!db.CheckTableExists(table))
+            //{
+            //    db.CreateTableIfNotExists(table);
+            //}
+
+            string SQL = $"INSERT INTO OCR_2018.dbo.T003_Pattern(Lang) VALUES ('{_p.Lang}')";
+            db.Execute(SQL, Operation.INSERT);
+            SQL = "SELECT TOP 1 * FROM OCR_2018.dbo.T003_Pattern ORDER BY Pattern_ID desc";
+            SqlDataReader o = (SqlDataReader)db.Execute(SQL, Operation.SELECT);
+            int id = 0;
+            while (o.Read())
+            {
+                id = (int)o[0];            
+            }
+            o.Close();
+            int rows = 0;
+            foreach (PossitionOfWord p in _p.ListOfKeyPossitions)
+            {
+                SQL = "INSERT INTO OCR_2018.dbo.T004_Possitions(Pattern_ID,Word_Key,Word_Value,K_X,K_Y,K_Width,K_Height,V_X,V_Y,V_Width,V_Height)" +
+                             $" Values({id},'{Common.SQLString(p.Key)}','{Common.SQLString(p.Value)}',{p.KeyBounds.X},{p.KeyBounds.Y},{p.KeyBounds.Width},{p.KeyBounds.Height}," +
+                                                       $"{p.ValueBounds.X},{p.ValueBounds.Y},{p.ValueBounds.Width},{p.ValueBounds.Height});";
+                object d = db.Execute(SQL,Operation.INSERT);
+                if (d.GetType() != typeof(SqlDataReader))
+                {
+                    rows += (int)d;
+                }
+            }
+
+            db.Close();
+
 
         }
+        private void btn_default_Click(object sender, System.EventArgs e)
+        {
+            FillListView(_def);
+        }
+
     }
 
 }

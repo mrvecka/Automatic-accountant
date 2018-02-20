@@ -12,7 +12,7 @@ namespace OCR_BusinessLayer.Classes
     {
         public PageIteratorLevel Level { get; set; }
         public Rectangle Bounds { get; set; }
-        public string text;
+        public string Text;
         public List<Word> Words;
     }
 }

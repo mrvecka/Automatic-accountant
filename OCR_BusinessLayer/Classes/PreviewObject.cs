@@ -9,12 +9,12 @@ namespace OCR_BusinessLayer.Classes
 {
     public class PreviewObject
     {
-        public Image img;
-        public string confidence;
+        public Image Img;
+        public string Confidence;
         public List<TextLine> Lines;
-        public string path;
-        public string lang;
-        public List<PossitionOfWord> listOfKeyPossitions;
+        public string Path;
+        public string Lang;
+        public List<PossitionOfWord> ListOfKeyPossitions;
 
     }
 }

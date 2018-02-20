@@ -1,10 +1,10 @@
-﻿using OpenCvSharp;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Text;
 using Tesseract;
 using OCR_BusinessLayer.Classes;
+using OpenCvSharp;
 
 namespace OCR_BusinessLayer.Service
 {
@@ -29,7 +29,7 @@ namespace OCR_BusinessLayer.Service
             using (engine = new TessBaseAPI(@".\tessdata", _lang,OcrEngineMode.TESSERACT_LSTM_COMBINED))
             {
                             
-                Mat rotated = GetMatImageForTesseract(file.path);
+                Mat rotated = GetMatImageForTesseract(file.Path);
 
                 Bitmap bmp = OpenCvSharp.Extensions.BitmapConverter.ToBitmap(rotated);
                 img = bmp;
@@ -46,10 +46,10 @@ namespace OCR_BusinessLayer.Service
                 confidence = ((Double)(engine.MeanTextConf) / 100).ToString("P2");
                 iterator.Dispose();
 
-                p.confidence = confidence;
-                p.img = img;
+                p.Confidence = confidence;
+                p.Img = img;
                 p.Lines = _textLines;
-                p.lang = _lang;
+                p.Lang = _lang;
 
             }
             progress.Report(40);
@@ -59,6 +59,63 @@ namespace OCR_BusinessLayer.Service
             }
 
             return p;
+        }
+
+
+        public bool CheckImageForPattern(FileToProcess file,List<PossitionOfWord> pos, bool checkPattern = false)
+        {
+            bool isPattern = true;
+            PreviewObject p = new PreviewObject();
+            Image img = null;
+            using (engine = new TessBaseAPI(@".\tessdata", _lang, OcrEngineMode.TESSERACT_LSTM_COMBINED))
+            {
+
+                Mat rotated = GetMatImageForTesseract(file.Path);
+
+                Bitmap bmp = OpenCvSharp.Extensions.BitmapConverter.ToBitmap(rotated);
+                img = bmp;
+
+                foreach (PossitionOfWord w in pos)
+                {
+                    OpenCvSharp.Rect rec = new Rect(w.KeyBounds.X, w.KeyBounds.Y, w.KeyBounds.Width, w.KeyBounds.Height);
+                    rec.X -= 10;
+                    rec.Y -= 10;
+                    rec.Width += 20; //ak pozram ci je to patern tak potrebujem co najmensie
+                    rec.Height += 20;
+                    
+                    Mat im = new Mat(rotated, rec);
+
+                    engine.InitForAnalysePage();
+                    engine.Init(null, _lang);
+                    //engine.SetInputImage(pix);
+                    engine.SetImage(new UIntPtr(BitConverter.ToUInt64(BitConverter.GetBytes(im.Data.ToInt64()), 0)), im.Size().Width, im.Size().Height, im.Channels(), (int)im.Step1());
+                    engine.Recognize();
+                    ResultIterator iterator = engine.GetIterator();
+
+                    IterateFullPage(iterator, ref _textLines);
+                    iterator.Dispose();
+
+                    if (checkPattern && !_textLines[0].Text.Trim(CONSTANTS.charsToTrimLine).Equals(w.Key))
+                    {
+                        isPattern = false;
+                    }
+                    else if (!checkPattern)
+                    {
+                        w.Value = _textLines[0].Text;
+                    }
+                    else
+                    {
+
+                    }
+                    _textLines.Clear();
+                }
+                p.Img = img;
+                p.Confidence = ((Double)(engine.MeanTextConf) / 100).ToString("P2");
+                p.Lines = _textLines;
+                p.Lang = _lang;
+
+            }
+            return isPattern;
         }
 
         private Mat GetMatImageForTesseract(string path)
@@ -86,7 +143,8 @@ namespace OCR_BusinessLayer.Service
                 iter.BoundingBox(level, out left, out top, out right, out bottom);
 
                 l.Bounds = new Rectangle(left, top, right - left, bottom - top);
-                l.text = t;
+                    
+                l.Text = t ?? "";
 
                 
                 level = PageIteratorLevel.RIL_WORD;

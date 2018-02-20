@@ -4,16 +4,16 @@ namespace OCR_BusinessLayer.Classes
 {
     public class FileToProcess
     {
-        public string path;
-        public Button button;
-        public ProgressBar progressBar;
-        public Label coenfidence;
+        public string Path;
+        public Button Button;
+        public ProgressBar ProgressBar;
+        public Label Coenfidence;
 
         public FileToProcess(string ppath, ProgressBar pprogress, Button pbutton)
         {
-            path = ppath;
-            progressBar = pprogress;
-            button = pbutton;
+            Path = ppath;
+            ProgressBar = pprogress;
+            Button = pbutton;
         }
     }
 }

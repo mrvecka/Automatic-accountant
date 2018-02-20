@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
+using System.Windows.Forms;
 
 namespace OCR_BusinessLayer.Service
 {
@@ -22,6 +24,23 @@ namespace OCR_BusinessLayer.Service
                 return files;
             }
             return null;
+        }
+
+        public static string FindDatabase()
+        {
+            string s = Environment.CurrentDirectory;
+            string[] path = Directory.GetFiles(s, String.Format("???_????.mdb"), SearchOption.TopDirectoryOnly);
+            if (path.Length == 0)
+            {
+                MessageBox.Show("Database not found!");
+                return "";
+            }
+            else
+            {
+                return path[0];
+            }
+
+
         }
     }
 

@@ -15,7 +15,7 @@ namespace Bakalarska_praca
         private List<string> _files;
         private List<FileToProcess> _filesToProcess;
         private List<PreviewObject> _previewObjects;
-        private ThreadService service;
+        private ThreadService _service;
 
         public frmOCR()
         {
@@ -71,9 +71,9 @@ namespace Bakalarska_praca
         {
             btnStart.Enabled = false;
             //prepare service
-            service = new ThreadService(_filesToProcess,comboBox1.SelectedItem.ToString());
-            await service.StartService();
-            _previewObjects = service.Preview;
+            _service = new ThreadService(_filesToProcess,comboBox1.SelectedItem.ToString());
+            await _service.StartService();
+            _previewObjects = _service.Preview;
             btnStart.Enabled = true;
             SETTINGS.GoInColumnForValue = checkBox1.Checked;
         }
@@ -128,10 +128,10 @@ namespace Bakalarska_praca
         {
             if (_previewObjects == null)
             {
-                _previewObjects = service.Preview;
+                _previewObjects = _service.Preview;
             }
 
-            Form1 f = new Form1(_previewObjects.Where(c => c.path.Equals(path)).FirstOrDefault());
+            Form1 f = new Form1(_previewObjects.Where(c => c.Path.Equals(path)).FirstOrDefault());
             f.ShowDialog();
         }
 

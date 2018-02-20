@@ -22,5 +22,16 @@ namespace Bakalarska_praca.Properties {
                 return defaultInstance;
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.ConnectionString)]
+        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=(LocalDb)\\MSSQLLocalDB;Initial Catalog=OCR_2018;Integrated Security=T" +
+            "rue")]
+        public string OCR_2018ConnectionString {
+            get {
+                return ((string)(this["OCR_2018ConnectionString"]));
+            }
+        }
     }
 }

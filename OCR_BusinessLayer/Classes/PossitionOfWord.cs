@@ -14,6 +14,7 @@ namespace OCR_BusinessLayer.Classes
         public Rectangle KeyBounds { get; set; }
         public string Value { get; set; }
         public Rectangle ValueBounds { get; set; }
+        public bool IsActive { get; set; } = false;
 
 
     }
