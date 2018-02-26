@@ -330,12 +330,16 @@ namespace OCR_BusinessLayer.Service
             string a = "";
             string first = GetFirstWordOfPhrase(stringkey);
             string last = GetLastWordOfPhrase(stringkey);
+            float conf = 0;
+            int count = 0;
             foreach (Word wk in Keyline.Words)
             {
                 string s = wk.Text.Trim(CONSTANTS.charsToTrimLine);
                 if (s.Contains(first) && !string.IsNullOrWhiteSpace(s))
                 {
                     tmpKeyWords.Add(wk);
+                    conf += wk.Confidence;
+                    count++;
                     if (first.Equals(last))
                         break;
                     else
@@ -352,6 +356,8 @@ namespace OCR_BusinessLayer.Service
                     if (!string.IsNullOrWhiteSpace(value) && (value.Contains(wv.Text.Trim(CONSTANTS.charsToTrimLine)) || wv.Text.Contains(value)))
                     {
                         tmpValueWords.Add(wv);
+                        conf += wv.Confidence;
+                        count++;
                     }
                 }
             }
@@ -424,9 +430,9 @@ namespace OCR_BusinessLayer.Service
                     }
                 }
             }
-            
 
 
+            pk.Confidence = conf / count;
             _p.ListOfKeyPossitions.Add(pk);
 
         }

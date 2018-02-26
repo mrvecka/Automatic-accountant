@@ -10,6 +10,7 @@ namespace OCR_BusinessLayer.Classes
     public class Word
     {
         public string Text { get; set; }
+        public float Confidence {get;set;}
         public Rectangle Bounds { get; set; }
     }
 }

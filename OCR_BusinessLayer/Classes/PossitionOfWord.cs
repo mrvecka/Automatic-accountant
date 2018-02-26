@@ -15,6 +15,7 @@ namespace OCR_BusinessLayer.Classes
         public string Value { get; set; }
         public Rectangle ValueBounds { get; set; }
         public bool IsActive { get; set; } = false;
+        public float Confidence { get; set; }
 
 
     }

@@ -2,6 +2,7 @@
 using OCR_BusinessLayer.Classes;
 using OCR_BusinessLayer.Service;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data.OleDb;
 using System.Data.SqlClient;
 using System.Drawing;
@@ -21,6 +22,9 @@ namespace Bakalarska_praca
         private bool _firstMove = true;
         private bool _resizingRight = false;
         private bool _resizingBottom = false;
+        private bool _drawingNewRect = false;
+        private bool _canDraw = false;
+        private int _countOfNewRect = 0;
         private PreviewObject _p;
         private Rectangle _newRect;
         private Rectangle _oldRect;
@@ -32,11 +36,10 @@ namespace Bakalarska_praca
         public Form1(PreviewObject file)
         {
             InitializeComponent();
+            btnRemove.Enabled = false;
             _def = file;
             _myPenword = new Pen(Color.Blue, 2f);
             pictureBox1.Image = (Bitmap)file.Img;
-            panel2.AutoScroll = true;
-            pictureBox1.SizeMode = PictureBoxSizeMode.AutoSize;
             txtCoinfidence.Text = file.Confidence;
             txtLang.Text = file.Lang;
             _newImage = file.Img;
@@ -46,41 +49,46 @@ namespace Bakalarska_praca
 
         private void FillListView(PreviewObject prew)
         {
-            int loc = 0;
-            foreach (PossitionOfWord key in prew.ListOfKeyPossitions)
-            {
-                var l = new Label { Text = key.Key + " : " + key.Value  };
-                l.SetBounds(0, loc, panel3.Width, 30);
-                l.Click += delegate { AddRectangle(key,l); };
-                panel3.Controls.Add(l);
-                loc += l.Height;
-            }
 
-            panel3.AutoScrollMinSize = new System.Drawing.Size(0, panel3.Height);
-            panel3.Refresh();
+            BindingList<PossitionOfWord> bindingList = new BindingList<PossitionOfWord>(prew.ListOfKeyPossitions);
+            dataGridValues.AutoGenerateColumns = false;
+            dataGridValues.DataSource = bindingList;
+
 
         }
 
-        private void AddRectangle(PossitionOfWord key,Label l)
+        private PossitionOfWord GetSelectedWords()
         {
-            if (_selectedLabel != null)
+            if (dataGridValues.SelectedRows.Count == 1)
             {
-                _selectedLabel.BackColor = Color.Transparent;
-                _selectedLabel.Font = l.Font;
+                PossitionOfWord b = dataGridValues.SelectedRows[0].DataBoundItem as PossitionOfWord;
+                btnRemove.Enabled = true;
+                return b;
             }
-            l.BackColor = Color.FromArgb(102,140,255);
-            l.Font = new Font(FontFamily.GenericSerif,_fontSize,FontStyle.Bold);
-            _selectedLabel = l;
-            ClearImageAndText();
-            System.Drawing.Image img = (System.Drawing.Image)_newImage.Clone();            
-            _newGraphics = System.Drawing.Graphics.FromImage(img);
+            else
+            {
+                return null;
+                btnRemove.Enabled = false;
+            }
+        }
 
-            _p.ListOfKeyPossitions.ForEach(c => c.IsActive = false);
-            key.IsActive = true;
-            _newGraphics.DrawRectangle(_myPenword, key.KeyBounds);
-            _newGraphics.DrawRectangle(_myPenword, key.ValueBounds);
+        private void AddRectangle(PossitionOfWord key)
+        {
 
-            pictureBox1.Image = img;
+            txtPartConfidence.Text = key.Confidence.ToString();
+            if (key != null)
+            {
+                ClearImageAndText();
+                System.Drawing.Image img = (System.Drawing.Image)_newImage.Clone();            
+                _newGraphics = System.Drawing.Graphics.FromImage(img);
+
+                _p.ListOfKeyPossitions.ForEach(c => c.IsActive = false);
+                key.IsActive = true;
+                _newGraphics.DrawRectangle(_myPenword, key.KeyBounds);
+                _newGraphics.DrawRectangle(_myPenword, key.ValueBounds);
+
+                pictureBox1.Image = img;
+            }
         }
         private void ClearImageAndText()
         {            
@@ -92,13 +100,20 @@ namespace Bakalarska_praca
         private void pictureBox1_MouseDown_1(object sender, MouseEventArgs e)
         {
             _isMouseDown = true;
-            _newRect = _oldRect = getRectangle(e);
-            if (e.X > _newRect.Right - 4 && e.X < _newRect.Right + 4 && e.Y > _newRect.Top && e.Y < _newRect.Bottom)
+            _newRect = _oldRect = getRectangle(e.Location);
+            if (_newRect.X == 0 && _newRect.Y == 0 && _newRect.Width == 0 && _newRect.Height == 0 && _canDraw)
+            {
+                _drawingNewRect = true;
+                _newRect.X = e.Location.X;
+                _newRect.Y = e.Location.Y;
+                Cursor.Current = Cursors.PanNW;
+            }
+            else if (e.X > _newRect.Right - 4 && e.X < _newRect.Right + 4 && e.Y > _newRect.Top && e.Y < _newRect.Bottom)
             {
                 _resizingRight = true;
                 Cursor.Current = Cursors.SizeWE;
             }
-            if (e.Y > _newRect.Bottom - 4 && e.Y < _newRect.Bottom + 4 && e.X > _newRect.Left && e.X < _newRect.Right)
+            else if (e.Y > _newRect.Bottom - 4 && e.Y < _newRect.Bottom + 4 && e.X > _newRect.Left && e.X < _newRect.Right)
             {
                 _resizingBottom = true;
                 Cursor.Current = Cursors.SizeNS;
@@ -107,54 +122,64 @@ namespace Bakalarska_praca
 
         private void pictureBox1_MouseMove_1(object sender, MouseEventArgs e)
         {
-            if (_isMouseDown == true && _oldRect.X != 0 && _oldRect.Y != 0)
+            pictureBox1.SuspendLayout();
+            if (_isMouseDown == true)
             {
                 if (_resizingBottom || _resizingRight)
                 {
                     if (_resizingBottom)
                     {
-                        _newRect.Height += (_newRect.Bottom - e.Y) *-1;
+                        _newRect.Height += (_newRect.Bottom - e.Y) * -1;
                     }
                     if (_resizingRight)
                     {
-                        _newRect.Width += (_newRect.Right - e.X) *-1;
+                        _newRect.Width += (_newRect.Right - e.X) * -1;
                     }
-                }                
+                }
+                else if (_drawingNewRect)
+                {
+                    _newRect.Width = e.Location.X - _newRect.X;
+                    _newRect.Height = e.Location.Y - _newRect.Y;
+                }
                 else
                 {
-                    if (_firstMove)
+                    if (_oldRect.X != 0 && _oldRect.Y != 0)
                     {
-                        _deltaX = e.Location.X - _newRect.X;
-                        _deltaY = e.Location.Y - _newRect.Y;
-                        _firstMove = false;
-                    }
+                        if (_firstMove)
+                        {
+                            _deltaX = e.Location.X - _newRect.X;
+                            _deltaY = e.Location.Y - _newRect.Y;
+                            _firstMove = false;
+                        }
 
-                    _newRect.Location = e.Location;
+                        _newRect.Location = e.Location;
 
                         _newRect.X -= _deltaX;
                         _newRect.Y -= _deltaY;
 
 
-                    if (_newRect.Right > pictureBox1.Width)
-                    {
-                        _newRect.X = pictureBox1.Width - _newRect.Width;
-                    }
-                    if (_newRect.Top < 0)
-                    {
-                        _newRect.Y = 0;
-                    }
-                    if (_newRect.Left < 0)
-                    {
-                        _newRect.X = 0;
-                    }
-                    if (_newRect.Bottom > pictureBox1.Height)
-                    {
-                        _newRect.Y = pictureBox1.Height - _newRect.Height;
-                    }
+                        if (_newRect.Right > pictureBox1.Width)
+                        {
+                            _newRect.X = pictureBox1.Width - _newRect.Width;
+                        }
+                        if (_newRect.Top < 0)
+                        {
+                            _newRect.Y = 0;
+                        }
+                        if (_newRect.Left < 0)
+                        {
+                            _newRect.X = 0;
+                        }
+                        if (_newRect.Bottom > pictureBox1.Height)
+                        {
+                            _newRect.Y = pictureBox1.Height - _newRect.Height;
+
+                        }
+                    }                
                 }
-                pictureBox1.Invalidate();
-                panel1.Invalidate();
             }
+            pictureBox1.Invalidate();
+            pictureBox1.ResumeLayout();
         }
 
         private void pictureBox1_MouseUp_1(object sender, MouseEventArgs e)
@@ -163,19 +188,30 @@ namespace Bakalarska_praca
             _firstMove = true;
             _resizingBottom = false;
             _resizingRight = false;
+
+            if (_drawingNewRect)
+            {
+                _drawingNewRect = false;
+                    _countOfNewRect--;
+                if (_countOfNewRect == 0)
+                {
+                    _canDraw = false;
+                }
+
+            }
             setRectangle();
 
 
         }
         private void pictureBox1_Paint(object sender, PaintEventArgs e)
         {
-            if (_oldRect != null && _newRect != null)
+            e.Graphics.DrawRectangle(new Pen(Color.Blue, 2f), _newRect);            
+            if (_oldRect != null)
             {
                 e.Graphics.DrawRectangle(new Pen(Color.White, 2f), _oldRect);
-                e.Graphics.DrawRectangle(new Pen(Color.Blue, 2f), _newRect);
             }
         }
-        private Rectangle getRectangle(MouseEventArgs e)
+        private Rectangle getRectangle(Point e)
         {
             foreach (PossitionOfWord p in _p.ListOfKeyPossitions)
             {
@@ -253,6 +289,30 @@ namespace Bakalarska_praca
         {
             FillListView(_def);
         }
+
+        private void dataGridValues_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+            AddRectangle(GetSelectedWords());
+        }
+
+        private void btnRemove_Click(object sender, System.EventArgs e)
+        {
+            var w = GetSelectedWords();
+            if (w != null)
+            {
+                _p.ListOfKeyPossitions.Remove(w);
+                _def = _p;
+                FillListView(_p);
+            }
+        }
+
+        private void btnAdd_Click(object sender, System.EventArgs e)
+        {
+            MessageBox.Show("If \"Only value\" is selected draw just one rectangle on value position else draw first rectangle on key position and second on value position.", "Positioning wizard", MessageBoxButtons.OK);
+            _canDraw = true;
+            _countOfNewRect = chkOnlyValue.Checked ? 1 : 2;
+        }
+
 
     }
 

@@ -15,6 +15,7 @@ namespace OCR_BusinessLayer.Service
         private List<TextLine> _textLines;
         public string confidence;
         public string text;
+        OpenCVImageService _cvService;
 
         public TesseractService(string lang)
         {
@@ -28,16 +29,18 @@ namespace OCR_BusinessLayer.Service
             Image img = null;
             using (engine = new TessBaseAPI(@".\tessdata", _lang,OcrEngineMode.TESSERACT_LSTM_COMBINED))
             {
-                            
-                Mat rotated = GetMatImageForTesseract(file.Path);
 
-                Bitmap bmp = OpenCvSharp.Extensions.BitmapConverter.ToBitmap(rotated);
-                img = bmp;
+                _cvService = OpenCVImageService.GetInstance();
+                _cvService.PrepareImage(file.Path);
+                Mat image = _cvService.Rotated;
+
+                img = OpenCvSharp.Extensions.BitmapConverter.ToBitmap(image);
+
 
                 engine.InitForAnalysePage();
                 engine.Init(null, _lang);
                 //engine.SetInputImage(pix);
-                engine.SetImage(new UIntPtr(BitConverter.ToUInt64(BitConverter.GetBytes(rotated.Data.ToInt64()), 0)), rotated.Size().Width, rotated.Size().Height, rotated.Channels(), (int)rotated.Step1());
+                engine.SetImage(new UIntPtr(BitConverter.ToUInt64(BitConverter.GetBytes(image.Data.ToInt64()), 0)), image.Size().Width, image.Size().Height, image.Channels(), (int)image.Step1());
                 engine.Recognize();
                 ResultIterator iterator = engine.GetIterator();
 
@@ -66,15 +69,14 @@ namespace OCR_BusinessLayer.Service
         {
             bool isPattern = true;
             PreviewObject p = new PreviewObject();
-            Image img = null;
             using (engine = new TessBaseAPI(@".\tessdata", _lang, OcrEngineMode.TESSERACT_LSTM_COMBINED))
             {
 
-                Mat rotated = GetMatImageForTesseract(file.Path);
+                _cvService = OpenCVImageService.GetInstance();
+                _cvService.PrepareImage(file.Path);
+                Mat image = _cvService.Rotated;
 
-                Bitmap bmp = OpenCvSharp.Extensions.BitmapConverter.ToBitmap(rotated);
-                img = bmp;
-
+                
                 foreach (PossitionOfWord w in pos)
                 {
                     OpenCvSharp.Rect rec = new Rect(w.KeyBounds.X, w.KeyBounds.Y, w.KeyBounds.Width, w.KeyBounds.Height);
@@ -83,7 +85,7 @@ namespace OCR_BusinessLayer.Service
                     rec.Width += 20; //ak pozram ci je to patern tak potrebujem co najmensie
                     rec.Height += 20;
                     
-                    Mat im = new Mat(rotated, rec);
+                    Mat im = new Mat(image, rec);
 
                     engine.InitForAnalysePage();
                     engine.Init(null, _lang);
@@ -109,21 +111,13 @@ namespace OCR_BusinessLayer.Service
                     }
                     _textLines.Clear();
                 }
-                p.Img = img;
+                p.Img = OpenCvSharp.Extensions.BitmapConverter.ToBitmap(image);
                 p.Confidence = ((Double)(engine.MeanTextConf) / 100).ToString("P2");
                 p.Lines = _textLines;
                 p.Lang = _lang;
 
             }
             return isPattern;
-        }
-
-        private Mat GetMatImageForTesseract(string path)
-        {
-            Mat original = Cv2.ImRead(path);
-            Mat rotated = new Mat();
-            RotateImage(original, rotated, 0, 1);
-            return rotated;
         }
 
         private void IterateFullPage(ResultIterator iter, ref List<TextLine> _textLines)
@@ -154,6 +148,7 @@ namespace OCR_BusinessLayer.Service
                     Word w = new Word();
                     iter.BoundingBox(level, out left, out top, out right, out bottom);
                     w.Text = iter.GetUTF8Text(level);
+                    w.Confidence = iter.Confidence(level);
                     w.Bounds = new Rectangle(left, top, right - left, bottom - top);
                     l.Words.Add(w);
                     if (iter.IsAtFinalElement(PageIteratorLevel.RIL_TEXTLINE, PageIteratorLevel.RIL_WORD))
@@ -179,12 +174,7 @@ namespace OCR_BusinessLayer.Service
                 dict.MakeObjectsFromLines(p,file,progress);
             }
         }
-        private void RotateImage(Mat src, Mat dst, double angle, double scale)
-        {
-            var imageCenter = new Point2f(src.Cols / 2f, src.Rows / 2f);
-            var rotationMat = Cv2.GetRotationMatrix2D(imageCenter, angle, scale);
-            Cv2.WarpAffine(src, dst, rotationMat, src.Size());
-        }
+
     }
 
 
