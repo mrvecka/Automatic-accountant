@@ -174,6 +174,7 @@ namespace Bakalarska_praca
                         {
                             _newRect.Y = pictureBox1.Height - _newRect.Height;
 
+
                         }
                     }                
                 }
