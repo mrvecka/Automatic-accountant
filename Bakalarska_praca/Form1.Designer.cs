@@ -9,11 +9,11 @@ namespace Bakalarska_praca
         /// </summary>
         private System.ComponentModel.IContainer components = null;
         private Button button1;
-        private TextBox txtCoinfidence;
+        private TextBox txtConfidence;
         private Panel panel1;
         private PictureBox pictureBox1;
-        private Label label2;
-        private Label label3;
+        private Label lblConfidence;
+        private Label lblLanguage;
         private Panel panel3;
         private Panel panel4;
 
@@ -39,56 +39,59 @@ namespace Bakalarska_praca
         private void InitializeComponent()
         {
             this.button1 = new System.Windows.Forms.Button();
-            this.txtCoinfidence = new System.Windows.Forms.TextBox();
+            this.txtConfidence = new System.Windows.Forms.TextBox();
             this.panel1 = new System.Windows.Forms.Panel();
             this.panel2 = new System.Windows.Forms.Panel();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.panel3 = new System.Windows.Forms.Panel();
-            this.label2 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
-            this.panel4 = new System.Windows.Forms.Panel();
-            this.btn_default = new System.Windows.Forms.Button();
-            this.txtLang = new System.Windows.Forms.TextBox();
+            this.panel6 = new System.Windows.Forms.Panel();
             this.dataGridValues = new System.Windows.Forms.DataGridView();
             this.key = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.value = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.label1 = new System.Windows.Forms.Label();
-            this.txtPartConfidence = new System.Windows.Forms.TextBox();
             this.panel5 = new System.Windows.Forms.Panel();
-            this.cmbKey = new System.Windows.Forms.ComboBox();
-            this.label4 = new System.Windows.Forms.Label();
-            this.chkOnlyValue = new System.Windows.Forms.CheckBox();
-            this.btnAdd = new System.Windows.Forms.Button();
             this.btnRemove = new System.Windows.Forms.Button();
-            this.panel6 = new System.Windows.Forms.Panel();
+            this.btnAdd = new System.Windows.Forms.Button();
+            this.btn_default = new System.Windows.Forms.Button();
+            this.chkOnlyValue = new System.Windows.Forms.CheckBox();
+            this.label4 = new System.Windows.Forms.Label();
+            this.cmbKey = new System.Windows.Forms.ComboBox();
+            this.lblConfidence = new System.Windows.Forms.Label();
+            this.lblLanguage = new System.Windows.Forms.Label();
+            this.panel4 = new System.Windows.Forms.Panel();
+            this.button2 = new System.Windows.Forms.Button();
+            this.txtPathPattern = new System.Windows.Forms.TextBox();
+            this.txtPartConfidence = new System.Windows.Forms.TextBox();
+            this.lblPatConfidence = new System.Windows.Forms.Label();
+            this.txtLang = new System.Windows.Forms.TextBox();
+            this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.panel3.SuspendLayout();
-            this.panel4.SuspendLayout();
+            this.panel6.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridValues)).BeginInit();
             this.panel5.SuspendLayout();
-            this.panel6.SuspendLayout();
+            this.panel4.SuspendLayout();
             this.SuspendLayout();
             // 
             // button1
             // 
             this.button1.Anchor = System.Windows.Forms.AnchorStyles.Right;
-            this.button1.Location = new System.Drawing.Point(1070, 3);
+            this.button1.Location = new System.Drawing.Point(344, 38);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(112, 26);
+            this.button1.Size = new System.Drawing.Size(112, 24);
             this.button1.TabIndex = 0;
             this.button1.Text = "Save as pattern";
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
-            // txtCoinfidence
+            // txtConfidence
             // 
-            this.txtCoinfidence.Location = new System.Drawing.Point(129, 6);
-            this.txtCoinfidence.Name = "txtCoinfidence";
-            this.txtCoinfidence.ReadOnly = true;
-            this.txtCoinfidence.Size = new System.Drawing.Size(67, 20);
-            this.txtCoinfidence.TabIndex = 2;
+            this.txtConfidence.Location = new System.Drawing.Point(129, 6);
+            this.txtConfidence.Name = "txtConfidence";
+            this.txtConfidence.ReadOnly = true;
+            this.txtConfidence.Size = new System.Drawing.Size(67, 20);
+            this.txtConfidence.TabIndex = 2;
             // 
             // panel1
             // 
@@ -138,59 +141,14 @@ namespace Bakalarska_praca
             this.panel3.Size = new System.Drawing.Size(468, 787);
             this.panel3.TabIndex = 11;
             // 
-            // label2
+            // panel6
             // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(33, 11);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(90, 13);
-            this.label2.TabIndex = 8;
-            this.label2.Text = "Total confidence:";
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(421, 9);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(58, 13);
-            this.label3.TabIndex = 8;
-            this.label3.Text = "Language:";
-            // 
-            // panel4
-            // 
-            this.panel4.BackColor = System.Drawing.Color.Transparent;
-            this.panel4.Controls.Add(this.txtPartConfidence);
-            this.panel4.Controls.Add(this.label1);
-            this.panel4.Controls.Add(this.btn_default);
-            this.panel4.Controls.Add(this.txtLang);
-            this.panel4.Controls.Add(this.label2);
-            this.panel4.Controls.Add(this.button1);
-            this.panel4.Controls.Add(this.txtCoinfidence);
-            this.panel4.Controls.Add(this.label3);
-            this.panel4.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panel4.Location = new System.Drawing.Point(0, 0);
-            this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(1185, 32);
-            this.panel4.TabIndex = 12;
-            // 
-            // btn_default
-            // 
-            this.btn_default.Anchor = System.Windows.Forms.AnchorStyles.Right;
-            this.btn_default.Location = new System.Drawing.Point(952, 6);
-            this.btn_default.Name = "btn_default";
-            this.btn_default.Size = new System.Drawing.Size(112, 23);
-            this.btn_default.TabIndex = 10;
-            this.btn_default.Text = "Reset to default";
-            this.btn_default.UseVisualStyleBackColor = true;
-            this.btn_default.Click += new System.EventHandler(this.btn_default_Click);
-            // 
-            // txtLang
-            // 
-            this.txtLang.Location = new System.Drawing.Point(486, 6);
-            this.txtLang.Name = "txtLang";
-            this.txtLang.ReadOnly = true;
-            this.txtLang.Size = new System.Drawing.Size(100, 20);
-            this.txtLang.TabIndex = 9;
+            this.panel6.Controls.Add(this.dataGridValues);
+            this.panel6.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel6.Location = new System.Drawing.Point(0, 0);
+            this.panel6.Name = "panel6";
+            this.panel6.Size = new System.Drawing.Size(468, 718);
+            this.panel6.TabIndex = 2;
             // 
             // dataGridValues
             // 
@@ -224,27 +182,12 @@ namespace Bakalarska_praca
             this.value.Name = "value";
             this.value.ReadOnly = true;
             // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(222, 10);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(95, 13);
-            this.label1.TabIndex = 11;
-            this.label1.Text = "Partial confidence:";
-            // 
-            // txtPartConfidence
-            // 
-            this.txtPartConfidence.Location = new System.Drawing.Point(323, 6);
-            this.txtPartConfidence.Name = "txtPartConfidence";
-            this.txtPartConfidence.ReadOnly = true;
-            this.txtPartConfidence.Size = new System.Drawing.Size(67, 20);
-            this.txtPartConfidence.TabIndex = 12;
-            // 
             // panel5
             // 
             this.panel5.Controls.Add(this.btnRemove);
+            this.panel5.Controls.Add(this.button1);
             this.panel5.Controls.Add(this.btnAdd);
+            this.panel5.Controls.Add(this.btn_default);
             this.panel5.Controls.Add(this.chkOnlyValue);
             this.panel5.Controls.Add(this.label4);
             this.panel5.Controls.Add(this.cmbKey);
@@ -254,47 +197,9 @@ namespace Bakalarska_praca
             this.panel5.Size = new System.Drawing.Size(468, 69);
             this.panel5.TabIndex = 1;
             // 
-            // cmbKey
-            // 
-            this.cmbKey.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbKey.FormattingEnabled = true;
-            this.cmbKey.Location = new System.Drawing.Point(136, 40);
-            this.cmbKey.Name = "cmbKey";
-            this.cmbKey.Size = new System.Drawing.Size(121, 21);
-            this.cmbKey.TabIndex = 0;
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(102, 43);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(28, 13);
-            this.label4.TabIndex = 2;
-            this.label4.Text = "Key:";
-            // 
-            // chkOnlyValue
-            // 
-            this.chkOnlyValue.AutoSize = true;
-            this.chkOnlyValue.Location = new System.Drawing.Point(154, 15);
-            this.chkOnlyValue.Name = "chkOnlyValue";
-            this.chkOnlyValue.Size = new System.Drawing.Size(76, 17);
-            this.chkOnlyValue.TabIndex = 4;
-            this.chkOnlyValue.Text = "Only value";
-            this.chkOnlyValue.UseVisualStyleBackColor = true;
-            // 
-            // btnAdd
-            // 
-            this.btnAdd.Location = new System.Drawing.Point(347, 11);
-            this.btnAdd.Name = "btnAdd";
-            this.btnAdd.Size = new System.Drawing.Size(109, 23);
-            this.btnAdd.TabIndex = 5;
-            this.btnAdd.Text = "Add";
-            this.btnAdd.UseVisualStyleBackColor = true;
-            this.btnAdd.Click += new System.EventHandler(this.btnAdd_Click);
-            // 
             // btnRemove
             // 
-            this.btnRemove.Location = new System.Drawing.Point(347, 38);
+            this.btnRemove.Location = new System.Drawing.Point(229, 38);
             this.btnRemove.Name = "btnRemove";
             this.btnRemove.Size = new System.Drawing.Size(109, 23);
             this.btnRemove.TabIndex = 6;
@@ -302,14 +207,138 @@ namespace Bakalarska_praca
             this.btnRemove.UseVisualStyleBackColor = true;
             this.btnRemove.Click += new System.EventHandler(this.btnRemove_Click);
             // 
-            // panel6
+            // btnAdd
             // 
-            this.panel6.Controls.Add(this.dataGridValues);
-            this.panel6.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel6.Location = new System.Drawing.Point(0, 0);
-            this.panel6.Name = "panel6";
-            this.panel6.Size = new System.Drawing.Size(468, 718);
-            this.panel6.TabIndex = 2;
+            this.btnAdd.Location = new System.Drawing.Point(229, 11);
+            this.btnAdd.Name = "btnAdd";
+            this.btnAdd.Size = new System.Drawing.Size(109, 23);
+            this.btnAdd.TabIndex = 5;
+            this.btnAdd.Text = "Add";
+            this.btnAdd.UseVisualStyleBackColor = true;
+            this.btnAdd.Click += new System.EventHandler(this.btnAdd_Click);
+            // 
+            // btn_default
+            // 
+            this.btn_default.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.btn_default.Location = new System.Drawing.Point(344, 11);
+            this.btn_default.Name = "btn_default";
+            this.btn_default.Size = new System.Drawing.Size(112, 23);
+            this.btn_default.TabIndex = 10;
+            this.btn_default.Text = "Reset to default";
+            this.btn_default.UseVisualStyleBackColor = true;
+            this.btn_default.Click += new System.EventHandler(this.btn_default_Click);
+            // 
+            // chkOnlyValue
+            // 
+            this.chkOnlyValue.AutoSize = true;
+            this.chkOnlyValue.Location = new System.Drawing.Point(41, 15);
+            this.chkOnlyValue.Name = "chkOnlyValue";
+            this.chkOnlyValue.Size = new System.Drawing.Size(76, 17);
+            this.chkOnlyValue.TabIndex = 4;
+            this.chkOnlyValue.Text = "Only value";
+            this.chkOnlyValue.UseVisualStyleBackColor = true;
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(7, 43);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(28, 13);
+            this.label4.TabIndex = 2;
+            this.label4.Text = "Key:";
+            // 
+            // cmbKey
+            // 
+            this.cmbKey.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbKey.FormattingEnabled = true;
+            this.cmbKey.Location = new System.Drawing.Point(41, 40);
+            this.cmbKey.Name = "cmbKey";
+            this.cmbKey.Size = new System.Drawing.Size(121, 21);
+            this.cmbKey.TabIndex = 0;
+            // 
+            // lblConfidence
+            // 
+            this.lblConfidence.AutoSize = true;
+            this.lblConfidence.Location = new System.Drawing.Point(33, 11);
+            this.lblConfidence.Name = "lblConfidence";
+            this.lblConfidence.Size = new System.Drawing.Size(90, 13);
+            this.lblConfidence.TabIndex = 8;
+            this.lblConfidence.Text = "Total confidence:";
+            // 
+            // lblLanguage
+            // 
+            this.lblLanguage.AutoSize = true;
+            this.lblLanguage.Location = new System.Drawing.Point(421, 9);
+            this.lblLanguage.Name = "lblLanguage";
+            this.lblLanguage.Size = new System.Drawing.Size(58, 13);
+            this.lblLanguage.TabIndex = 8;
+            this.lblLanguage.Text = "Language:";
+            // 
+            // panel4
+            // 
+            this.panel4.BackColor = System.Drawing.Color.Transparent;
+            this.panel4.Controls.Add(this.button2);
+            this.panel4.Controls.Add(this.txtPathPattern);
+            this.panel4.Controls.Add(this.txtPartConfidence);
+            this.panel4.Controls.Add(this.lblPatConfidence);
+            this.panel4.Controls.Add(this.txtLang);
+            this.panel4.Controls.Add(this.lblConfidence);
+            this.panel4.Controls.Add(this.txtConfidence);
+            this.panel4.Controls.Add(this.lblLanguage);
+            this.panel4.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panel4.Location = new System.Drawing.Point(0, 0);
+            this.panel4.Name = "panel4";
+            this.panel4.Size = new System.Drawing.Size(1185, 32);
+            this.panel4.TabIndex = 12;
+            // 
+            // button2
+            // 
+            this.button2.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.button2.Location = new System.Drawing.Point(1062, 4);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(111, 23);
+            this.button2.TabIndex = 14;
+            this.button2.Text = "Choose file";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
+            // 
+            // txtPathPattern
+            // 
+            this.txtPathPattern.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.txtPathPattern.Location = new System.Drawing.Point(612, 7);
+            this.txtPathPattern.Name = "txtPathPattern";
+            this.txtPathPattern.ReadOnly = true;
+            this.txtPathPattern.Size = new System.Drawing.Size(443, 20);
+            this.txtPathPattern.TabIndex = 13;
+            // 
+            // txtPartConfidence
+            // 
+            this.txtPartConfidence.Location = new System.Drawing.Point(323, 6);
+            this.txtPartConfidence.Name = "txtPartConfidence";
+            this.txtPartConfidence.ReadOnly = true;
+            this.txtPartConfidence.Size = new System.Drawing.Size(67, 20);
+            this.txtPartConfidence.TabIndex = 12;
+            // 
+            // lblPatConfidence
+            // 
+            this.lblPatConfidence.AutoSize = true;
+            this.lblPatConfidence.Location = new System.Drawing.Point(222, 10);
+            this.lblPatConfidence.Name = "lblPatConfidence";
+            this.lblPatConfidence.Size = new System.Drawing.Size(95, 13);
+            this.lblPatConfidence.TabIndex = 11;
+            this.lblPatConfidence.Text = "Partial confidence:";
+            // 
+            // txtLang
+            // 
+            this.txtLang.Location = new System.Drawing.Point(486, 6);
+            this.txtLang.Name = "txtLang";
+            this.txtLang.ReadOnly = true;
+            this.txtLang.Size = new System.Drawing.Size(100, 20);
+            this.txtLang.TabIndex = 9;
+            // 
+            // openFileDialog1
+            // 
+            this.openFileDialog1.FileName = "openFileDialog1";
             // 
             // Form1
             // 
@@ -326,12 +355,12 @@ namespace Bakalarska_praca
             this.panel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.panel3.ResumeLayout(false);
-            this.panel4.ResumeLayout(false);
-            this.panel4.PerformLayout();
+            this.panel6.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridValues)).EndInit();
             this.panel5.ResumeLayout(false);
             this.panel5.PerformLayout();
-            this.panel6.ResumeLayout(false);
+            this.panel4.ResumeLayout(false);
+            this.panel4.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -345,7 +374,7 @@ namespace Bakalarska_praca
         private DataGridViewTextBoxColumn key;
         private DataGridViewTextBoxColumn value;
         private TextBox txtPartConfidence;
-        private Label label1;
+        private Label lblPatConfidence;
         private Panel panel5;
         private ComboBox cmbKey;
         private Button btnRemove;
@@ -353,6 +382,9 @@ namespace Bakalarska_praca
         private CheckBox chkOnlyValue;
         private Label label4;
         private Panel panel6;
+        private Button button2;
+        private TextBox txtPathPattern;
+        private OpenFileDialog openFileDialog1;
     }
 }
 

@@ -26,9 +26,6 @@ namespace Bakalarska_praca
 
             comboBox1.DataSource = lng;
 
-            Form1 f = new Form1(null);
-            f.ShowDialog();
-
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -138,5 +135,10 @@ namespace Bakalarska_praca
             f.ShowDialog();
         }
 
+        private void button2_Click(object sender, EventArgs e)
+        {
+            Form1 f = new Form1(null);
+            f.ShowDialog();
+        }
     }
 }

@@ -75,7 +75,7 @@ namespace OCR_BusinessLayer.Service
                 _cvService = OpenCVImageService.GetInstance();
                 _cvService.PrepareImage(file.Path);
                 Mat image = _cvService.Rotated;
-
+                
                 
                 foreach (PossitionOfWord w in pos)
                 {
@@ -86,7 +86,7 @@ namespace OCR_BusinessLayer.Service
                     rec.Height += CONSTANTS.PATTERN_CHECK_WIDTHHEIGHT_PROXIMITY;
                     
                     Mat im = new Mat(image, rec);
-
+                    
                     engine.InitForAnalysePage();
                     engine.Init(null, _lang);
                     //engine.SetInputImage(pix);

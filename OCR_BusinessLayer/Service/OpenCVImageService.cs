@@ -1,13 +1,9 @@
-﻿using Emgu.CV;
-using Emgu.CV.Structure;
-using OpenCvSharp;
+﻿using OpenCvSharp;
+using SautinSoft;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Drawing.Imaging;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO;
 
 namespace OCR_BusinessLayer.Service
 {
@@ -17,6 +13,8 @@ namespace OCR_BusinessLayer.Service
         private static OpenCVImageService _service;
         private OpenCvSharp.Mat _original;
         private Bitmap cBmp;
+        private List<string> filesToDelete;
+        private int dpi = 600;
         private double cAlphaStart = -20;
         private double cAlphaStep = 0.2;
         private int cSteps = 40 * 5;
@@ -41,6 +39,19 @@ namespace OCR_BusinessLayer.Service
 
         public void PrepareImage(string path)
         {
+            filesToDelete = new List<string>();
+            if (path.Substring(path.LastIndexOf('.') + 1).Equals("pdf"))
+            {
+                path = CreateImageFromPDF(path);
+                _original = Cv2.ImRead(path);
+
+                Rotated = _original;
+                bmp = OpenCvSharp.Extensions.BitmapConverter.ToBitmap(Rotated);
+
+
+                DeleteFiles();
+                return;
+            }
             _original = Cv2.ImRead(path);
             //using (var window = new Window("original", image: _original, flags: WindowMode.AutoSize))
             //{
@@ -81,6 +92,10 @@ namespace OCR_BusinessLayer.Service
 
             Rotated = a;
             bmp = OpenCvSharp.Extensions.BitmapConverter.ToBitmap(Rotated);
+            a.Dispose();
+            newImage.Dispose();
+
+            DeleteFiles();
         }
 
         private OpenCvSharp.Mat GetRotatedImage()
@@ -203,7 +218,7 @@ namespace OCR_BusinessLayer.Service
                 }
                 catch (Exception ex)
                 {
-                    
+                    throw new Exception(ex.Message);
                 }
             }
         }
@@ -251,6 +266,65 @@ namespace OCR_BusinessLayer.Service
 
 
 
+        }
+
+        private string CreateImageFromPDF(string path)
+        {
+            PdfFocus f = new PdfFocus();
+            var s = path.Remove(path.LastIndexOf('.')-1);
+            string finalPath = s + ".png";
+            var images = new List<Image>();
+            f.OpenPdf(path);
+            if (f.PageCount > 0)
+            {
+                f.ImageOptions.Dpi = dpi;
+                f.ImageOptions.ImageFormat = System.Drawing.Imaging.ImageFormat.Png;
+
+                for (int page = 1; page <= f.PageCount; page++)
+                {
+                    var pat = s + page + ".png";
+                    f.ToImage(pat, page);                 
+                    images.Add(Bitmap.FromFile(pat));
+                    filesToDelete.Add(pat);
+                }
+            }
+
+            MergeImages(images,finalPath);
+            return finalPath;
+        }
+
+        private void MergeImages(List<Image> images,string finalPath)
+        {
+
+            var width = 0;
+            var height = 0;
+
+            foreach (var image in images)
+            {
+                width = dpi;
+                height += dpi*2;
+            }
+
+            var bitmap = new Bitmap(width, height);
+            using (var g = Graphics.FromImage(bitmap))
+            {
+                var localHeight = 0;
+                foreach (var image in images)
+                {
+                    g.DrawImage(image, 0, localHeight);
+                    localHeight += dpi*2;
+                    image.Dispose();                   
+                }
+            }
+            bitmap.Save(finalPath);
+        }
+
+        private void DeleteFiles()
+        {
+            foreach (string file in filesToDelete)
+            {
+                File.Delete(file);
+            }
         }
 
     }

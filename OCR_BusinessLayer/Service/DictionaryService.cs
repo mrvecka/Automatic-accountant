@@ -10,7 +10,6 @@ namespace OCR_BusinessLayer.Service
     class DictionaryService : IDisposable
     {
         private int _keysInRow = 0;
-        private bool _nextLineIsColumn = false;
         private int _columnsCount = 0;
         private List<Column> _listOfColumns;
         private List<Column> _TempListOfColumn;
@@ -222,7 +221,6 @@ namespace OCR_BusinessLayer.Service
             if (_dic.columns.ContainsKey(key.Key))
             {
                 // je to stlpec
-                _nextLineIsColumn = true;
                 _columnsCount++;
                 Column column = GetColumnParam(_columnsCount, stringKey, line);
                 column.Text = key.Key;
@@ -327,7 +325,6 @@ namespace OCR_BusinessLayer.Service
         {
             List<Word> tmpKeyWords = new List<Word>();
             List<Word> tmpValueWords = new List<Word>();
-            string a = "";
             string first = GetFirstWordOfPhrase(stringkey);
             string last = GetLastWordOfPhrase(stringkey);
             float conf = 0;
@@ -575,7 +572,7 @@ namespace OCR_BusinessLayer.Service
             }
             catch (IndexOutOfRangeException e)
             {
-
+                throw new Exception(e.Message);
             }
             
             return res;
@@ -747,7 +744,6 @@ namespace OCR_BusinessLayer.Service
             string otherText = line.Text;
             string colText = "";
             Client client;
-            bool stillColumn = false;
             foreach (Column col in _listOfColumns)
             {
                 if (!col.Blocked)
@@ -757,7 +753,6 @@ namespace OCR_BusinessLayer.Service
                     if (!col.Completed)
                     {
                         _keysInRow = 0;
-                        stillColumn = true;
                         colText += text; // najskor si tu dam to co som uz pouzil
 
                         if (!string.IsNullOrWhiteSpace(text))
@@ -782,10 +777,6 @@ namespace OCR_BusinessLayer.Service
             otherText = otherText.Trim(CONSTANTS.charsToTrim);
             if (!string.IsNullOrEmpty(otherText) || otherText.Length > 3)
                 GetDataFromLine(line, ref otherText, _dic.header, _eud.GetType(), _eud, false, null);
-
-
-            if (!stillColumn && _TempListOfColumn.Count > 0)
-                _nextLineIsColumn = true;
 
         }
 

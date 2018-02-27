@@ -17,7 +17,7 @@ namespace Bakalarska_praca
 
         private const int _fontSize = 13;
         private System.Drawing.Image _newImage;
-        private Label _selectedLabel;
+        private List<string> _files;
         private PreviewObject _def;
         private bool _isMouseDown = false;
         private bool _firstMove = true;
@@ -38,26 +38,28 @@ namespace Bakalarska_praca
         public Form1(PreviewObject file)
         {
             InitializeComponent();
+            _myPenword = new Pen(Color.Blue, 2f);
             if (file != null)
             {
                 btnRemove.Enabled = false;
                 _def = file;
                 pictureBox1.Image = (Bitmap)file.Img;
-                txtCoinfidence.Text = file.Confidence;
+                txtConfidence.Text = file.Confidence;
                 txtLang.Text = file.Lang;
                 _newImage = file.Img;
                 _p = file;
                 FillListView(file);
             }
-                _myPenword = new Pen(Color.Blue, 2f);
-
-            var s = OpenCVImageService.GetInstance();
-            s.PrepareImage(@"C:\Users\Lukáš\Pictures\2018-02-01 faktura\vyskusane\faktura 001.jpg");
-            pictureBox1.Image = s.bmp;
-            _newImage = s.bmp;
-            _p = new PreviewObject();
-            _p.ListOfKeyPossitions = new List<PossitionOfWord>();
-            FillCombo();
+            else
+            {
+                //idem vytvarat novy pattern
+                lblConfidence.Visible = false;
+                lblPatConfidence.Visible = false;
+                txtConfidence.Visible = false;
+                txtPartConfidence.Visible = false;
+                lblLanguage.Visible = false;
+                txtLang.Visible = false;
+            }
         }
 
         private void FillListView(PreviewObject prew)
@@ -365,6 +367,33 @@ namespace Bakalarska_praca
             panel4.Enabled = false;
             panel5.Enabled = false;
             panel6.Enabled = false;
+        }
+
+        private void button2_Click(object sender, System.EventArgs e)
+        {
+            using (var fbd = new OpenFileDialog())
+            {
+                DialogResult result = fbd.ShowDialog();
+
+                if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(fbd.FileName))
+                {
+                    txtPathPattern.Text = fbd.FileName;
+                }
+            }
+            _files = FileService.FindFiles(txtPathPattern.Text);
+            if (_files == null)
+            {
+                MessageBox.Show("Unsupported file format!!!", "Invalid format", MessageBoxButtons.OK);
+                return;
+            }
+
+            var _cvService = OpenCVImageService.GetInstance();
+            _cvService.PrepareImage(_files[0]);
+            pictureBox1.Image = _cvService.bmp;
+            _newImage = _cvService.bmp;
+            _p = new PreviewObject();
+            _p.ListOfKeyPossitions = new List<PossitionOfWord>();
+            FillCombo();
         }
 
 

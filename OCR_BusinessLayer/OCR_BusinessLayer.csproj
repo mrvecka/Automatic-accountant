@@ -56,6 +56,9 @@
     <Reference Include="OpenCvSharp.UserInterface, Version=1.0.0.0, Culture=neutral, PublicKeyToken=6adad1e807fea099, processorArchitecture=MSIL">
       <HintPath>..\packages\OpenCvSharp3-AnyCPU.3.3.1.20171117\lib\net46\OpenCvSharp.UserInterface.dll</HintPath>
     </Reference>
+    <Reference Include="SautinSoft.PdfFocus, Version=6.7.12.11, Culture=neutral, PublicKeyToken=0b79b934109b3e9e, processorArchitecture=MSIL">
+      <HintPath>..\packages\sautinsoft.pdffocus.6.7.12.11\lib\net461\SautinSoft.PdfFocus.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -175,4 +178,8 @@
     <Error Condition="!Exists('..\packages\EMGU.CV.3.3.0.2824\build\Emgu.CV.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\EMGU.CV.3.3.0.2824\build\Emgu.CV.targets'))" />
   </Target>
   <Import Project="..\packages\EMGU.CV.3.3.0.2824\build\Emgu.CV.targets" Condition="Exists('..\packages\EMGU.CV.3.3.0.2824\build\Emgu.CV.targets')" />
+  <PropertyGroup>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
 </Project>
