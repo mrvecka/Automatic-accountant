@@ -845,7 +845,7 @@ namespace OCR_BusinessLayer.Service
 
             foreach (Word w in line.Words)
             {
-                if (w.Bounds.Left < col.Right && w.Bounds.Width < 300)
+                if (w.Bounds.Left < col.Right && w.Bounds.Width < CONSTANTS.MAX_LENGTH_OF_ONE_WORD)
                 {
                     if (((w.Bounds.Left <= col.Left && w.Bounds.Right > col.Left) || w.Bounds.Left >= col.Left) && ((w.Bounds.Right >= col.Right && w.Bounds.Left < col.Right) || w.Bounds.Right <= col.Right))
 

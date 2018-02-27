@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Bakalarska_praca.Dictioneries
 {
-    class Dictionary
+    public class Dictionary
     {
         public Dictionary<string,string> header;
         public Dictionary<string, string> columns;
@@ -96,7 +96,6 @@ namespace Bakalarska_praca.Dictioneries
             header.Add("Spôsob platby", "RefundMethode");
             header.Add("Forma úhrady", "RefundMethode");
             header.Add("Úhrada", "RefundMethode");
-            header.Add("rada", "RefundMethode");
             header.Add("Spôsob dopravy", "Transport");
             header.Add("Doprava", "Transport");
             header.Add("Celkom k úhrade EUR", "Amount");

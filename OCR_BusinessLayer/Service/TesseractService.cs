@@ -80,10 +80,10 @@ namespace OCR_BusinessLayer.Service
                 foreach (PossitionOfWord w in pos)
                 {
                     OpenCvSharp.Rect rec = new Rect(w.KeyBounds.X, w.KeyBounds.Y, w.KeyBounds.Width, w.KeyBounds.Height);
-                    rec.X -= 10;
-                    rec.Y -= 10;
-                    rec.Width += 20; //ak pozram ci je to patern tak potrebujem co najmensie
-                    rec.Height += 20;
+                    rec.X -= CONSTANTS.PATTERN_CHECK_XY_PROXIMITY;
+                    rec.Y -= CONSTANTS.PATTERN_CHECK_XY_PROXIMITY;
+                    rec.Width += CONSTANTS.PATTERN_CHECK_WIDTHHEIGHT_PROXIMITY; //ak pozram ci je to patern tak potrebujem co najmensie
+                    rec.Height += CONSTANTS.PATTERN_CHECK_WIDTHHEIGHT_PROXIMITY;
                     
                     Mat im = new Mat(image, rec);
 

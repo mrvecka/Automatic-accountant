@@ -1,4 +1,5 @@
-﻿using OCR_BusinessLayer;
+﻿using Bakalarska_praca.Dictioneries;
+using OCR_BusinessLayer;
 using OCR_BusinessLayer.Classes;
 using OCR_BusinessLayer.Service;
 using System.Collections.Generic;
@@ -26,6 +27,7 @@ namespace Bakalarska_praca
         private bool _canDraw = false;
         private int _countOfNewRect = 0;
         private PreviewObject _p;
+        private PossitionOfWord _newPositions;
         private Rectangle _newRect;
         private Rectangle _oldRect;
         private int _deltaX = 0;
@@ -36,26 +38,46 @@ namespace Bakalarska_praca
         public Form1(PreviewObject file)
         {
             InitializeComponent();
-            btnRemove.Enabled = false;
-            _def = file;
-            _myPenword = new Pen(Color.Blue, 2f);
-            pictureBox1.Image = (Bitmap)file.Img;
-            txtCoinfidence.Text = file.Confidence;
-            txtLang.Text = file.Lang;
-            _newImage = file.Img;
-            _p = file;
-            FillListView(file);
+            if (file != null)
+            {
+                btnRemove.Enabled = false;
+                _def = file;
+                pictureBox1.Image = (Bitmap)file.Img;
+                txtCoinfidence.Text = file.Confidence;
+                txtLang.Text = file.Lang;
+                _newImage = file.Img;
+                _p = file;
+                FillListView(file);
+            }
+                _myPenword = new Pen(Color.Blue, 2f);
+
+            var s = OpenCVImageService.GetInstance();
+            s.PrepareImage(@"C:\Users\Lukáš\Pictures\2018-02-01 faktura\vyskusane\faktura 001.jpg");
+            pictureBox1.Image = s.bmp;
+            _newImage = s.bmp;
+            _p = new PreviewObject();
+            _p.ListOfKeyPossitions = new List<PossitionOfWord>();
+            FillCombo();
         }
 
         private void FillListView(PreviewObject prew)
         {
-
             BindingList<PossitionOfWord> bindingList = new BindingList<PossitionOfWord>(prew.ListOfKeyPossitions);
             dataGridValues.AutoGenerateColumns = false;
             dataGridValues.DataSource = bindingList;
+        }
 
+        private void FillCombo()
+        {
+            var a = new Dictionary();
+            Common.AddRangeNewOnly(a.header, a.columns);
+            Common.AddRangeNewOnly(a.header, a.clients);
+            cmbKey.DataSource = new BindingSource(a.header, null);
+            cmbKey.DisplayMember = "Key";
+            cmbKey.ValueMember = "Key";
 
         }
+
 
         private PossitionOfWord GetSelectedWords()
         {
@@ -67,8 +89,8 @@ namespace Bakalarska_praca
             }
             else
             {
-                return null;
                 btnRemove.Enabled = false;
+                return null;
             }
         }
 
@@ -192,16 +214,44 @@ namespace Bakalarska_praca
 
             if (_drawingNewRect)
             {
+                if (_newPositions == null)
+                {
+                    _newPositions = new PossitionOfWord();
+                }
                 _drawingNewRect = false;
-                    _countOfNewRect--;
+
+                if (!chkOnlyValue.Checked && _countOfNewRect == 2)
+                {
+                    _newPositions.KeyBounds = _newRect;
+                }
+                else if (!chkOnlyValue.Checked && _countOfNewRect == 1)
+                {
+                    _newPositions.ValueBounds = _newRect;
+                }
+                else if (chkOnlyValue.Checked && _countOfNewRect == 1)
+                {
+                    _newPositions.ValueBounds = _newRect;
+                }
+                    
+                _countOfNewRect--;
+
                 if (_countOfNewRect == 0)
                 {
+                    _newPositions.Key = cmbKey.SelectedValue.ToString();
+                    _newPositions.Value = "";
+                    
+                    _p.ListOfKeyPossitions.Add(_newPositions);
+                    AddRectangle(_newPositions);
+                    _newPositions = null;
                     _canDraw = false;
+                    panel4.Enabled = true;
+                    panel5.Enabled = true;
+                    panel6.Enabled = true;
                 }
 
             }
             setRectangle();
-
+            FillListView(_p);
 
         }
         private void pictureBox1_Paint(object sender, PaintEventArgs e)
@@ -312,6 +362,9 @@ namespace Bakalarska_praca
             MessageBox.Show("If \"Only value\" is selected draw just one rectangle on value position else draw first rectangle on key position and second on value position.", "Positioning wizard", MessageBoxButtons.OK);
             _canDraw = true;
             _countOfNewRect = chkOnlyValue.Checked ? 1 : 2;
+            panel4.Enabled = false;
+            panel5.Enabled = false;
+            panel6.Enabled = false;
         }
 
 

@@ -5,6 +5,8 @@ namespace OCR_BusinessLayer.Service
     class SimilarityService
     {
         private static int percent = 100;
+        private static int one = 1;
+        private static int zero = 0;
         public static int GetSimilarity(string string1, string string2)
         {
             if (string2.Contains(string1))
@@ -25,23 +27,23 @@ namespace OCR_BusinessLayer.Service
         {
             int n = s.Length;
             int m = t.Length;
-            int[,] distance = new int[n + 1, m + 1]; // matrix
-            int cost = 0;
-            if (n == 0) return m;
-            if (m == 0) return n;
+            int[,] distance = new int[n + one, m + one]; // matrix
+            int cost = zero;
+            if (n == zero) return m;
+            if (m == zero) return n;
             //init1
-            for (int i = 0; i <= n; distance[i, 0] = i++) ;
-            for (int j = 0; j <= m; distance[0, j] = j++) ;
+            for (int i = zero; i <= n; distance[i, zero] = i++) ;
+            for (int j = zero; j <= m; distance[zero, j] = j++) ;
             //find min distance
-            for (int i = 1; i <= n; i++)
+            for (int i = one; i <= n; i++)
             {
-                for (int j = 1; j <= m; j++)
+                for (int j = one; j <= m; j++)
                 {
-                    cost = (t.Substring(j - 1, 1) ==
-                        s.Substring(i - 1, 1) ? 0 : 1);
-                    distance[i, j] = Min3(distance[i - 1, j] + 1,
-                    distance[i, j - 1] + 1,
-                    distance[i - 1, j - 1] + cost);
+                    cost = (t.Substring(j - one, one) ==
+                        s.Substring(i - one, one) ? zero : one);
+                    distance[i, j] = Min3(distance[i - one, j] + one,
+                    distance[i, j - one] + one,
+                    distance[i - one, j - one] + cost);
                 }
             }
             return distance[n, m];
