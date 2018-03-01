@@ -66,7 +66,7 @@
             // 
             this.lblFound.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.lblFound.AutoSize = true;
-            this.lblFound.Location = new System.Drawing.Point(551, 41);
+            this.lblFound.Location = new System.Drawing.Point(452, 41);
             this.lblFound.Name = "lblFound";
             this.lblFound.Size = new System.Drawing.Size(0, 13);
             this.lblFound.TabIndex = 2;
@@ -143,7 +143,8 @@
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(559, 36);
+            this.button2.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.button2.Location = new System.Drawing.Point(557, 36);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(107, 23);
             this.button2.TabIndex = 8;
@@ -161,6 +162,7 @@
             this.MinimumSize = new System.Drawing.Size(800, 550);
             this.Name = "frmOCR";
             this.Text = "frmOCR";
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.frmOCR_FormClosed);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             this.ResumeLayout(false);

@@ -13,8 +13,10 @@ namespace OCR_BusinessLayer.Service
         private static OpenCVImageService _service;
         private OpenCvSharp.Mat _original;
         private Bitmap cBmp;
-        private List<string> filesToDelete;
-        private int dpi = 600;
+        private static List<string> filesToDelete;
+        private int countOfLines = 60;
+        private int dpi = 800;
+        private int dpiContrast = 450;
         private double cAlphaStart = -20;
         private double cAlphaStep = 0.2;
         private int cSteps = 40 * 5;
@@ -31,7 +33,10 @@ namespace OCR_BusinessLayer.Service
         public static OpenCVImageService GetInstance()
         {
             if (_service == null)
+            {
                 _service = new OpenCVImageService();
+                filesToDelete = new List<string>();
+            }
 
             return _service;
         }
@@ -39,7 +44,6 @@ namespace OCR_BusinessLayer.Service
 
         public void PrepareImage(string path)
         {
-            filesToDelete = new List<string>();
             if (path.Substring(path.LastIndexOf('.') + 1).Equals("pdf"))
             {
                 path = CreateImageFromPDF(path);
@@ -49,7 +53,6 @@ namespace OCR_BusinessLayer.Service
                 bmp = OpenCvSharp.Extensions.BitmapConverter.ToBitmap(Rotated);
 
 
-                DeleteFiles();
                 return;
             }
             _original = Cv2.ImRead(path);
@@ -69,16 +72,12 @@ namespace OCR_BusinessLayer.Service
             //{
             //    Cv2.WaitKey();
             //}
-            OpenCvSharp.Mat a = new OpenCvSharp.Mat();
-            Cv2.Erode(newImage, a, new OpenCvSharp.Mat());
-            //using (var window = new Window("erode", image: a, flags: WindowMode.AutoSize))
-            //{
-            //    Cv2.WaitKey();
-            //}
 
-            cBmp = OpenCvSharp.Extensions.BitmapConverter.ToBitmap(a);
-            DeskewImage(ref a);
-            bmp = OpenCvSharp.Extensions.BitmapConverter.ToBitmap(a);
+            cBmp = OpenCvSharp.Extensions.BitmapConverter.ToBitmap(newImage);
+
+
+            DeskewImage(ref newImage);
+            bmp = OpenCvSharp.Extensions.BitmapConverter.ToBitmap(newImage);
 
             //if (IsUpSideDownBitmap(bmp))
             //{
@@ -90,12 +89,9 @@ namespace OCR_BusinessLayer.Service
             //    Cv2.WaitKey();
             //}
 
-            Rotated = a;
+            Rotated = newImage;
             bmp = OpenCvSharp.Extensions.BitmapConverter.ToBitmap(Rotated);
-            a.Dispose();
-            newImage.Dispose();
 
-            DeleteFiles();
         }
 
         private OpenCvSharp.Mat GetRotatedImage()
@@ -134,9 +130,9 @@ namespace OCR_BusinessLayer.Service
             //' Hough Transformation
             Calc();
             //' Top 20 of the detected lines in the image.
-            hl = GetTop(20);
+            hl = GetTop(countOfLines);
             //' Average angle of the lines
-            for (i = 0; i < 19; i++)
+            for (i = 0; i < countOfLines-1; i++)
             {
                 sum += hl[i].Alpha;
                 count += 1;
@@ -288,7 +284,7 @@ namespace OCR_BusinessLayer.Service
                     filesToDelete.Add(pat);
                 }
             }
-
+            filesToDelete.Add(finalPath);
             MergeImages(images,finalPath);
             return finalPath;
         }
@@ -312,19 +308,20 @@ namespace OCR_BusinessLayer.Service
                 foreach (var image in images)
                 {
                     g.DrawImage(image, 0, localHeight);
-                    localHeight += dpi*2;
+                    localHeight += dpi*2- dpiContrast;
                     image.Dispose();                   
                 }
             }
             bitmap.Save(finalPath);
         }
 
-        private void DeleteFiles()
+        public static void DeleteFiles()
         {
-            foreach (string file in filesToDelete)
-            {
-                File.Delete(file);
-            }
+            if (filesToDelete != null)
+                foreach (string file in filesToDelete)
+                {
+                    File.Delete(file);
+                }
         }
 
     }

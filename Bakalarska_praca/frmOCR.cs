@@ -22,9 +22,8 @@ namespace Bakalarska_praca
             InitializeComponent();
             _filesToProcess = new List<FileToProcess>();
             txtPath.Text = @"C:\Users\Lukáš\Pictures\2018-02-01 faktura\vyskusane";
-            List<string> lng = new List<string>() {"slk", "eng" };
-
-            comboBox1.DataSource = lng;
+            var data = FileService.FindTrainedData("tessdata", CONSTANTS.trainedData);
+            comboBox1.DataSource = data;
 
         }
 
@@ -41,7 +40,7 @@ namespace Bakalarska_praca
                 }
             }
 
-            _files = FileService.FindFiles(txtPath.Text);
+            _files = FileService.FindFiles(txtPath.Text,CONSTANTS.filter);
             if (_files != null)
             {
                 if (_files.Count == 0)
@@ -70,11 +69,20 @@ namespace Bakalarska_praca
         private async void btnStart_Click(object sender, EventArgs e)
         {
             btnStart.Enabled = false;
+            checkBox1.Enabled = false;
+            comboBox1.Enabled = false;
+            button1.Enabled = false;
+            button2.Enabled = false;
             //prepare service
             _service = new ThreadService(_filesToProcess,comboBox1.SelectedItem.ToString());
             await _service.StartService();
             _previewObjects = _service.Preview;
             btnStart.Enabled = true;
+            btnStart.Enabled = true;
+            checkBox1.Enabled = true;
+            comboBox1.Enabled = true;
+            button1.Enabled = true;
+            button2.Enabled = true;
             SETTINGS.GoInColumnForValue = checkBox1.Checked;
         }
 
@@ -139,6 +147,11 @@ namespace Bakalarska_praca
         {
             Form1 f = new Form1(null);
             f.ShowDialog();
+        }
+
+        private void frmOCR_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            OpenCVImageService.DeleteFiles();
         }
     }
 }

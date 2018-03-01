@@ -28,7 +28,11 @@ namespace OCR_BusinessLayer.Service
                 TesseractService tess = new TesseractService(_lang);
                 var progress = new Progress<int>(percent =>
                 {
-                    s.ProgressBar.Value = s.ProgressBar.Value + percent;
+                    if ((s.ProgressBar.Value + percent) > 100)
+                        s.ProgressBar.Value = 100;
+                    else
+                        s.ProgressBar.Value = s.ProgressBar.Value + percent;
+
                 });
                 await Task.Run(() =>
                 {

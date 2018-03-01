@@ -176,22 +176,22 @@ namespace OCR_BusinessLayer.Service
                             case 1:
                                 client.Name = lineText;
                                 col.FirstLineInColumn++;
-                                SavePossitionToLists("Name","",lineText,line,line);
+                                SavePossitionToLists("Name","", lineText, line, line,col.Text + " Meno");
                                 break;
                             case 2:
                                 client.Street = lineText;
                                 col.FirstLineInColumn++;
-                                SavePossitionToLists("Street", "", lineText, line, line);
+                                SavePossitionToLists("Street","", lineText, line, line, col.Text + " Ulica");
                                 break;
                             case 3:
                                 client.PSCCity = lineText;
                                 col.FirstLineInColumn++;
-                                SavePossitionToLists("PSCCity", "", lineText, line, line);
+                                SavePossitionToLists("PSCCity", "", lineText, line, line, col.Text + " Psč");
                                 break;
                             case 4:
                                 client.State = lineText;
                                 col.FirstLineInColumn++;
-                                SavePossitionToLists("State", "", lineText, line, line);
+                                SavePossitionToLists("State","", lineText, line, line, col.Text + " Štát");
                                 break;
 
                         }
@@ -275,11 +275,11 @@ namespace OCR_BusinessLayer.Service
                 }
                 bool saved = false;
                 stringKeyValue = stringKeyValue.Trim(CONSTANTS.charsToTrimLine);
-                if (string.IsNullOrEmpty(stringKeyValue) && SETTINGS.GoInColumnForValue && _dic.valueInColumn.Contains(key.Value))                
-                    stringKeyValue = FindValueInColumn(line, stringKey,key.Key,ref saved);
+                if (string.IsNullOrEmpty(stringKeyValue) && SETTINGS.GoInColumnForValue && _dic.valueInColumn.Contains(key.Value))
+                    stringKeyValue = FindValueInColumn(line, stringKey, key.Key, ref saved);
 
-                if(!saved)
-                    SavePossitionToLists(key.Key,stringKey.Trim(CONSTANTS.charsToTrim), stringKeyValue.Trim(CONSTANTS.charsToTrim), line,line);
+                if (!saved)
+                    SavePossitionToLists(key.Key, stringKey.Trim(CONSTANTS.charsToTrim), stringKeyValue.Trim(CONSTANTS.charsToTrim), line, line);
                 SaveData(ref keyFound, isColumn, type, key, data, stringKeyValue, ref lineText, firstCharIndex);
 
                 if (_pair.Value != "" && lookingForRight)
@@ -321,7 +321,7 @@ namespace OCR_BusinessLayer.Service
             lineText = lineText.Replace(lineText.Substring(firstCharIndex), "");
         }
 
-        private void SavePossitionToLists(string key,string stringkey, string value, TextLine Keyline, TextLine valueLine,int x1 = 0,int x2 = 0)
+        private void SavePossitionToLists(string key, string stringkey, string value, TextLine Keyline, TextLine valueLine, string colText = "", int x1 = 0, int x2 = 0)
         {
             List<Word> tmpKeyWords = new List<Word>();
             List<Word> tmpValueWords = new List<Word>();
@@ -365,15 +365,19 @@ namespace OCR_BusinessLayer.Service
             {
                 var v = tmpKeyWords.First<Word>();
                 var vl = tmpKeyWords.Last<Word>();
-                pk.KeyBounds = new System.Drawing.Rectangle(v.Bounds.X,v.Bounds.Y, tmpKeyWords.Last<Word>().Bounds.Right - v.Bounds.Left, v.Bounds.Height);
+                pk.KeyBounds = new System.Drawing.Rectangle(v.Bounds.X, v.Bounds.Y, tmpKeyWords.Last<Word>().Bounds.Right - v.Bounds.Left, v.Bounds.Height);
             }
-            pk.Key = stringkey;
+            if (key.Equals("Name") || key.Equals("Street") || key.Equals("PSCCity") || key.Equals("State"))
+                pk.Key = colText;
+            else
+                pk.Key = stringkey;
+
             pk.Value = value;
 
             //value
             if (value == "")
             {
-                pk.ValueBounds = new System.Drawing.Rectangle(pk.KeyBounds.Right,pk.KeyBounds.Y,100,pk.KeyBounds.Height);
+                pk.ValueBounds = new System.Drawing.Rectangle(pk.KeyBounds.Right, pk.KeyBounds.Y, 100, pk.KeyBounds.Height);
 
             }
             else
@@ -530,7 +534,7 @@ namespace OCR_BusinessLayer.Service
         /// <param name="line">Current line</param>
         /// <param name="foundKey">Current key</param>
         /// <returns></returns>
-        private string FindValueInColumn(TextLine line, string foundKey, string key,ref bool saved)
+        private string FindValueInColumn(TextLine line, string foundKey, string key, ref bool saved)
         {
             int x1 = 0, x2 = 0;
             string firstWord = GetFirstWordOfPhrase(foundKey).Trim();
@@ -554,7 +558,7 @@ namespace OCR_BusinessLayer.Service
                 x1 = w2.Bounds.Left;
                 x2 = w.Bounds.Right;
             }
-            
+
             try
             {
                 for (int i = 1; i <= 2; i++)
@@ -563,18 +567,18 @@ namespace OCR_BusinessLayer.Service
                     res = GetWordsForColumn(new Column { Left = x1, Right = x2 }, t);
                     if (!string.IsNullOrWhiteSpace(res))
                     {
-                        SavePossitionToLists(key, foundKey.Trim(CONSTANTS.charsToTrim), res.Trim(CONSTANTS.charsToTrim), line, t,x1,x2);
+                        SavePossitionToLists(key, foundKey.Trim(CONSTANTS.charsToTrim), res.Trim(CONSTANTS.charsToTrim), line, t,"", x1, x2);
                         saved = true;
                         break;
                     }
-                    
+
                 }
             }
             catch (IndexOutOfRangeException e)
             {
                 throw new Exception(e.Message);
             }
-            
+
             return res;
         }
 
@@ -708,7 +712,7 @@ namespace OCR_BusinessLayer.Service
             return text.Trim();
         }
 
-        private string GetNextWordOfPhrase(string prev,string text)
+        private string GetNextWordOfPhrase(string prev, string text)
         {
             text = text.Remove(0, text.IndexOf(prev));
             text = text.Replace(prev, "");

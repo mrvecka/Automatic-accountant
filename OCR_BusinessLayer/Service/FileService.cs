@@ -10,9 +10,8 @@ namespace OCR_BusinessLayer.Service
     {
 
 
-        public static List<string> FindFiles(string path)
+        public static List<string> FindFiles(string path, string[] filter)
         {
-            var filter = new string[] {"jpg", "jpeg", "png", "gif", "tiff", "bmp", "pdf" };
             if (!string.IsNullOrEmpty(path) && Directory.Exists(path))
             {
                 List<string> files = new List<string>();
@@ -40,6 +39,22 @@ namespace OCR_BusinessLayer.Service
                 return null;
             }
             return null;
+        }
+        public static List<string> FindTrainedData(string path, string[] filter)
+        {
+            var data = FindFiles(path, filter);
+            List<string> final = new List<string>();
+            foreach (string lang in data)
+            {
+                var s = lang.Substring(lang.LastIndexOf('\\') + 1);
+                if (s.Length == 15)
+                {
+                    s = s.Substring(0, 3);
+                    if (!final.Contains(s))
+                        final.Add(s);
+                }
+            }
+            return final;
         }
 
     }

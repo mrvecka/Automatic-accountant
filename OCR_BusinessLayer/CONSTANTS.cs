@@ -11,6 +11,10 @@
         public static char[] charsToTrim = { ':', '/',' ' };
         public static char[] charsToTrimLine = { ' ','\'', ';', '/', '\\', '|', '\n', ')', '(', '!', '&', '=', '´', '%', 'ˇ', '+', '“', '$', '?','!'};
         public static char[] charsToTrimAccountNumber = { ' ', '\'', ';', '\\', '|', '\n', ')', '(', '!', '&', '=', '´', '%', 'ˇ', '+', '“', '$', '?' };
+        public static string[] filter = new string[] { "jpg", "jpeg", "png", "gif", "tiff", "bmp", "pdf" };
+        public static string[] trainedData = new string[] { "traineddata"};
+
+
 
 
         public enum Result

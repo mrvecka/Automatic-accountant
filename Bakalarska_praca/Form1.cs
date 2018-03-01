@@ -48,7 +48,10 @@ namespace Bakalarska_praca
                 txtLang.Text = file.Lang;
                 _newImage = file.Img;
                 _p = file;
+                txtPathPattern.Visible = false;
+                btnNewFile.Visible = false;
                 FillListView(file);
+                FillCombo();
             }
             else
             {
@@ -380,7 +383,7 @@ namespace Bakalarska_praca
                     txtPathPattern.Text = fbd.FileName;
                 }
             }
-            _files = FileService.FindFiles(txtPathPattern.Text);
+            _files = FileService.FindFiles(txtPathPattern.Text,CONSTANTS.filter);
             if (_files == null)
             {
                 MessageBox.Show("Unsupported file format!!!", "Invalid format", MessageBoxButtons.OK);

@@ -128,6 +128,7 @@ namespace OCR_BusinessLayer.Service
             StringBuilder ss = new StringBuilder("");
             PageIteratorLevel level = PageIteratorLevel.RIL_TEXTLINE;
             string t;
+            
             do
             {
                 TextLine l = new TextLine();

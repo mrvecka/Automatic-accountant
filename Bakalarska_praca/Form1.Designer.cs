@@ -8,7 +8,7 @@ namespace Bakalarska_praca
         /// Required designer variable.
         /// </summary>
         private System.ComponentModel.IContainer components = null;
-        private Button button1;
+        private Button btnSave;
         private TextBox txtConfidence;
         private Panel panel1;
         private PictureBox pictureBox1;
@@ -38,7 +38,7 @@ namespace Bakalarska_praca
         /// </summary>
         private void InitializeComponent()
         {
-            this.button1 = new System.Windows.Forms.Button();
+            this.btnSave = new System.Windows.Forms.Button();
             this.txtConfidence = new System.Windows.Forms.TextBox();
             this.panel1 = new System.Windows.Forms.Panel();
             this.panel2 = new System.Windows.Forms.Panel();
@@ -51,14 +51,14 @@ namespace Bakalarska_praca
             this.panel5 = new System.Windows.Forms.Panel();
             this.btnRemove = new System.Windows.Forms.Button();
             this.btnAdd = new System.Windows.Forms.Button();
-            this.btn_default = new System.Windows.Forms.Button();
+            this.btnDefault = new System.Windows.Forms.Button();
             this.chkOnlyValue = new System.Windows.Forms.CheckBox();
             this.label4 = new System.Windows.Forms.Label();
             this.cmbKey = new System.Windows.Forms.ComboBox();
             this.lblConfidence = new System.Windows.Forms.Label();
             this.lblLanguage = new System.Windows.Forms.Label();
             this.panel4 = new System.Windows.Forms.Panel();
-            this.button2 = new System.Windows.Forms.Button();
+            this.btnNewFile = new System.Windows.Forms.Button();
             this.txtPathPattern = new System.Windows.Forms.TextBox();
             this.txtPartConfidence = new System.Windows.Forms.TextBox();
             this.lblPatConfidence = new System.Windows.Forms.Label();
@@ -74,16 +74,16 @@ namespace Bakalarska_praca
             this.panel4.SuspendLayout();
             this.SuspendLayout();
             // 
-            // button1
+            // btnSave
             // 
-            this.button1.Anchor = System.Windows.Forms.AnchorStyles.Right;
-            this.button1.Location = new System.Drawing.Point(344, 38);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(112, 24);
-            this.button1.TabIndex = 0;
-            this.button1.Text = "Save as pattern";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.btnSave.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.btnSave.Location = new System.Drawing.Point(344, 38);
+            this.btnSave.Name = "btnSave";
+            this.btnSave.Size = new System.Drawing.Size(112, 24);
+            this.btnSave.TabIndex = 0;
+            this.btnSave.Text = "Save as pattern";
+            this.btnSave.UseVisualStyleBackColor = true;
+            this.btnSave.Click += new System.EventHandler(this.button1_Click);
             // 
             // txtConfidence
             // 
@@ -185,9 +185,9 @@ namespace Bakalarska_praca
             // panel5
             // 
             this.panel5.Controls.Add(this.btnRemove);
-            this.panel5.Controls.Add(this.button1);
+            this.panel5.Controls.Add(this.btnSave);
             this.panel5.Controls.Add(this.btnAdd);
-            this.panel5.Controls.Add(this.btn_default);
+            this.panel5.Controls.Add(this.btnDefault);
             this.panel5.Controls.Add(this.chkOnlyValue);
             this.panel5.Controls.Add(this.label4);
             this.panel5.Controls.Add(this.cmbKey);
@@ -217,16 +217,16 @@ namespace Bakalarska_praca
             this.btnAdd.UseVisualStyleBackColor = true;
             this.btnAdd.Click += new System.EventHandler(this.btnAdd_Click);
             // 
-            // btn_default
+            // btnDefault
             // 
-            this.btn_default.Anchor = System.Windows.Forms.AnchorStyles.Right;
-            this.btn_default.Location = new System.Drawing.Point(344, 11);
-            this.btn_default.Name = "btn_default";
-            this.btn_default.Size = new System.Drawing.Size(112, 23);
-            this.btn_default.TabIndex = 10;
-            this.btn_default.Text = "Reset to default";
-            this.btn_default.UseVisualStyleBackColor = true;
-            this.btn_default.Click += new System.EventHandler(this.btn_default_Click);
+            this.btnDefault.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.btnDefault.Location = new System.Drawing.Point(344, 11);
+            this.btnDefault.Name = "btnDefault";
+            this.btnDefault.Size = new System.Drawing.Size(112, 23);
+            this.btnDefault.TabIndex = 10;
+            this.btnDefault.Text = "Reset to default";
+            this.btnDefault.UseVisualStyleBackColor = true;
+            this.btnDefault.Click += new System.EventHandler(this.btn_default_Click);
             // 
             // chkOnlyValue
             // 
@@ -277,7 +277,7 @@ namespace Bakalarska_praca
             // panel4
             // 
             this.panel4.BackColor = System.Drawing.Color.Transparent;
-            this.panel4.Controls.Add(this.button2);
+            this.panel4.Controls.Add(this.btnNewFile);
             this.panel4.Controls.Add(this.txtPathPattern);
             this.panel4.Controls.Add(this.txtPartConfidence);
             this.panel4.Controls.Add(this.lblPatConfidence);
@@ -291,16 +291,16 @@ namespace Bakalarska_praca
             this.panel4.Size = new System.Drawing.Size(1185, 32);
             this.panel4.TabIndex = 12;
             // 
-            // button2
+            // btnNewFile
             // 
-            this.button2.Anchor = System.Windows.Forms.AnchorStyles.Right;
-            this.button2.Location = new System.Drawing.Point(1062, 4);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(111, 23);
-            this.button2.TabIndex = 14;
-            this.button2.Text = "Choose file";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
+            this.btnNewFile.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.btnNewFile.Location = new System.Drawing.Point(1062, 4);
+            this.btnNewFile.Name = "btnNewFile";
+            this.btnNewFile.Size = new System.Drawing.Size(111, 23);
+            this.btnNewFile.TabIndex = 14;
+            this.btnNewFile.Text = "Choose file";
+            this.btnNewFile.UseVisualStyleBackColor = true;
+            this.btnNewFile.Click += new System.EventHandler(this.button2_Click);
             // 
             // txtPathPattern
             // 
@@ -368,7 +368,7 @@ namespace Bakalarska_praca
         #endregion
 
         private TextBox txtLang;
-        private Button btn_default;
+        private Button btnDefault;
         private Panel panel2;
         private DataGridView dataGridValues;
         private DataGridViewTextBoxColumn key;
@@ -382,7 +382,7 @@ namespace Bakalarska_praca
         private CheckBox chkOnlyValue;
         private Label label4;
         private Panel panel6;
-        private Button button2;
+        private Button btnNewFile;
         private TextBox txtPathPattern;
         private OpenFileDialog openFileDialog1;
     }
