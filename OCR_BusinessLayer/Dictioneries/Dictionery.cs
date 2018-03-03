@@ -72,6 +72,7 @@ namespace Bakalarska_praca.Dictioneries
             header.Add("Konštantný symbol", "KonstSymbol");
             header.Add("Konšt.symbol", "KonstSymbol");
             header.Add("KS", "KonstSymbol");
+            header.Add("Špecifický symbol", "SpecSymbol");
             header.Add("Faktúra - daňový doklad č.", "EvidenceNumber");
             header.Add("Predfaktura č.", "EvidenceNumber");
             header.Add("Faktúra číslo.", "EvidenceNumber");
@@ -151,6 +152,8 @@ namespace Bakalarska_praca.Dictioneries
             valueInColumn.Add("DateOfCreate");
             valueInColumn.Add("KonstSymbol");
             valueInColumn.Add("VariabilSymbol");
+            valueInColumn.Add("SpecSymbol");
+
 
         }
 

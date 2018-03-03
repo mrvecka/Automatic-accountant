@@ -24,6 +24,7 @@ namespace Bakalarska_praca
             txtPath.Text = @"C:\Users\Lukáš\Pictures\2018-02-01 faktura\vyskusane";
             var data = FileService.FindTrainedData("tessdata", CONSTANTS.trainedData);
             comboBox1.DataSource = data;
+            comboBox1.SelectedIndex = data.IndexOf("slk");
 
         }
 
@@ -68,11 +69,8 @@ namespace Bakalarska_praca
 
         private async void btnStart_Click(object sender, EventArgs e)
         {
-            btnStart.Enabled = false;
-            checkBox1.Enabled = false;
-            comboBox1.Enabled = false;
-            button1.Enabled = false;
-            button2.Enabled = false;
+
+            DisableControls();
             //prepare service
             _service = new ThreadService(_filesToProcess,comboBox1.SelectedItem.ToString());
             await _service.StartService();
@@ -152,6 +150,17 @@ namespace Bakalarska_praca
         private void frmOCR_FormClosed(object sender, FormClosedEventArgs e)
         {
             OpenCVImageService.DeleteFiles();
+        }
+        private void DisableControls()
+        {
+            btnStart.Enabled = false;
+            checkBox1.Enabled = false;
+            comboBox1.Enabled = false;
+            button1.Enabled = false;
+            button2.Enabled = false;
+            _filesToProcess.ForEach(c => c.ProgressBar.Value = 0);
+            _filesToProcess.ForEach(c => c.Button.Enabled = false);
+
         }
     }
 }

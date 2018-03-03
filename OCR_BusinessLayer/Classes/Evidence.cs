@@ -4,6 +4,7 @@
     {
         public string VariabilSymbol { get; set; }
         public string KonstSymbol { get; set; }
+        public string SpecSymbol { get; set; }
         public string EvidenceNumber { get; set; }
         public string DeliveryNumber { get; set; }
         public string OrderNumber { get; set; }

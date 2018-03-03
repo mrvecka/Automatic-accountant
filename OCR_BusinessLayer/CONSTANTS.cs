@@ -6,10 +6,11 @@
         public static int PROXIMITY = 20;
         public static int PATTERN_CHECK_XY_PROXIMITY = 10;
         public static int PATTERN_CHECK_WIDTHHEIGHT_PROXIMITY = 20;
-        public static int MAX_LENGTH_OF_ONE_WORD = 300;
+        public static int MAX_LENGTH_OF_ONE_WORD = 500;
         public static int MAX_LENGTH_OF_SQL_STRING = 100;
         public static char[] charsToTrim = { ':', '/',' ' };
         public static char[] charsToTrimLine = { ' ','\'', ';', '/', '\\', '|', '\n', ')', '(', '!', '&', '=', '´', '%', 'ˇ', '+', '“', '$', '?','!'};
+        public static char[] charsToTrimLineForpossition = { ' ', '\'', ';', '/', '\\', '|', '\n', ')', '(', '!', '&', '=', '´', '%', 'ˇ', '+', '“', '$', '?', '!','.',':' };
         public static char[] charsToTrimAccountNumber = { ' ', '\'', ';', '\\', '|', '\n', ')', '(', '!', '&', '=', '´', '%', 'ˇ', '+', '“', '$', '?' };
         public static string[] filter = new string[] { "jpg", "jpeg", "png", "gif", "tiff", "bmp", "pdf" };
         public static string[] trainedData = new string[] { "traineddata"};

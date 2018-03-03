@@ -325,42 +325,14 @@ namespace OCR_BusinessLayer.Service
         {
             List<Word> tmpKeyWords = new List<Word>();
             List<Word> tmpValueWords = new List<Word>();
-            string first = GetFirstWordOfPhrase(stringkey);
-            string last = GetLastWordOfPhrase(stringkey);
             float conf = 0;
             int count = 0;
-            foreach (Word wk in Keyline.Words)
-            {
-                string s = wk.Text.Trim(CONSTANTS.charsToTrimLine);
-                if (s.Contains(first) && !string.IsNullOrWhiteSpace(s))
-                {
-                    tmpKeyWords.Add(wk);
-                    conf += wk.Confidence;
-                    count++;
-                    if (first.Equals(last))
-                        break;
-                    else
-                        first = GetNextWordOfPhrase(first, stringkey);
+            tmpKeyWords = GetWordsForPositionSave(Keyline, stringkey, ref conf, ref count);
 
-                }
+            tmpValueWords = GetWordsForPositionSave(valueLine, value,ref conf,ref  count,x1,x2);
 
-            }
-            if (valueLine != null)
-            {
-                foreach (Word wv in valueLine.Words)
-                {
-
-                    if (!string.IsNullOrWhiteSpace(value) && (value.Contains(wv.Text.Trim(CONSTANTS.charsToTrimLine)) || wv.Text.Contains(value)))
-                    {
-                        tmpValueWords.Add(wv);
-                        conf += wv.Confidence;
-                        count++;
-                    }
-                }
-            }
-
-            //key
-            PossitionOfWord pk = new PossitionOfWord();
+             //key
+             PossitionOfWord pk = new PossitionOfWord();
             if (stringkey != "")
             {
                 var v = tmpKeyWords.First<Word>();
@@ -375,7 +347,7 @@ namespace OCR_BusinessLayer.Service
             pk.Value = value;
 
             //value
-            if (value == "")
+            if (value == "" || !tmpValueWords.Any())
             {
                 pk.ValueBounds = new System.Drawing.Rectangle(pk.KeyBounds.Right, pk.KeyBounds.Y, 100, pk.KeyBounds.Height);
 
@@ -435,6 +407,61 @@ namespace OCR_BusinessLayer.Service
 
             pk.Confidence = conf / count;
             _p.ListOfKeyPossitions.Add(pk);
+
+        }
+
+        private List<Word> GetWordsForPositionSave(TextLine line,string value,ref float conf,ref int count,int x1 =0,int x2 =0)
+        {
+            var tmpWords = new List<Word>();
+            var tmp = new List<Word>();
+            string first,sFirst = GetFirstWordOfPhrase(value);
+            string last = GetLastWordOfPhrase(value);
+            if (line != null)
+            {
+                first = GetFirstWordOfPhrase(value);
+                last = GetLastWordOfPhrase(value);
+                foreach (Word wv in line.Words)
+                {
+                    string s = wv.Text.Trim(CONSTANTS.charsToTrimLineForpossition);
+                    if (!string.IsNullOrWhiteSpace(value) && !string.IsNullOrWhiteSpace(s) && s.Contains(first))
+                    {
+                        tmp.Clear();
+                        if (x1 != 0 && x2 != 0)
+                        {
+                            if ((wv.Bounds.Left > x1 && wv.Bounds.Right < x2) || (wv.Bounds.Left < x1 && wv.Bounds.Right>x1)||
+                                (wv.Bounds.Left < x2 && wv.Bounds.Right > x2) || (wv.Bounds.Left < x1 && wv.Bounds.Right > x2))
+                            {
+                                tmpWords.Add(wv);
+                                conf += wv.Confidence;
+                                count++;
+                                if (first.Equals(last))
+                                    break;
+                                else
+                                    first = GetNextWordOfPhrase(first, value);
+                            }
+                            continue;
+                        }
+                        tmpWords.Add(wv);
+                        conf += wv.Confidence;
+                        count++;
+                        if (first.Equals(last))
+                            break;
+                        else
+                            first = GetNextWordOfPhrase(first, value);
+                    }
+                    else
+                    {
+                        tmp.AddRange(tmpWords);
+                        tmpWords.Clear();
+                        first = sFirst;
+                    }
+
+                }
+            }
+
+            if (tmpWords.Count == 0)
+                tmpWords = tmp;
+            return tmpWords;
 
         }
 
@@ -565,7 +592,7 @@ namespace OCR_BusinessLayer.Service
                 {
                     TextLine t = _p.Lines[_p.Lines.IndexOf(line) + i];
                     res = GetWordsForColumn(new Column { Left = x1, Right = x2 }, t);
-                    if (!string.IsNullOrWhiteSpace(res))
+                    if (!string.IsNullOrWhiteSpace(res) || i ==2)
                     {
                         SavePossitionToLists(key, foundKey.Trim(CONSTANTS.charsToTrim), res.Trim(CONSTANTS.charsToTrim), line, t,"", x1, x2);
                         saved = true;
@@ -704,24 +731,31 @@ namespace OCR_BusinessLayer.Service
         /// <returns></returns>
         private string GetFirstWordOfPhrase(string text)
         {
-            text = text.Trim();
+            text = text.Trim(CONSTANTS.charsToTrimLineForpossition);
             if (text.Contains(" "))
             {
                 text = text.Substring(0, text.IndexOf(" "));
             }
-            return text.Trim();
+            return text.Trim(CONSTANTS.charsToTrimLineForpossition);
         }
 
+        /// <summary>
+        /// Methode return next word in text, depends on prev parameter
+        /// </summary>
+        /// <param name="prev">Indicates word befor word which shoul by returned</param>
+        /// <param name="text">Text where looking for words</param>
+        /// <returns></returns>
         private string GetNextWordOfPhrase(string prev, string text)
         {
             text = text.Remove(0, text.IndexOf(prev));
-            text = text.Replace(prev, "");
+            if (text.Contains(prev) && !string.IsNullOrEmpty(prev))
+                text = text.Replace(prev, "");
             text = text.Trim();
             if (text.Contains(" "))
             {
                 text = text.Substring(0, text.IndexOf(" "));
             }
-            return text.Trim();
+            return text.Trim(CONSTANTS.charsToTrimLineForpossition);
         }
 
         /// <summary>
@@ -736,7 +770,7 @@ namespace OCR_BusinessLayer.Service
             {
                 text = text.Substring(text.LastIndexOf(" "));
             }
-            return text.Trim();
+            return text.Trim(CONSTANTS.charsToTrimLineForpossition);
         }
 
         /// <summary>
@@ -845,8 +879,8 @@ namespace OCR_BusinessLayer.Service
                     if (((w.Bounds.Left <= col.Left && w.Bounds.Right > col.Left) || w.Bounds.Left >= col.Left) && ((w.Bounds.Right >= col.Right && w.Bounds.Left < col.Right) || w.Bounds.Right <= col.Right))
 
                     {
-                        if (col.Left > w.Bounds.Right)
-                            col.Left = w.Bounds.Right;
+                        if (col.Left > w.Bounds.Left)
+                            col.Left = w.Bounds.Left;
 
                         a += w.Text + " ";
 
