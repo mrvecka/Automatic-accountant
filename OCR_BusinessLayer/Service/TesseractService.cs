@@ -65,21 +65,31 @@ namespace OCR_BusinessLayer.Service
         }
 
 
-        public bool CheckImageForPattern(FileToProcess file,List<PossitionOfWord> pos, bool checkPattern = false)
+        public bool CheckImageForPatternAndGetDataFromIt(FileToProcess file,List<PossitionOfWord> pos, IProgress<int> progress,out PreviewObject prew, bool checkPattern = false)
         {
             bool isPattern = true;
             PreviewObject p = new PreviewObject();
+            int step = 100 / pos.Count;
             using (engine = new TessBaseAPI(@".\tessdata", _lang, OcrEngineMode.TESSERACT_LSTM_COMBINED))
             {
 
                 _cvService = OpenCVImageService.GetInstance();
                 _cvService.PrepareImage(file.Path);
                 Mat image = _cvService.Rotated;
-                
-                
+
+                p.ListOfKeyPossitions = new List<PossitionOfWord>();
+                p.Lines = new List<TextLine>();
                 foreach (PossitionOfWord w in pos)
                 {
-                    OpenCvSharp.Rect rec = new Rect(w.KeyBounds.X, w.KeyBounds.Y, w.KeyBounds.Width, w.KeyBounds.Height);
+                    OpenCvSharp.Rect rec;
+                    if (checkPattern)
+                        rec = new Rect(w.KeyBounds.X, w.KeyBounds.Y, w.KeyBounds.Width, w.KeyBounds.Height);
+                    else
+                    {
+                        rec = new Rect(w.ValueBounds.X, w.ValueBounds.Y, w.ValueBounds.Width, w.ValueBounds.Height);
+                        progress.Report(step);
+                    }
+
                     rec.X -= CONSTANTS.PATTERN_CHECK_XY_PROXIMITY;
                     rec.Y -= CONSTANTS.PATTERN_CHECK_XY_PROXIMITY;
                     rec.Width += CONSTANTS.PATTERN_CHECK_WIDTHHEIGHT_PROXIMITY; //ak pozram ci je to patern tak potrebujem co najmensie
@@ -96,27 +106,31 @@ namespace OCR_BusinessLayer.Service
 
                     IterateFullPage(iterator, ref _textLines);
                     iterator.Dispose();
+                    if (checkPattern)
+                    {
+                        var s = Common.RemoveDiacritism(_textLines[0].Text.Trim(CONSTANTS.charsToTrimLineForpossition));
+                        if (!s.Equals(Common.RemoveDiacritism(w.Key)))
+                        {
 
-                    if (checkPattern && !_textLines[0].Text.Trim(CONSTANTS.charsToTrimLine).Equals(w.Key))
-                    {
-                        isPattern = false;
-                    }
-                    else if (!checkPattern)
-                    {
-                        w.Value = _textLines[0].Text;
+                            isPattern = false;
+                        }
                     }
                     else
                     {
-
+                        w.Value = _textLines[0].Text.Trim(CONSTANTS.charsToTrimLineForpossition);
+                        
                     }
+                    w.Confidence = GetConfForLine(_textLines[0]);
+                    p.ListOfKeyPossitions.Add(w);
+                    p.Lines.AddRange(_textLines);
                     _textLines.Clear();
                 }
+                p.Confidence = ((float)(engine.MeanTextConf) / 100).ToString("P2");
                 p.Img = OpenCvSharp.Extensions.BitmapConverter.ToBitmap(image);
-                p.Confidence = ((Double)(engine.MeanTextConf) / 100).ToString("P2");
-                p.Lines = _textLines;
                 p.Lang = _lang;
 
             }
+            prew = p;
             return isPattern;
         }
 
@@ -174,6 +188,19 @@ namespace OCR_BusinessLayer.Service
             {
                 dict.MakeObjectsFromLines(p,file,progress);
             }
+        }
+
+        private string GetConfForLine(TextLine line)
+        {
+            float conf = 0;
+            int count = 0;
+            foreach (var w in line.Words)
+            {
+                conf += w.Confidence;
+                count++;
+            }
+
+            return (conf / count).ToString("P2");
         }
 
     }

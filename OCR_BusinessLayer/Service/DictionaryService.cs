@@ -279,7 +279,7 @@ namespace OCR_BusinessLayer.Service
                     stringKeyValue = FindValueInColumn(line, stringKey, key.Key, ref saved);
 
                 if (!saved)
-                    SavePossitionToLists(key.Key, stringKey.Trim(CONSTANTS.charsToTrim), stringKeyValue.Trim(CONSTANTS.charsToTrim), line, line);
+                    SavePossitionToLists(key.Key, stringKey.Trim(CONSTANTS.charsToTrimLineForpossition), stringKeyValue.Trim(CONSTANTS.charsToTrimLineForpossition), line, line);
                 SaveData(ref keyFound, isColumn, type, key, data, stringKeyValue, ref lineText, firstCharIndex);
 
                 if (_pair.Value != "" && lookingForRight)
@@ -405,7 +405,7 @@ namespace OCR_BusinessLayer.Service
             }
 
 
-            pk.Confidence = conf / count;
+            pk.Confidence = (conf / count).ToString("P2");
             _p.ListOfKeyPossitions.Add(pk);
 
         }
@@ -575,12 +575,45 @@ namespace OCR_BusinessLayer.Service
             }
             else
             {
-                Word w = line.Words.Where(c => c.Text.Trim(CONSTANTS.charsToTrim).Equals(lastWord)).FirstOrDefault();
-                Word w2 = line.Words[line.Words.IndexOf(w) - 1];
-                if (!w2.Text.Trim(CONSTANTS.charsToTrim).Equals(firstWord))
-                {
-                    w2 = line.Words[line.Words.IndexOf(w2) - 1];
-                }
+                bool found = false;
+                var tmp = line.Words.Where(c => c.Text.Trim(CONSTANTS.charsToTrim).Equals(lastWord)).ToList();
+                Word w = tmp.FirstOrDefault();
+                Word w2 = line.Words[line.Words.IndexOf(w)];
+                var index = line.Words.IndexOf(w);
+                if (index != 0)                
+                    while (index >= 0)
+                    {
+                        w2 = line.Words[line.Words.IndexOf(w2) - 1];
+                        index--;
+                        if (w2.Text.Trim(CONSTANTS.charsToTrim).Equals(lastWord))
+                        {
+                            if (tmp.IndexOf(w) + 1 < tmp.Count())
+                            {
+                                w = tmp[tmp.IndexOf(w) + 1];
+                                w2 = line.Words[line.Words.IndexOf(w)];
+                                index = line.Words.IndexOf(w);
+                                continue;
+                            }
+                            else
+                                break;
+                        }
+                        if (w2.Text.Trim(CONSTANTS.charsToTrim).Equals(firstWord))
+                        {
+                            found = true;
+                            break;
+                        }
+                        if (!found && index == 0)
+                        {
+                            if (tmp.IndexOf(w) + 1 < tmp.Count())
+                            {
+                                w = tmp[tmp.IndexOf(w) + 1];
+                                w2 = line.Words[line.Words.IndexOf(w)];
+                                index = line.Words.IndexOf(w);
+                            }
+                            else
+                                break;
+                        }
+                    }
 
                 x1 = w2.Bounds.Left;
                 x2 = w.Bounds.Right;
@@ -594,7 +627,7 @@ namespace OCR_BusinessLayer.Service
                     res = GetWordsForColumn(new Column { Left = x1, Right = x2 }, t);
                     if (!string.IsNullOrWhiteSpace(res) || i ==2)
                     {
-                        SavePossitionToLists(key, foundKey.Trim(CONSTANTS.charsToTrim), res.Trim(CONSTANTS.charsToTrim), line, t,"", x1, x2);
+                        SavePossitionToLists(key, foundKey.Trim(CONSTANTS.charsToTrimLineForpossition), res.Trim(CONSTANTS.charsToTrimLineForpossition), line, t,"", x1, x2);
                         saved = true;
                         break;
                     }

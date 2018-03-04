@@ -25,6 +25,18 @@ namespace OCR_BusinessLayer
             }
             return text;
         }
+
+        public static string RemoveDiacritism(string Text)
+        {
+            string stringFormD = Text.Normalize(System.Text.NormalizationForm.FormD);
+            System.Text.StringBuilder retVal = new System.Text.StringBuilder();
+            for (int index = 0; index < stringFormD.Length; index++)
+            {
+                if (System.Globalization.CharUnicodeInfo.GetUnicodeCategory(stringFormD[index]) != System.Globalization.UnicodeCategory.NonSpacingMark)
+                    retVal.Append(stringFormD[index]);
+            }
+            return retVal.ToString().Normalize(System.Text.NormalizationForm.FormC);
+        }
         /// <summary>
         /// Overrides all existing keys
         /// </summary>

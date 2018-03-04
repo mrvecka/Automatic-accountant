@@ -302,7 +302,7 @@ namespace Bakalarska_praca
         //save pattern
         private void button1_Click(object sender, System.EventArgs e)
         {
-            //SavePatternClick();
+            SavePatternClick();
         }
         private void SavePatternClick()
         {
@@ -338,6 +338,9 @@ namespace Bakalarska_praca
             }
 
             db.Close();
+
+            MessageBox.Show("Pattern successfully saved", "Save pattern", MessageBoxButtons.OK);
+
 
 
         }

@@ -22,7 +22,7 @@ namespace OCR_BusinessLayer.Service
         }
 
         public async Task StartService()
-        { 
+        {
             foreach (FileToProcess s in _filesToProcess)
             {
                 TesseractService tess = new TesseractService(_lang);
@@ -36,18 +36,21 @@ namespace OCR_BusinessLayer.Service
                 });
                 await Task.Run(() =>
                 {
-                //var id = CheckForPattern(tess, s);
-                //if (id == -1)
-                //{
-                    PreviewObject p = tess.ProcessImage(s, progress);
+                    var id = CheckForPattern(tess, s);
+                    if (id == -1)
+                    {
+                        PreviewObject p = tess.ProcessImage(s, progress);
                         p.Path = s.Path;
                         _previewObjects.Add(p);
-                    //}
-                    //else
-                    //{
-                    //    //nasiel som pattern tak idem podla neho
-                    //    tess.CheckImageForPattern(s, GetKeysPossitions(id));
-                    //}
+                    }
+                    else
+                    {
+                        PreviewObject prew;
+                        //nasiel som pattern tak idem podla neho
+                        tess.CheckImageForPatternAndGetDataFromIt(s, GetKeysPossitions(id),progress,out prew);
+                        prew.Path = s.Path;
+                        _previewObjects.Add(prew);
+                    }
 
 
 
@@ -58,11 +61,11 @@ namespace OCR_BusinessLayer.Service
             }
         }
 
-        private int CheckForPattern(TesseractService tess,FileToProcess s)
+        private int CheckForPattern(TesseractService tess, FileToProcess s)
         {
             Database db = new Database();
             string SQL = "SELECT Pattern_ID FROM OCR_2018.dbo.T003_Pattern";
-            SqlDataReader data = (SqlDataReader)db.Execute(SQL,Operation.SELECT);
+            SqlDataReader data = (SqlDataReader)db.Execute(SQL, Operation.SELECT);
             List<int> patterns = new List<int>();
             while (data.Read())
             {
@@ -71,7 +74,8 @@ namespace OCR_BusinessLayer.Service
             data.Close();
             foreach (int id in patterns)
             {
-                if (tess.CheckImageForPattern(s, GetKeysPossitions(id,db,true),true))
+                PreviewObject p;
+                if (tess.CheckImageForPatternAndGetDataFromIt(s, GetKeysPossitions(id, db, true),null,out p, true))
                 {
                     return id;
                 }
@@ -80,7 +84,7 @@ namespace OCR_BusinessLayer.Service
             return -1;
 
         }
-        private List<PossitionOfWord> GetKeysPossitions(int id,Database db = null,bool test = false)
+        private List<PossitionOfWord> GetKeysPossitions(int id, Database db = null, bool test = false)
         {
             List<PossitionOfWord> list = new List<PossitionOfWord>();
             if (db == null)
@@ -90,7 +94,7 @@ namespace OCR_BusinessLayer.Service
             string SQL;
             if (test)
             {
-                SQL = $"SELECT TOP 5 * FROM OCR_2018.dbo.T004_Possitions WHERE Pattern_ID = {id} AND Word_Key NOT IN ('Name','Street','PSCCity','State')";
+                SQL = $"SELECT TOP 5 * FROM OCR_2018.dbo.T004_Possitions WHERE Pattern_ID = {id} AND Word_Key NOT IN ('Name','Street','PSCCity','State') AND K_X != 0 AND K_Y != 0";
             }
             else
             {

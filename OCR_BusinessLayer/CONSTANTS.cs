@@ -10,7 +10,7 @@
         public static int MAX_LENGTH_OF_SQL_STRING = 100;
         public static char[] charsToTrim = { ':', '/',' ' };
         public static char[] charsToTrimLine = { ' ','\'', ';', '/', '\\', '|', '\n', ')', '(', '!', '&', '=', '´', '%', 'ˇ', '+', '“', '$', '?','!'};
-        public static char[] charsToTrimLineForpossition = { ' ', '\'', ';', '/', '\\', '|', '\n', ')', '(', '!', '&', '=', '´', '%', 'ˇ', '+', '“', '$', '?', '!','.',':' };
+        public static char[] charsToTrimLineForpossition = { ' ', '\'', ';', '/', '\\', '|', '\n', ')', '(', '!', '&', '=', '´', '%', 'ˇ', '+', '“', '$', '?', '!','.','-', '_', ':' };
         public static char[] charsToTrimAccountNumber = { ' ', '\'', ';', '\\', '|', '\n', ')', '(', '!', '&', '=', '´', '%', 'ˇ', '+', '“', '$', '?' };
         public static string[] filter = new string[] { "jpg", "jpeg", "png", "gif", "tiff", "bmp", "pdf" };
         public static string[] trainedData = new string[] { "traineddata"};
