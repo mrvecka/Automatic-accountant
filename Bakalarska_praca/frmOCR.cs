@@ -30,7 +30,8 @@ namespace Bakalarska_praca
 
         private void button1_Click(object sender, EventArgs e)
         {
-
+            _filesToProcess.Clear();
+            pnlMain.Controls.Clear();
             using (var fbd = new FolderBrowserDialog())
             {
                 DialogResult result = fbd.ShowDialog();

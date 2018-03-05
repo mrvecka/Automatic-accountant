@@ -11,7 +11,7 @@ namespace OCR_BusinessLayer.Service
     {
         private List<FileToProcess> _filesToProcess;
         private List<PreviewObject> _previewObjects;
-        private string _lang = "";
+        private string _lang = string.Empty;
         public List<PreviewObject> Preview { get { return _previewObjects; } }
 
         public ThreadService(List<FileToProcess> filesTorocess, string lang)

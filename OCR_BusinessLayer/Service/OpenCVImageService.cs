@@ -15,8 +15,7 @@ namespace OCR_BusinessLayer.Service
         private Bitmap cBmp;
         private static List<string> filesToDelete;
         private int countOfLines = 60;
-        private int dpi = 800;
-        private int dpiContrast = 450;
+        private int dpi = 300;
         private double cAlphaStart = -20;
         private double cAlphaStep = 0.2;
         private int cSteps = 40 * 5;
@@ -83,7 +82,7 @@ namespace OCR_BusinessLayer.Service
             //{
             //    RotateImage(a, ref a, 180, 1);
             //}
-    
+
             //using (var window = new Window("isupsidedown", image: a, flags: WindowMode.AutoSize))
             //{
             //    Cv2.WaitKey();
@@ -132,7 +131,7 @@ namespace OCR_BusinessLayer.Service
             //' Top 20 of the detected lines in the image.
             hl = GetTop(countOfLines);
             //' Average angle of the lines
-            for (i = 0; i < countOfLines-1; i++)
+            for (i = 0; i < countOfLines - 1; i++)
             {
                 sum += hl[i].Alpha;
                 count += 1;
@@ -242,8 +241,8 @@ namespace OCR_BusinessLayer.Service
                 cSinA[i] = Math.Sin(angle);
                 cCosA[i] = Math.Cos(angle);
             }
-         //' Range of d
-         cDMin = -cBmp.Width;
+            //' Range of d
+            cDMin = -cBmp.Width;
             cDCount = (int)(2 * (cBmp.Width + cBmp.Height) / cDStep);
             cHMatrix = new int[cDCount * cSteps];
         }
@@ -267,7 +266,7 @@ namespace OCR_BusinessLayer.Service
         private string CreateImageFromPDF(string path)
         {
             PdfFocus f = new PdfFocus();
-            var s = path.Remove(path.LastIndexOf('.')-1);
+            var s = path.Remove(path.LastIndexOf('.') - 1);
             string finalPath = s + ".png";
             var images = new List<Image>();
             f.OpenPdf(path);
@@ -279,27 +278,22 @@ namespace OCR_BusinessLayer.Service
                 for (int page = 1; page <= f.PageCount; page++)
                 {
                     var pat = s + page + ".png";
-                    f.ToImage(pat, page);                 
+                    f.ToImage(pat, page);
                     images.Add(Bitmap.FromFile(pat));
                     filesToDelete.Add(pat);
                 }
             }
             filesToDelete.Add(finalPath);
-            MergeImages(images,finalPath);
+            MergeImages(images, finalPath);
             return finalPath;
         }
 
-        private void MergeImages(List<Image> images,string finalPath)
+        private void MergeImages(List<Image> images, string finalPath)
         {
 
-            var width = 0;
-            var height = 0;
-
-            foreach (var image in images)
-            {
-                width = dpi;
-                height += dpi*2;
-            }
+            var width = images[0].Width; ;
+            var height = images[0].Height * images.Count;
+            
 
             var bitmap = new Bitmap(width, height);
             using (var g = Graphics.FromImage(bitmap))
@@ -308,8 +302,8 @@ namespace OCR_BusinessLayer.Service
                 foreach (var image in images)
                 {
                     g.DrawImage(image, 0, localHeight);
-                    localHeight += dpi*2- dpiContrast;
-                    image.Dispose();                   
+                    localHeight +=image.Height;
+                    image.Dispose();
                 }
             }
             bitmap.Save(finalPath);
@@ -320,7 +314,12 @@ namespace OCR_BusinessLayer.Service
             if (filesToDelete != null)
                 foreach (string file in filesToDelete)
                 {
-                    File.Delete(file);
+                    try
+                    {
+                        File.Delete(file);
+                    }
+                    catch (Exception e)
+                    { }
                 }
         }
 

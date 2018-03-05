@@ -19,6 +19,16 @@ namespace OCR_BusinessLayer.Classes
         public bool Completed { get; set; } = false;
         public bool Blocked { get; set; } = false; // ak sa stlpec nachadza nad inym tak je true
 
+        public Column(){}
 
+        public Column(string t,int l,int r,int bot,int top)
+        {
+            Text = t;
+            Left = l;
+            Right = r;
+            Bottom = bot;
+            Top = top;
+            Words = new List<string>();
+        }
     }
 }

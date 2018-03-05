@@ -16,7 +16,7 @@ namespace OCR_BusinessLayer
             {
                 if (text.Contains(c))
                 {
-                    text = text.Replace(c.ToString(),"");
+                    text = text.Replace(c.ToString(), string.Empty);
                 }
             }
             if (text.Length > CONSTANTS.MAX_LENGTH_OF_SQL_STRING)

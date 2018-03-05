@@ -62,12 +62,18 @@ namespace Bakalarska_praca
                 txtPartConfidence.Visible = false;
                 lblLanguage.Visible = false;
                 txtLang.Visible = false;
+
             }
         }
 
         private void FillListView(PreviewObject prew)
         {
             BindingList<PossitionOfWord> bindingList = new BindingList<PossitionOfWord>(prew.ListOfKeyPossitions);
+            foreach (var col in prew.ListOfKeyColumn)
+            {
+                var rec = new Rectangle(col.Left,col.Top,col.Right-col.Left,col.Bottom-col.Top);
+                bindingList.Add(new PossitionOfWord(col.Text,rec,string.Empty,rec));
+            }
             dataGridValues.AutoGenerateColumns = false;
             dataGridValues.DataSource = bindingList;
         }
@@ -106,19 +112,26 @@ namespace Bakalarska_praca
             if (key != null)
             {
                 ClearImageAndText();
-                System.Drawing.Image img = (System.Drawing.Image)_newImage.Clone();            
+                System.Drawing.Image img = (System.Drawing.Image)_newImage.Clone();
                 _newGraphics = System.Drawing.Graphics.FromImage(img);
 
                 _p.ListOfKeyPossitions.ForEach(c => c.IsActive = false);
                 key.IsActive = true;
-                _newGraphics.DrawRectangle(_myPenword, key.KeyBounds);
-                _newGraphics.DrawRectangle(_myPenword, key.ValueBounds);
+                if (key.KeyBounds.Equals(key.ValueBounds))
+                {
+                    _newGraphics.DrawRectangle(_myPenword, key.ValueBounds);
+                }
+                else
+                {
+                    _newGraphics.DrawRectangle(_myPenword, key.KeyBounds);
+                    _newGraphics.DrawRectangle(_myPenword, key.ValueBounds);
+                }
 
                 pictureBox1.Image = img;
             }
         }
         private void ClearImageAndText()
-        {            
+        {
             pictureBox1.Image = _newImage;
             pictureBox1.Refresh();
 
@@ -203,7 +216,7 @@ namespace Bakalarska_praca
 
 
                         }
-                    }                
+                    }
                 }
             }
             pictureBox1.Invalidate();
@@ -237,14 +250,14 @@ namespace Bakalarska_praca
                 {
                     _newPositions.ValueBounds = _newRect;
                 }
-                    
+
                 _countOfNewRect--;
 
                 if (_countOfNewRect == 0)
                 {
                     _newPositions.Key = cmbKey.SelectedValue.ToString();
-                    _newPositions.Value = "";
-                    
+                    _newPositions.Value = string.Empty;
+
                     _p.ListOfKeyPossitions.Add(_newPositions);
                     AddRectangle(_newPositions);
                     _newPositions = null;
@@ -261,7 +274,7 @@ namespace Bakalarska_praca
         }
         private void pictureBox1_Paint(object sender, PaintEventArgs e)
         {
-            e.Graphics.DrawRectangle(new Pen(Color.Blue, 2f), _newRect);            
+            e.Graphics.DrawRectangle(new Pen(Color.Blue, 2f), _newRect);
             if (_oldRect != null)
             {
                 e.Graphics.DrawRectangle(new Pen(Color.White, 2f), _oldRect);
@@ -280,7 +293,7 @@ namespace Bakalarska_praca
                     return p.ValueBounds;
                 }
             }
-            return new Rectangle(0,0,0,0);
+            return new Rectangle(0, 0, 0, 0);
         }
 
         private void setRectangle()
@@ -321,7 +334,7 @@ namespace Bakalarska_praca
             int id = 0;
             while (o.Read())
             {
-                id = (int)o[0];            
+                id = (int)o[0];
             }
             o.Close();
             int rows = 0;
@@ -330,7 +343,7 @@ namespace Bakalarska_praca
                 SQL = "INSERT INTO OCR_2018.dbo.T004_Possitions(Pattern_ID,Word_Key,Word_Value,K_X,K_Y,K_Width,K_Height,V_X,V_Y,V_Width,V_Height)" +
                              $" Values({id},'{Common.SQLString(p.Key)}','{Common.SQLString(p.Value)}',{p.KeyBounds.X},{p.KeyBounds.Y},{p.KeyBounds.Width},{p.KeyBounds.Height}," +
                                                        $"{p.ValueBounds.X},{p.ValueBounds.Y},{p.ValueBounds.Width},{p.ValueBounds.Height});";
-                object d = db.Execute(SQL,Operation.INSERT);
+                object d = db.Execute(SQL, Operation.INSERT);
                 if (d.GetType() != typeof(SqlDataReader))
                 {
                     rows += (int)d;
@@ -386,7 +399,7 @@ namespace Bakalarska_praca
                     txtPathPattern.Text = fbd.FileName;
                 }
             }
-            _files = FileService.FindFiles(txtPathPattern.Text,CONSTANTS.filter);
+            _files = FileService.FindFiles(txtPathPattern.Text, CONSTANTS.filter);
             if (_files == null)
             {
                 MessageBox.Show("Unsupported file format!!!", "Invalid format", MessageBoxButtons.OK);
@@ -399,6 +412,7 @@ namespace Bakalarska_praca
             _newImage = _cvService.bmp;
             _p = new PreviewObject();
             _p.ListOfKeyPossitions = new List<PossitionOfWord>();
+            _p.ListOfKeyColumn = new List<Column>();
             FillCombo();
         }
 

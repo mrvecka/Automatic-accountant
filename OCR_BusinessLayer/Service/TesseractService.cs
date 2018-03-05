@@ -70,6 +70,7 @@ namespace OCR_BusinessLayer.Service
             bool isPattern = true;
             PreviewObject p = new PreviewObject();
             int step = 100 / pos.Count;
+            p.ListOfKeyColumn = new List<Column>();
             using (engine = new TessBaseAPI(@".\tessdata", _lang, OcrEngineMode.TESSERACT_LSTM_COMBINED))
             {
 
@@ -87,6 +88,9 @@ namespace OCR_BusinessLayer.Service
                     else
                     {
                         rec = new Rect(w.ValueBounds.X, w.ValueBounds.Y, w.ValueBounds.Width, w.ValueBounds.Height);
+                        if (w.KeyBounds.Equals(w.ValueBounds))
+                            p.ListOfKeyColumn.Add(new Column(w.Value,w.ValueBounds.Left,w.ValueBounds.Right,w.ValueBounds.Bottom,w.ValueBounds.Top));
+
                         progress.Report(step);
                     }
 
@@ -95,7 +99,7 @@ namespace OCR_BusinessLayer.Service
                     rec.Width += CONSTANTS.PATTERN_CHECK_WIDTHHEIGHT_PROXIMITY; //ak pozram ci je to patern tak potrebujem co najmensie
                     rec.Height += CONSTANTS.PATTERN_CHECK_WIDTHHEIGHT_PROXIMITY;
                     
-                    Mat im = new Mat(image, rec);
+                    Mat im = new Mat(image, rec);//zistit maximalne mnozstvo dpi
                     
                     engine.InitForAnalysePage();
                     engine.Init(null, _lang);
@@ -139,7 +143,7 @@ namespace OCR_BusinessLayer.Service
             int left, top, right, bottom;
 
 
-            StringBuilder ss = new StringBuilder("");
+            StringBuilder ss = new StringBuilder(string.Empty);
             PageIteratorLevel level = PageIteratorLevel.RIL_TEXTLINE;
             string t;
             
@@ -153,7 +157,7 @@ namespace OCR_BusinessLayer.Service
 
                 l.Bounds = new Rectangle(left, top, right - left, bottom - top);
                     
-                l.Text = t ?? "";
+                l.Text = t ?? string.Empty;
 
                 
                 level = PageIteratorLevel.RIL_WORD;
@@ -200,7 +204,7 @@ namespace OCR_BusinessLayer.Service
                 count++;
             }
 
-            return (conf / count).ToString("P2");
+            return ((float)(conf / count)).ToString("P2");
         }
 
     }

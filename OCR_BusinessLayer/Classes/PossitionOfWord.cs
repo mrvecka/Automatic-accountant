@@ -15,8 +15,16 @@ namespace OCR_BusinessLayer.Classes
         public string Value { get; set; }
         public Rectangle ValueBounds { get; set; }
         public bool IsActive { get; set; } = false;
-        public string Confidence { get; set; }
+        public string Confidence { get; set; } = "0.00";
 
 
+        public PossitionOfWord(string k,Rectangle KB,string val,Rectangle VB)
+        {
+            Key = k;
+            KeyBounds = KB;
+            Value = val;
+            ValueBounds = VB;
+        }
+        public PossitionOfWord() { }
     }
 }

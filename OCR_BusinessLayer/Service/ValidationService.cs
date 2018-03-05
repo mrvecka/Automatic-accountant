@@ -75,7 +75,7 @@ namespace OCR_BusinessLayer.Service
 
         private static void Validate_ValiabilSymbol( Evidence e)
         {
-            string symbol = "";
+            string symbol = string.Empty;
             if (e.VariabilSymbol != null)
             {
                 symbol = e.VariabilSymbol.Trim(CONSTANTS.charsToTrimLine);
@@ -88,7 +88,7 @@ namespace OCR_BusinessLayer.Service
 
         private static void Validate_KonstSymbol( Evidence e)
         {
-            string symbol = "";
+            string symbol = string.Empty;
             if (e.KonstSymbol != null)
             {
                 symbol = e.KonstSymbol.Trim(CONSTANTS.charsToTrimLine);
@@ -103,7 +103,7 @@ namespace OCR_BusinessLayer.Service
         }
         private static void Validate_EvidenceNumber( Evidence e)
         {
-            string symbol = "";
+            string symbol = string.Empty;
             if (e.EvidenceNumber != null)
             {
                 symbol = e.EvidenceNumber.Trim(CONSTANTS.charsToTrimLine);
@@ -129,7 +129,7 @@ namespace OCR_BusinessLayer.Service
 
         private static void Validate_OrderNumber( Evidence e)
         {
-            string symbol = "";
+            string symbol = string.Empty;
             if (e.OrderNumber != null)
             {
                 symbol = e.OrderNumber.Trim(CONSTANTS.charsToTrimLine);
@@ -141,7 +141,7 @@ namespace OCR_BusinessLayer.Service
 
         private static void Validate_DeliveryNumber( Evidence e)
         {
-            string symbol = "";
+            string symbol = string.Empty;
             if (e.DeliveryNumber != null)
             {
                 symbol = e.DeliveryNumber.Trim(CONSTANTS.charsToTrimLine);
@@ -153,7 +153,7 @@ namespace OCR_BusinessLayer.Service
 
         private static void Validate_ClientNumber( Evidence e)
         {
-            string symbol = "";
+            string symbol = string.Empty;
             if (e.ClientNumber != null)
             {
                 symbol = e.ClientNumber.Trim(CONSTANTS.charsToTrimLine);
@@ -165,7 +165,7 @@ namespace OCR_BusinessLayer.Service
 
         private static void Validate_Transpport( Evidence e)
         {
-            string symbol = "";
+            string symbol = string.Empty;
             if (e.Transport != null)
             {
                 symbol = e.Transport.Trim(CONSTANTS.charsToTrimLine);
@@ -177,7 +177,7 @@ namespace OCR_BusinessLayer.Service
 
         private static void Validate_PlaceOfSupply( Evidence e)
         {
-            string symbol = "";
+            string symbol = string.Empty;
             if (e.PlaceOfSupply != null)
             {
                 symbol = e.PlaceOfSupply.Trim(CONSTANTS.charsToTrimLine);
@@ -189,7 +189,7 @@ namespace OCR_BusinessLayer.Service
 
         private static void Validate_PlaceOfDelivery( Evidence e)
         {
-            string symbol = "";
+            string symbol = string.Empty;
             if (e.PlaceOfDelivery != null)
             {
                 symbol = e.PlaceOfDelivery.Trim(CONSTANTS.charsToTrimLine);
@@ -201,7 +201,7 @@ namespace OCR_BusinessLayer.Service
 
         private static void Validate_RefundMethode( Evidence e)
         {
-            string symbol = "";
+            string symbol = string.Empty;
             if (e.RefundMethode != null)
             {
                 symbol = e.RefundMethode.Trim(CONSTANTS.charsToTrimLine);
@@ -212,7 +212,7 @@ namespace OCR_BusinessLayer.Service
         }
         private static void Validate_CreatorName( Evidence e)
         {
-            string symbol = "";
+            string symbol = string.Empty;
             if (e.CreatorName != null)
             {
                 symbol = e.CreatorName.Trim(CONSTANTS.charsToTrimLine);
@@ -223,7 +223,7 @@ namespace OCR_BusinessLayer.Service
         }
         private static void Validate_DocumentCreateDate( Evidence e)
         {
-            string symbol = "";
+            string symbol = string.Empty;
             if (e.DocumentCreateDate != null)
             {
                 symbol = e.DocumentCreateDate.Trim(CONSTANTS.charsToTrimLine);
@@ -237,7 +237,7 @@ namespace OCR_BusinessLayer.Service
         }
         private static void Validate_DateOfTax( Evidence e)
         {
-            string symbol = "";
+            string symbol = string.Empty;
             if (e.DateOfTax != null)
             {
                 symbol = e.DateOfTax.Trim(CONSTANTS.charsToTrimLine);
@@ -251,7 +251,7 @@ namespace OCR_BusinessLayer.Service
         }
         private static void Validate_DateOfPayment( Evidence e)
         {
-            string symbol = "";
+            string symbol = string.Empty;
             if (e.DateOfPayment != null)
             {
                 symbol = e.DateOfPayment.Trim(CONSTANTS.charsToTrimLine);
@@ -265,7 +265,7 @@ namespace OCR_BusinessLayer.Service
         }
         private static void Validate_DateOfCreate( Evidence e)
         {
-            string symbol = "";
+            string symbol = string.Empty;
             if (e.DateOfCreate != null)
             {
                 symbol = e.DateOfCreate.Trim(CONSTANTS.charsToTrimLine);
@@ -279,7 +279,7 @@ namespace OCR_BusinessLayer.Service
         }
         private static void Validate_DateOfDelivery( Evidence e)
         {
-            string symbol = "";
+            string symbol = string.Empty;
             if (e.DateOfDelivery != null)
             {
                 symbol = e.DateOfDelivery.Trim(CONSTANTS.charsToTrimLine);
@@ -293,7 +293,7 @@ namespace OCR_BusinessLayer.Service
         }
         private static void Validate_DateOfOrder( Evidence e)
         {
-            string symbol = "";
+            string symbol = string.Empty;
             if (e.DateOfOrder != null)
             {
                 symbol = e.DateOfOrder.Trim(CONSTANTS.charsToTrimLine);
@@ -314,7 +314,7 @@ namespace OCR_BusinessLayer.Service
 
         private static void Validate_Name( Client c)
         {
-            string symbol = "";
+            string symbol = string.Empty;
             if (c.Name != null)
             {
                 symbol = c.Name.Trim(CONSTANTS.charsToTrimLine);
@@ -324,7 +324,7 @@ namespace OCR_BusinessLayer.Service
         }
         private static void Validate_Street( Client c)
         {
-            string symbol = "";
+            string symbol = string.Empty;
             if (c.Street != null)
             {
                 symbol = c.Street.Trim(CONSTANTS.charsToTrimLine);
@@ -333,7 +333,7 @@ namespace OCR_BusinessLayer.Service
         }
         private static void Validate_PSC( Client c)
         {
-            string symbol = "";
+            string symbol = string.Empty;
             if (c.PSCCity != null)
             {
                 symbol = c.PSCCity.Trim(CONSTANTS.charsToTrimLine);
@@ -342,7 +342,7 @@ namespace OCR_BusinessLayer.Service
         }
         private static void Validate_State( Client c)
         {
-            string symbol = "";
+            string symbol = string.Empty;
             if (c.State != null)
             {
                 symbol = c.State.Trim(CONSTANTS.charsToTrimLine);
@@ -352,7 +352,7 @@ namespace OCR_BusinessLayer.Service
 
         private static void Validate_ICO(Client c)
         {
-            string symbol = "";
+            string symbol = string.Empty;
             if (c.ICO != null)
             {
                 symbol = c.ICO.Trim(CONSTANTS.charsToTrimLine);
@@ -363,7 +363,7 @@ namespace OCR_BusinessLayer.Service
 
         private static void Validate_DIC( Client c)
         {
-            string symbol = "";
+            string symbol = string.Empty;
             if (c.DIC != null)
             {
                 symbol = c.DIC.Trim(CONSTANTS.charsToTrimLine);
@@ -374,7 +374,7 @@ namespace OCR_BusinessLayer.Service
 
         private static void Validate_ICDPH( Client c)
         {
-            string symbol = "";
+            string symbol = string.Empty;
             int countOfLetters = 0;
             if (c.ICDPH != null)
             {
@@ -391,12 +391,12 @@ namespace OCR_BusinessLayer.Service
                     }
                     else
                     {
-                        symbol = symbol.Replace(symbol[i],' ');
+                        symbol = symbol.Remove(i, 1);
                     }
                 }
                 if (countOfLetters > 2)
                 {
-                    symbol = "";
+                    symbol = string.Empty;
                 }
 
             }
@@ -406,7 +406,7 @@ namespace OCR_BusinessLayer.Service
         private static void Validate_Phone( Client c)
         {
            
-            string symbol = "";
+            string symbol = string.Empty;
             if (c.Phone != null)
             {
                 symbol = c.Phone.Trim(CONSTANTS.charsToTrimLine);
@@ -427,7 +427,7 @@ namespace OCR_BusinessLayer.Service
         private static void Validate_Email( Client c)
         {
 
-            string symbol = "";
+            string symbol = string.Empty;
             if (c.Email != null)
             {
                 symbol = c.Email.Trim(CONSTANTS.charsToTrimLine);
@@ -448,7 +448,7 @@ namespace OCR_BusinessLayer.Service
         private static void Validate_Transport( Client c)
         {
 
-            string symbol = "";
+            string symbol = string.Empty;
             if (c.Transport != null)
             {
                 symbol = c.Transport.Trim(CONSTANTS.charsToTrimLine);
@@ -461,7 +461,7 @@ namespace OCR_BusinessLayer.Service
 
         private static void Validate_Bank( Client c)
         {
-            string symbol = "";
+            string symbol = string.Empty;
             if (c.Bank != null)
             {
                 symbol = c.Bank.Trim(CONSTANTS.charsToTrimLine);
@@ -473,7 +473,7 @@ namespace OCR_BusinessLayer.Service
 
         private static void Validate_AccountNumber( Client c)
         {
-            string symbol = "";
+            string symbol = string.Empty;
             if (c.AccountNumber != null)
             {
                 symbol = c.AccountNumber.Trim(CONSTANTS.charsToTrimAccountNumber);
@@ -500,7 +500,7 @@ namespace OCR_BusinessLayer.Service
         }
         private static void Validate_BankCode( Client c)
         {
-            string symbol = "";
+            string symbol = string.Empty;
             if (c.BankCode != null)
             {
                 symbol = c.BankCode.Trim(CONSTANTS.charsToTrimAccountNumber);
@@ -512,7 +512,7 @@ namespace OCR_BusinessLayer.Service
 
         private static void Validate_IBAN( Client c)
         {
-            string symbol = "";
+            string symbol = string.Empty;
             int countOfLetters = 0;
             if (c.IBAN != null)
             {
@@ -529,12 +529,12 @@ namespace OCR_BusinessLayer.Service
                     }
                     else
                     {
-                        symbol = symbol.Replace(symbol[i], ' ');
+                        symbol = symbol.Remove(i, 1);
                     }
                 }
                 if (countOfLetters > 2)
                 {
-                    symbol = "";
+                    symbol = string.Empty;
                 }
 
             }
@@ -543,7 +543,7 @@ namespace OCR_BusinessLayer.Service
 
         private static void Validate_SWIFT( Client c)
         {
-            string symbol = "";
+            string symbol = string.Empty;
             if (c.SWIFT != null)
             {
                 symbol = c.SWIFT.Trim(CONSTANTS.charsToTrimAccountNumber);
@@ -555,7 +555,7 @@ namespace OCR_BusinessLayer.Service
 
         private static void Validate_Web( Client c)
         {
-            string symbol = "";
+            string symbol = string.Empty;
             if (c.Web != null)
             {
                 symbol = c.Web.Trim(CONSTANTS.charsToTrimAccountNumber);
@@ -593,7 +593,7 @@ namespace OCR_BusinessLayer.Service
                     }
                 }
             }
-            return symbol;
+            return symbol.Trim();
         }
 
 
@@ -612,7 +612,7 @@ namespace OCR_BusinessLayer.Service
                     i--;
                 }
             }
-            return symbol;
+            return symbol.Trim();
         }
 
         private static string LettersSpacesOnly(string symbol)
@@ -629,7 +629,7 @@ namespace OCR_BusinessLayer.Service
                     i--;
                 }
             }
-            return symbol;
+            return symbol.Trim();
         }
 
         private static string LettersDotsOnly(string symbol)
@@ -646,7 +646,7 @@ namespace OCR_BusinessLayer.Service
                     i--;
                 }
             }
-            return symbol;
+            return symbol.Trim();
         }
 
         private static string LettersSpacesDotsOnly(string symbol)
@@ -663,13 +663,13 @@ namespace OCR_BusinessLayer.Service
                     i--;
                 }
             }
-            return symbol;
+            return symbol.Trim();
         }
 
 
         private static string ValidateDate(string symbol)
         {
-            string date = "";
+            string date = string.Empty;
             //120314
             // 12032014 or 12.03.14 or 12 03 14
             //12.03. 14
@@ -678,13 +678,13 @@ namespace OCR_BusinessLayer.Service
 
             //day
             int index = symbol.IndexOfAny(numbersOnly.ToArray());
-            var s = "";
+            var s = string.Empty;
             if (index != -1)
             {
                 s = symbol.Substring(index, 2);
                 date += s;
                 date += ".";
-                symbol = symbol.Replace(s, "");
+                symbol = symbol.Replace(s, string.Empty);
             }
 
             // month
@@ -694,7 +694,7 @@ namespace OCR_BusinessLayer.Service
                 s = symbol.Substring(index, 2);
                 date += s;
                 date += ". ";
-                symbol = symbol.Replace(s, "");
+                symbol = symbol.Replace(s, string.Empty);
             }
 
             //year
