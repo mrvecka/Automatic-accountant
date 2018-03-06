@@ -1,8 +1,11 @@
-﻿using OpenCvSharp;
+﻿using Ghostscript.NET;
+using Ghostscript.NET.Rasterizer;
+using OpenCvSharp;
 using SautinSoft;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 
 namespace OCR_BusinessLayer.Service
@@ -45,13 +48,13 @@ namespace OCR_BusinessLayer.Service
         {
             if (path.Substring(path.LastIndexOf('.') + 1).Equals("pdf"))
             {
-                path = CreateImageFromPDF(path);
-                _original = Cv2.ImRead(path);
+                path = CreatePicturesFromPdf(path);
+                if (path != string.Empty)
+                {
+                    _original = Cv2.ImRead(path);
 
-                Rotated = _original;
-                bmp = OpenCvSharp.Extensions.BitmapConverter.ToBitmap(Rotated);
-
-
+                    Rotated = _original;
+                }
                 return;
             }
             _original = Cv2.ImRead(path);
@@ -263,37 +266,62 @@ namespace OCR_BusinessLayer.Service
 
         }
 
-        private string CreateImageFromPDF(string path)
+        public string CreatePicturesFromPdf(string filePath)
         {
-            PdfFocus f = new PdfFocus();
-            var s = path.Remove(path.LastIndexOf('.') - 1);
-            string finalPath = s + ".png";
-            var images = new List<Image>();
-            f.OpenPdf(path);
-            if (f.PageCount > 0)
-            {
-                f.ImageOptions.Dpi = dpi;
-                f.ImageOptions.ImageFormat = System.Drawing.Imaging.ImageFormat.Png;
+            List<Image> images = new List<Image>();
+            GhostscriptVersionInfo gvi = null;
+            GhostscriptRasterizer _rasterizer = null;
+            var finalPath = filePath.Remove(filePath.LastIndexOf('.') - 1);
 
-                for (int page = 1; page <= f.PageCount; page++)
-                {
-                    var pat = s + page + ".png";
-                    f.ToImage(pat, page);
-                    images.Add(Bitmap.FromFile(pat));
-                    filesToDelete.Add(pat);
-                }
+            if (Environment.Is64BitProcess)
+            {
+                gvi = new GhostscriptVersionInfo(System.IO.Path.GetFullPath($@"{System.AppDomain.CurrentDomain.BaseDirectory}/libpvt/gsdll64.dll"));
             }
-            filesToDelete.Add(finalPath);
-            MergeImages(images, finalPath);
+            else
+            {
+                gvi = new GhostscriptVersionInfo(System.IO.Path.GetFullPath($@"{System.AppDomain.CurrentDomain.BaseDirectory}/libpvt/gsdll32.dll"));
+            }
+
+            try
+            {
+                int desired_x_dpi = 200;
+                int desired_y_dpi = 200;
+
+                _rasterizer = new GhostscriptRasterizer();
+                _rasterizer.Open(filePath, gvi, true);
+
+                for (int pageNumber = 1; pageNumber <= _rasterizer.PageCount; pageNumber++)
+                {
+                    string pageFilePath = finalPath+ "Page" + pageNumber.ToString("000") + ".png";
+
+                    Image img = _rasterizer.GetPage(desired_x_dpi, desired_y_dpi, pageNumber);
+                    images.Add(img);
+
+                }
+                _rasterizer.Close();
+                finalPath = finalPath + ".png";
+                MergeImages(images,finalPath);
+            }
+            catch (Exception ex)
+            {
+                finalPath = string.Empty;
+                if (_rasterizer != null)
+                    _rasterizer.Close();
+                string inner = ex.InnerException != null ? ex.InnerException.ToString() : null;
+
+
+            }
+
             return finalPath;
         }
+
 
         private void MergeImages(List<Image> images, string finalPath)
         {
 
             var width = images[0].Width; ;
             var height = images[0].Height * images.Count;
-            
+
 
             var bitmap = new Bitmap(width, height);
             using (var g = Graphics.FromImage(bitmap))
@@ -302,7 +330,7 @@ namespace OCR_BusinessLayer.Service
                 foreach (var image in images)
                 {
                     g.DrawImage(image, 0, localHeight);
-                    localHeight +=image.Height;
+                    localHeight += image.Height;
                     image.Dispose();
                 }
             }

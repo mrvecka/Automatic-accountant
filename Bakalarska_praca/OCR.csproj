@@ -181,6 +181,12 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="libPvt\gsdll32.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="libPvt\gsdll64.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="libPvt\x64\pvt.cppan.demo.danbloomberg.leptonica-1.74.4.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

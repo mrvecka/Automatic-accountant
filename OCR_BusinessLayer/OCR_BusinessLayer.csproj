@@ -24,6 +24,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -35,6 +36,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Ghostscript.NET, Version=1.2.1.0, Culture=neutral, PublicKeyToken=f85051de34525b59, processorArchitecture=MSIL">
+      <HintPath>..\packages\Ghostscript.NET.1.2.1\lib\net40\Ghostscript.NET.dll</HintPath>
+    </Reference>
     <Reference Include="leptonica.net, Version=1.75.0.2, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\leptonica.net.1.75.0.2\lib\net452\leptonica.net.dll</HintPath>
     </Reference>
@@ -139,6 +143,7 @@
     <Content Include="lib\x86\pvt.cppan.demo.tiff-4.0.9.dll" />
     <Content Include="lib\x86\pvt.cppan.demo.webp-0.6.0.dll" />
     <Content Include="lib\x86\pvt.cppan.demo.xz_utils.lzma-5.2.3.dll" />
+    <Content Include="XsPDF.Native.dll" />
   </ItemGroup>
   <ItemGroup>
     <COMReference Include="Microsoft.Office.Core">
