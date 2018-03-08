@@ -413,8 +413,7 @@ namespace OCR_BusinessLayer.Service
                 }
             }
 
-
-            pk.Confidence = (conf / count).ToString("P2");
+            pk.Confidence = string.Format("{0:N2}%", (conf / count));
             _p.ListOfKeyPossitions.Add(pk);
 
         }
@@ -510,14 +509,15 @@ namespace OCR_BusinessLayer.Service
 
         private void EndRelaticeColumnByText(Word w)
         {
-            foreach (Column c in _listOfColumns)
-            {
-                if (w.Bounds.Right < c.Right)
+            if (w != null)
+                foreach (Column c in _listOfColumns)
                 {
-                    c.Completed = true;
-                    c.Blocked = true;
+                    if (w.Bounds.Right < c.Right)
+                    {
+                        c.Completed = true;
+                        c.Blocked = true;
+                    }
                 }
-            }
         }
 
 

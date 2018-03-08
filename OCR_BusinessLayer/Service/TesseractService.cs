@@ -98,8 +98,11 @@ namespace OCR_BusinessLayer.Service
                     rec.Y -= CONSTANTS.PATTERN_CHECK_XY_PROXIMITY;
                     rec.Width += CONSTANTS.PATTERN_CHECK_WIDTHHEIGHT_PROXIMITY; //ak pozram ci je to patern tak potrebujem co najmensie
                     rec.Height += CONSTANTS.PATTERN_CHECK_WIDTHHEIGHT_PROXIMITY;
-                    
-                    Mat im = new Mat(image, rec);//zistit maximalne mnozstvo dpi
+                    if (image.Cols < rec.X + rec.Width)
+                        rec.Width -= (rec.X + rec.Width) - image.Cols;
+                    if (image.Rows < rec.Y + rec.Height)
+                        rec.Height -= (rec.Y + rec.Height) - image.Rows;
+                    Mat im = new Mat(image, rec);
                     
                     engine.InitForAnalysePage();
                     engine.Init(null, _lang);
@@ -129,7 +132,8 @@ namespace OCR_BusinessLayer.Service
                     p.Lines.AddRange(_textLines);
                     _textLines.Clear();
                 }
-                p.Confidence = ((float)(engine.MeanTextConf) / 100).ToString("P2");
+                
+                p.Confidence = string.Format("{0:N2}%", (engine.MeanTextConf) / 100);
                 p.Img = OpenCvSharp.Extensions.BitmapConverter.ToBitmap(image);
                 p.Lang = _lang;
 
