@@ -67,8 +67,11 @@ namespace OCR_BusinessLayer.Service
 
         public bool CheckImageForPatternAndGetDataFromIt(FileToProcess file,List<PossitionOfWord> pos, IProgress<int> progress,out PreviewObject prew, bool checkPattern = false)
         {
-            bool isPattern = true;
+            
             PreviewObject p = new PreviewObject();
+            if (pos.Count > 0)
+            {
+            bool isPattern = true;
             int step = 100 / pos.Count;
             p.ListOfKeyColumn = new List<Column>();
             using (engine = new TessBaseAPI(@".\tessdata", _lang, OcrEngineMode.TESSERACT_LSTM_COMBINED))
@@ -98,11 +101,12 @@ namespace OCR_BusinessLayer.Service
                     rec.Y -= CONSTANTS.PATTERN_CHECK_XY_PROXIMITY;
                     rec.Width += CONSTANTS.PATTERN_CHECK_WIDTHHEIGHT_PROXIMITY; //ak pozram ci je to patern tak potrebujem co najmensie
                     rec.Height += CONSTANTS.PATTERN_CHECK_WIDTHHEIGHT_PROXIMITY;
-                    if (image.Cols < rec.X + rec.Width)
-                        rec.Width -= (rec.X + rec.Width) - image.Cols;
-                    if (image.Rows < rec.Y + rec.Height)
-                        rec.Height -= (rec.Y + rec.Height) - image.Rows;
-                    Mat im = new Mat(image, rec);
+                    
+                        if (image.Cols < rec.X + rec.Width)
+                            rec.Width -= (rec.X + rec.Width) - image.Cols;
+                        if (image.Rows < rec.Y + rec.Height)
+                            rec.Height -= (rec.Y + rec.Height) - image.Rows;
+                    Mat im = new Mat(image, rec);//zistit maximalne mnozstvo dpi
                     
                     engine.InitForAnalysePage();
                     engine.Init(null, _lang);
@@ -140,6 +144,9 @@ namespace OCR_BusinessLayer.Service
             }
             prew = p;
             return isPattern;
+            }
+            prew =p;
+            return false;
         }
 
         private void IterateFullPage(ResultIterator iter, ref List<TextLine> _textLines)
