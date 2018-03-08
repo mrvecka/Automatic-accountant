@@ -510,6 +510,7 @@ namespace OCR_BusinessLayer.Service
 
         private void EndRelaticeColumnByText(Word w)
         {
+        if (w != null)
             foreach (Column c in _listOfColumns)
             {
                 if (w.Bounds.Right < c.Right)
