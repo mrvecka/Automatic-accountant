@@ -34,11 +34,11 @@
             this.lblFound = new System.Windows.Forms.Label();
             this.btnStart = new System.Windows.Forms.Button();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.checkBox1 = new System.Windows.Forms.CheckBox();
+            this.button2 = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.pnlMain = new System.Windows.Forms.Panel();
-            this.button2 = new System.Windows.Forms.Button();
+            this.btnGenerate = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -66,7 +66,7 @@
             // 
             this.lblFound.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.lblFound.AutoSize = true;
-            this.lblFound.Location = new System.Drawing.Point(452, 41);
+            this.lblFound.Location = new System.Drawing.Point(337, 41);
             this.lblFound.Name = "lblFound";
             this.lblFound.Size = new System.Drawing.Size(0, 13);
             this.lblFound.TabIndex = 2;
@@ -85,8 +85,8 @@
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.btnGenerate);
             this.panel1.Controls.Add(this.button2);
-            this.panel1.Controls.Add(this.checkBox1);
             this.panel1.Controls.Add(this.label1);
             this.panel1.Controls.Add(this.comboBox1);
             this.panel1.Controls.Add(this.pnlMain);
@@ -100,15 +100,16 @@
             this.panel1.Size = new System.Drawing.Size(784, 511);
             this.panel1.TabIndex = 4;
             // 
-            // checkBox1
+            // button2
             // 
-            this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(202, 40);
-            this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(142, 17);
-            this.checkBox1.TabIndex = 7;
-            this.checkBox1.Text = "Look for value in column";
-            this.checkBox1.UseVisualStyleBackColor = true;
+            this.button2.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.button2.Location = new System.Drawing.Point(557, 36);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(107, 23);
+            this.button2.TabIndex = 8;
+            this.button2.Text = "Create Pattern";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
             // label1
             // 
@@ -141,16 +142,15 @@
             this.pnlMain.Size = new System.Drawing.Size(710, 420);
             this.pnlMain.TabIndex = 4;
             // 
-            // button2
+            // btnGenerate
             // 
-            this.button2.Anchor = System.Windows.Forms.AnchorStyles.Right;
-            this.button2.Location = new System.Drawing.Point(557, 36);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(107, 23);
-            this.button2.TabIndex = 8;
-            this.button2.Text = "Create Pattern";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
+            this.btnGenerate.Location = new System.Drawing.Point(438, 35);
+            this.btnGenerate.Name = "btnGenerate";
+            this.btnGenerate.Size = new System.Drawing.Size(113, 23);
+            this.btnGenerate.TabIndex = 9;
+            this.btnGenerate.Text = "Generate import file";
+            this.btnGenerate.UseVisualStyleBackColor = true;
+            this.btnGenerate.Click += new System.EventHandler(this.button3_Click);
             // 
             // frmOCR
             // 
@@ -178,9 +178,9 @@
         private System.Windows.Forms.Button btnStart;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Panel pnlMain;
-        private System.Windows.Forms.CheckBox checkBox1;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.ComboBox comboBox1;
         private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Button btnGenerate;
     }
 }

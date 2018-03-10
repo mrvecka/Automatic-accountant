@@ -63,7 +63,7 @@ namespace Bakalarska_praca
             }
             else
             {
-                MessageBox.Show("Directory on that path does no exists!!!", "Invalid path", MessageBoxButtons.OK);
+                MessageBox.Show("You don't have rights to that folder OR no files ware found!!!", "Invalid path", MessageBoxButtons.OK);
             }
 
         }
@@ -78,11 +78,10 @@ namespace Bakalarska_praca
             _previewObjects = _service.Preview;
             btnStart.Enabled = true;
             btnStart.Enabled = true;
-            checkBox1.Enabled = true;
             comboBox1.Enabled = true;
             button1.Enabled = true;
             button2.Enabled = true;
-            SETTINGS.GoInColumnForValue = checkBox1.Checked;
+            btnGenerate.Enabled = true;
         }
 
         private void FillPanel()
@@ -154,13 +153,18 @@ namespace Bakalarska_praca
         }
         private void DisableControls()
         {
+            btnGenerate.Enabled = false;
             btnStart.Enabled = false;
-            checkBox1.Enabled = false;
             comboBox1.Enabled = false;
             button1.Enabled = false;
             button2.Enabled = false;
             _filesToProcess.ForEach(c => c.ProgressBar.Value = 0);
             _filesToProcess.ForEach(c => c.Button.Enabled = false);
+
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
 
         }
     }

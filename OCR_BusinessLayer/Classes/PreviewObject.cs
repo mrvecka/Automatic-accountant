@@ -16,6 +16,8 @@ namespace OCR_BusinessLayer.Classes
         public string Lang;
         public List<PossitionOfWord> ListOfKeyPossitions;
         public List<Column> ListOfKeyColumn;
+        public Evidence Evidence;
+        public List<Client> Clients;
 
     }
 }

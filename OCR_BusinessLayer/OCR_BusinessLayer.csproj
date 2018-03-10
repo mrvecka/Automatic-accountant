@@ -96,6 +96,7 @@
     <Compile Include="Service\DictionaryService.cs" />
     <Compile Include="Service\FileService.cs" />
     <Compile Include="Service\OpenCVImageService.cs" />
+    <Compile Include="Service\Orientation.cs" />
     <Compile Include="Service\SimilarityService.cs" />
     <Compile Include="Service\TesseractService.cs" />
     <Compile Include="Service\ThreadService.cs" />

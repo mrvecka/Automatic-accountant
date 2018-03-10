@@ -34,7 +34,6 @@ namespace OCR_BusinessLayer.Service
         public void MakeObjectsFromLines(PreviewObject p, FileToProcess file, IProgress<int> progress)
         {
             _p = p;
-            int Step = p.Lines.Count / 60;
             _dic = new Dictionary();
             _eud = new Evidence();
             Type type = _eud.GetType();
@@ -65,7 +64,7 @@ namespace OCR_BusinessLayer.Service
 
 
 
-                progress.Report(Step);
+                progress.Report(1);
             }
             ValidationService.Validate(_eud);
             foreach (Client c in _listOfClients)
@@ -74,6 +73,8 @@ namespace OCR_BusinessLayer.Service
             }
             _p.ListOfKeyColumn = new List<Column>();
             _p.ListOfKeyColumn.AddRange(_listOfColumns);
+            _p.Evidence = _eud;
+            _p.Clients = new List<Client>(_listOfClients);
         }
 
         private bool GoLikeColumn()
@@ -204,6 +205,9 @@ namespace OCR_BusinessLayer.Service
 
             if (_keysInRow >= 2)
                 return false;
+            if (lookingForRight && _pair.Key != null)
+                return true;
+
 
             return keyFound;
         }

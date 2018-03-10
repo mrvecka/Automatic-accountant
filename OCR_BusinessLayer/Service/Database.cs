@@ -12,9 +12,9 @@ namespace OCR_BusinessLayer.Service
 		public Database()
 		{
 			_conn = new SqlConnection();
-			_conn.ConnectionString = @"Data Source=MRVECKA\SQLEXPRESS;Initial Catalog=OCR_2018;Integrated Security=SSPI; User Id=WINKROS\mrvecka; password=21mrvecka12";
-		   
-		}
+			//_conn.ConnectionString = @"Data Source=MRVECKA\SQLEXPRESS;Initial Catalog=OCR_2018;Integrated Security=SSPI; User Id=WINKROS\mrvecka; password=21mrvecka12";
+		   _conn.ConnectionString = @"Data Source = (LocalDb)\MSSQLLocalDB; Initial Catalog = OCR_2018; Integrated Security = True";
+        }
 		/// <summary>
 		/// Connect
 		/// </summary>

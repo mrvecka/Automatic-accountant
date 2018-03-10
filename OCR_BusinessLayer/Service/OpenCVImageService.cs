@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Threading;
 
 namespace OCR_BusinessLayer.Service
 {
@@ -44,55 +45,40 @@ namespace OCR_BusinessLayer.Service
         }
         private OpenCVImageService() { }
 
-        public void PrepareImage(string path)
+        public void PrepareImage(string path, IProgress<int> progress = null, string lang = "slk")
         {
             if (path.Substring(path.LastIndexOf('.') + 1).Equals("pdf"))
             {
                 path = CreatePicturesFromPdf(path);
                 if (path != string.Empty)
                 {
-                    _original = Cv2.ImRead(path);
-
-                    Rotated = _original;
+                    Rotated = _original = Cv2.ImRead(path);
                 }
                 return;
             }
             _original = Cv2.ImRead(path);
-            //using (var window = new Window("original", image: _original, flags: WindowMode.AutoSize))
-            //{
-            //    Cv2.WaitKey();
-            //}
-            Rotated = GetRotatedImage();
-            //using (var window = new Window("rotated", image: Rotated, flags: WindowMode.AutoSize))
-            //{
-            //    Cv2.WaitKey();
-            //}
             OpenCvSharp.Mat newImage = new OpenCvSharp.Mat();
+            try
+            {
+                Cv2.Threshold(_original, newImage, 127, 255, ThresholdTypes.Tozero);
+                if (progress != null)
+                    progress.Report(10);
+                cBmp = OpenCvSharp.Extensions.BitmapConverter.ToBitmap(newImage);
+                DeskewImage(ref newImage);
+                if (progress != null)
+                    progress.Report(10);
+                RotateImageByTextOrientation(ref newImage,lang);
+                if (progress != null)
+                    progress.Report(10);
 
-            Cv2.Threshold(_original, newImage, 127, 255, ThresholdTypes.Tozero);
-            //using (var window = new Window("tresshold", image: newImage, flags: WindowMode.AutoSize))
-            //{
-            //    Cv2.WaitKey();
-            //}
+                Rotated = newImage;
+                bmp = OpenCvSharp.Extensions.BitmapConverter.ToBitmap(Rotated);
 
-            cBmp = OpenCvSharp.Extensions.BitmapConverter.ToBitmap(newImage);
-
-
-            DeskewImage(ref newImage);
-            bmp = OpenCvSharp.Extensions.BitmapConverter.ToBitmap(newImage);
-
-            //if (IsUpSideDownBitmap(bmp))
-            //{
-            //    RotateImage(a, ref a, 180, 1);
-            //}
-
-            //using (var window = new Window("isupsidedown", image: a, flags: WindowMode.AutoSize))
-            //{
-            //    Cv2.WaitKey();
-            //}
-
-            Rotated = newImage;
-            bmp = OpenCvSharp.Extensions.BitmapConverter.ToBitmap(Rotated);
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message + $"There is a problem in image preparing thread and can't continue! Image: {path}", e.InnerException);
+            }
 
         }
 
@@ -103,7 +89,7 @@ namespace OCR_BusinessLayer.Service
             return rotated;
         }
 
-        private void RotateImage(OpenCvSharp.Mat src, ref OpenCvSharp.Mat dst, double angle, double scale)
+        public void RotateImage(OpenCvSharp.Mat src, ref OpenCvSharp.Mat dst, double angle, double scale)
         {
             var imageCenter = new Point2f(src.Cols / 2f, src.Rows / 2f);
             var rotationMat = Cv2.GetRotationMatrix2D(imageCenter, angle, scale);
@@ -122,7 +108,7 @@ namespace OCR_BusinessLayer.Service
 
         }
 
-        public double GetSkewAngle()
+        private double GetSkewAngle()
         {
             HougLine[] hl;
             int i;
@@ -275,11 +261,11 @@ namespace OCR_BusinessLayer.Service
 
             if (Environment.Is64BitProcess)
             {
-                gvi = new GhostscriptVersionInfo(System.IO.Path.GetFullPath($@"{System.AppDomain.CurrentDomain.BaseDirectory}/libpvt/gsdll64.dll"));
+                gvi = new GhostscriptVersionInfo(Path.GetFullPath(@".\..\..\..\OCR_BusinessLayer\lib\gsdll64.dll"));
             }
             else
             {
-                gvi = new GhostscriptVersionInfo(System.IO.Path.GetFullPath($@"{System.AppDomain.CurrentDomain.BaseDirectory}/libpvt/gsdll32.dll"));
+                gvi = new GhostscriptVersionInfo(Path.GetFullPath(@".\..\..\..\OCR_BusinessLayer\lib\gsdll32.dll"));
             }
 
             try
@@ -308,7 +294,7 @@ namespace OCR_BusinessLayer.Service
                 if (_rasterizer != null)
                     _rasterizer.Close();
                 string inner = ex.InnerException != null ? ex.InnerException.ToString() : null;
-
+                throw new Exception("Failed to initialize GhostScript!", ex.InnerException);
 
             }
 
@@ -336,6 +322,33 @@ namespace OCR_BusinessLayer.Service
             }
             bitmap.Save(finalPath);
         }
+
+        private void RotateImageByTextOrientation(ref Mat img,string lang)
+        {
+            double a = 0.0;
+            Orientation[] myThread = new Orientation[4];
+            for (int i = 0; i < myThread.Length; i++)
+            {
+                myThread[i] = new Orientation(i * 90, img.Clone(), lang);
+            }
+
+            while (!myThread[0].Finished || !myThread[1].Finished || !myThread[2].Finished || !myThread[3].Finished)
+                continue;
+
+            Orientation max = myThread[0];
+            
+            for (int i = 1; i < myThread.Length; i++)
+            {
+                if (myThread[i].Confidence > max.Confidence)
+                    max = myThread[i];
+            }
+            
+
+            RotateImage(img, ref img, max.Angle, 1);
+
+ 
+        }
+
 
         public static void DeleteFiles()
         {

@@ -402,7 +402,7 @@ namespace Bakalarska_praca
             _files = FileService.FindFiles(txtPathPattern.Text, CONSTANTS.filter);
             if (_files == null)
             {
-                MessageBox.Show("Unsupported file format!!!", "Invalid format", MessageBoxButtons.OK);
+                MessageBox.Show("Unsupported file format OR you don't have rights to that file!!!", "Invalid format", MessageBoxButtons.OK);
                 return;
             }
 
