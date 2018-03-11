@@ -64,6 +64,7 @@ namespace Bakalarska_praca
             this.lblPatConfidence = new System.Windows.Forms.Label();
             this.txtLang = new System.Windows.Forms.TextBox();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
+            this.cmbClientInfo = new System.Windows.Forms.ComboBox();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -184,6 +185,7 @@ namespace Bakalarska_praca
             // 
             // panel5
             // 
+            this.panel5.Controls.Add(this.cmbClientInfo);
             this.panel5.Controls.Add(this.btnRemove);
             this.panel5.Controls.Add(this.btnSave);
             this.panel5.Controls.Add(this.btnAdd);
@@ -231,7 +233,7 @@ namespace Bakalarska_praca
             // chkOnlyValue
             // 
             this.chkOnlyValue.AutoSize = true;
-            this.chkOnlyValue.Location = new System.Drawing.Point(41, 15);
+            this.chkOnlyValue.Location = new System.Drawing.Point(9, 42);
             this.chkOnlyValue.Name = "chkOnlyValue";
             this.chkOnlyValue.Size = new System.Drawing.Size(76, 17);
             this.chkOnlyValue.TabIndex = 4;
@@ -241,7 +243,7 @@ namespace Bakalarska_praca
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(7, 43);
+            this.label4.Location = new System.Drawing.Point(6, 16);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(28, 13);
             this.label4.TabIndex = 2;
@@ -251,10 +253,11 @@ namespace Bakalarska_praca
             // 
             this.cmbKey.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbKey.FormattingEnabled = true;
-            this.cmbKey.Location = new System.Drawing.Point(41, 40);
+            this.cmbKey.Location = new System.Drawing.Point(40, 13);
             this.cmbKey.Name = "cmbKey";
-            this.cmbKey.Size = new System.Drawing.Size(121, 21);
+            this.cmbKey.Size = new System.Drawing.Size(183, 21);
             this.cmbKey.TabIndex = 0;
+            this.cmbKey.SelectedValueChanged += new System.EventHandler(this.cmbKey_SelectedValueChanged);
             // 
             // lblConfidence
             // 
@@ -340,6 +343,16 @@ namespace Bakalarska_praca
             // 
             this.openFileDialog1.FileName = "openFileDialog1";
             // 
+            // cmbClientInfo
+            // 
+            this.cmbClientInfo.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbClientInfo.FormattingEnabled = true;
+            this.cmbClientInfo.Location = new System.Drawing.Point(92, 40);
+            this.cmbClientInfo.Name = "cmbClientInfo";
+            this.cmbClientInfo.Size = new System.Drawing.Size(131, 21);
+            this.cmbClientInfo.TabIndex = 11;
+            this.cmbClientInfo.Visible = false;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -385,6 +398,7 @@ namespace Bakalarska_praca
         private Button btnNewFile;
         private TextBox txtPathPattern;
         private OpenFileDialog openFileDialog1;
+        private ComboBox cmbClientInfo;
     }
 }
 

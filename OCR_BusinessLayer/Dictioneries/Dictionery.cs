@@ -13,9 +13,17 @@ namespace Bakalarska_praca.Dictioneries
         public Dictionary<string, string> clients;
         public List<string> canDeleteKeys;
         public List<string> valueInColumn;
-        public Dictionary()
+        private static Dictionary dic;
+        private Dictionary()
         {
             Init();
+        }
+        public static Dictionary GetInstance()
+        {
+            if (dic == null)
+                dic = new Dictionary();
+
+            return dic;
         }
 
 

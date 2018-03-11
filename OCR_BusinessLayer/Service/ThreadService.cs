@@ -1,4 +1,5 @@
 ﻿using OCR_BusinessLayer.Classes;
+using OpenCvSharp;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
@@ -36,10 +37,14 @@ namespace OCR_BusinessLayer.Service
                 });
                 await Task.Run(() =>
                 {
-                    var id = CheckForPattern(tess, s);
+                    var _cvService = OpenCVImageService.GetInstance();
+                    _cvService.PrepareImage(s.Path, null, _lang);
+                    Mat image = _cvService.Rotated;
+
+                    var id = CheckForPattern(tess, image);
                     if (id == -1)
                     {
-                        PreviewObject p = tess.ProcessImage(s, progress);
+                        PreviewObject p = tess.ProcessImage(image, progress);
                         p.Path = s.Path;
                         _previewObjects.Add(p);
                     }
@@ -47,13 +52,10 @@ namespace OCR_BusinessLayer.Service
                     {
                         PreviewObject prew;
                         //nasiel som pattern tak idem podla neho
-                        tess.CheckImageForPatternAndGetDataFromIt(s, GetKeysPossitions(id),progress,out prew);
+                        tess.CheckImageForPatternAndGetDataFromIt(image, GetKeysPossitions(id),progress,out prew);
                         prew.Path = s.Path;
                         _previewObjects.Add(prew);
                     }
-
-
-
                 });
 
                 s.ProgressBar.Value = 100;
@@ -61,7 +63,7 @@ namespace OCR_BusinessLayer.Service
             }
         }
 
-        private int CheckForPattern(TesseractService tess, FileToProcess s)
+        private int CheckForPattern(TesseractService tess, Mat image)
         {
             Database db = new Database();
             string SQL = "SELECT Pattern_ID FROM OCR_2018.dbo.T003_Pattern";
@@ -72,10 +74,11 @@ namespace OCR_BusinessLayer.Service
                 patterns.Add((int)data[0]);
             }
             data.Close();
+
             foreach (int id in patterns)
             {
                 PreviewObject p;
-                if (tess.CheckImageForPatternAndGetDataFromIt(s, GetKeysPossitions(id, db, true),null,out p, true))
+                if (tess.CheckImageForPatternAndGetDataFromIt(image, GetKeysPossitions(id, db, true),null,out p, true))
                 {
                     return id;
                 }
@@ -94,7 +97,14 @@ namespace OCR_BusinessLayer.Service
             string SQL;
             if (test)
             {
-                SQL = $"SELECT TOP 5 * FROM OCR_2018.dbo.T004_Possitions WHERE Pattern_ID = {id} AND Word_Key NOT IN ('Name','Street','PSCCity','State') AND K_X != 0 AND K_Y != 0";
+                SQL = $"SELECT TOP 5 * FROM OCR_2018.dbo.T004_Possitions WHERE Pattern_ID = {id} AND (Word_Key NOT LIKE '%Meno%' OR Word_Key NOT LIKE '%Ulica%' OR " +
+                    $"Word_Key NOT LIKE '%Psč%' OR Word_Key NOT LIKE '%Štát%') AND K_X != 0 AND K_Y != 0";
+
+                /*
+                   OR Word_Key NOT LIKE '%Dodávateľ%' OR Word_Key NOT LIKE '%Odberateľ%' OR " +
+                   $"Word_Key NOT LIKE '%Konečný príjemca%' OR Word_Key NOT LIKE '%Poštová adresa%' OR Word_Key NOT LIKE '%Adresa%' OR Word_Key NOT LIKE '%Sídlo firmy%' OR " +
+                   $"Word_Key NOT LIKE '%Korešpondenčná adresa%'
+                */
             }
             else
             {

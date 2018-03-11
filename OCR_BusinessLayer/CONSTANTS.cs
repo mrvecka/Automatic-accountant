@@ -4,8 +4,8 @@
     {
         public static int SIMILARITY = 70;
         public static int PROXIMITY = 20;
-        public static int PATTERN_CHECK_XY_PROXIMITY = 10;
-        public static int PATTERN_CHECK_WIDTHHEIGHT_PROXIMITY = 20;
+        public static int PATTERN_CHECK_XY_PROXIMITY = 5;
+        public static int PATTERN_CHECK_WIDTHHEIGHT_PROXIMITY = 10;
         public static int MAX_LENGTH_OF_ONE_WORD = 500;
         public static int MAX_LENGTH_OF_SQL_STRING = 100;
         public static char[] charsToTrim = { ':', '/',' ' };

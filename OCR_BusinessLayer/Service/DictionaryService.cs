@@ -31,10 +31,10 @@ namespace OCR_BusinessLayer.Service
         /// <param name="lines">List of lines</param>
         /// <param name="width">Width of document</param>
         /// <returns></returns>
-        public void MakeObjectsFromLines(PreviewObject p, FileToProcess file, IProgress<int> progress)
+        public void MakeObjectsFromLines(PreviewObject p,IProgress<int> progress)
         {
             _p = p;
-            _dic = new Dictionary();
+            _dic = Dictionary.GetInstance();
             _eud = new Evidence();
             Type type = _eud.GetType();
             _listOfColumns = new List<Column>();
@@ -232,6 +232,8 @@ namespace OCR_BusinessLayer.Service
                 column.Text = key.Key;
                 if (ColumnAlreadyExists(column))
                 {
+                    column = null;
+                    _columnsCount--;
                     return CONSTANTS.Result.Continue;
                 }
                 Client n = new Client();
@@ -336,90 +338,92 @@ namespace OCR_BusinessLayer.Service
 
         private void SavePossitionToLists(string key, string stringkey, string value, TextLine Keyline, TextLine valueLine, string colText = "", int x1 = 0, int x2 = 0)
         {
-            List<Word> tmpKeyWords = new List<Word>();
-            List<Word> tmpValueWords = new List<Word>();
-            float conf = 0;
-            int count = 0;
-            tmpKeyWords = GetWordsForPositionSave(Keyline, stringkey, ref conf, ref count);
-
-            tmpValueWords = GetWordsForPositionSave(valueLine, value, ref conf, ref count, x1, x2);
-
-            //key
-            PossitionOfWord pk = new PossitionOfWord();
-            if (stringkey != string.Empty)
+            if (!_p.ListOfKeyPossitions.Any(c => c.Key.Equals(key)))
             {
-                var v = tmpKeyWords.First<Word>();
-                var vl = tmpKeyWords.Last<Word>();
-                pk.KeyBounds = new System.Drawing.Rectangle(v.Bounds.X, v.Bounds.Y, tmpKeyWords.Last<Word>().Bounds.Right - v.Bounds.Left, v.Bounds.Height);
-            }
-            if (key.Equals("Name") || key.Equals("Street") || key.Equals("PSCCity") || key.Equals("State"))
-                pk.Key = colText;
-            else
-                pk.Key = stringkey;
+                List<Word> tmpKeyWords = new List<Word>();
+                List<Word> tmpValueWords = new List<Word>();
+                float conf = 0;
+                int count = 0;
+                tmpKeyWords = GetWordsForPositionSave(Keyline, stringkey, ref conf, ref count);
 
-            pk.Value = value;
+                tmpValueWords = GetWordsForPositionSave(valueLine, value, ref conf, ref count, x1, x2);
 
-            //value
-            if (value == string.Empty || !tmpValueWords.Any())
-            {
-                pk.ValueBounds = new System.Drawing.Rectangle(pk.KeyBounds.Right, pk.KeyBounds.Y, 100, pk.KeyBounds.Height);
-
-            }
-            else
-            {
-                var w = tmpValueWords.First<Word>();
-                if (Keyline == valueLine)
+                //key
+                PossitionOfWord pk = new PossitionOfWord();
+                if (stringkey != string.Empty)
                 {
-                    //nie je to stlpec
-                    if (!string.IsNullOrWhiteSpace(value))
-                    {
-                        pk.ValueBounds = new System.Drawing.Rectangle(w.Bounds.X, w.Bounds.Y, tmpValueWords.Last<Word>().Bounds.Right - w.Bounds.Left, w.Bounds.Height);
+                    var v = tmpKeyWords.First<Word>();
+                    var vl = tmpKeyWords.Last<Word>();
+                    pk.KeyBounds = new System.Drawing.Rectangle(v.Bounds.X, v.Bounds.Y, tmpKeyWords.Last<Word>().Bounds.Right - v.Bounds.Left, v.Bounds.Height);
+                }
+                if (key.Equals("Name") || key.Equals("Street") || key.Equals("PSCCity") || key.Equals("State"))
+                    pk.Key = colText;
+                else
+                    pk.Key = stringkey;
 
-                    }
-                    else
-                    {
-                        var x = w.Bounds.Right;
-                        var y = w.Bounds.Y;
-                        var width = 0;
-                        try
-                        {
-                            if (stringkey == string.Empty)
-                            {
-                                width = tmpValueWords.Last<Word>().Bounds.Right - w.Bounds.Left;
-                            }
-                            else
-                            {
-                                var vl = tmpKeyWords.Last<Word>();
-                                width = Keyline.Words[Keyline.Words.IndexOf(vl) + 1].Bounds.Left - vl.Bounds.Right;
-                            }
-                        }
-                        catch (ArgumentOutOfRangeException e)
-                        {
-                            width = w.Bounds.Right + 50;
-                        }
-                        pk.ValueBounds = new System.Drawing.Rectangle(x, y, width, w.Bounds.Height);
+                pk.Value = value;
 
+                //value
+                if (value == string.Empty || !tmpValueWords.Any())
+                {
+                    pk.ValueBounds = new System.Drawing.Rectangle(pk.KeyBounds.Right, pk.KeyBounds.Y, 100, pk.KeyBounds.Height);
 
-                    }
                 }
                 else
                 {
-                    //hladal som v stlpci
-                    if (!string.IsNullOrWhiteSpace(value))
+                    var w = tmpValueWords.First<Word>();
+                    if (Keyline == valueLine)
                     {
-                        pk.ValueBounds = new System.Drawing.Rectangle(w.Bounds.X, w.Bounds.Y, tmpValueWords.Last<Word>().Bounds.Right - w.Bounds.Left, w.Bounds.Height);
+                        //nie je to stlpec
+                        if (!string.IsNullOrWhiteSpace(value))
+                        {
+                            pk.ValueBounds = new System.Drawing.Rectangle(w.Bounds.X, w.Bounds.Y, tmpValueWords.Last<Word>().Bounds.Right - w.Bounds.Left, w.Bounds.Height);
+
+                        }
+                        else
+                        {
+                            var x = w.Bounds.Right;
+                            var y = w.Bounds.Y;
+                            var width = 0;
+                            try
+                            {
+                                if (stringkey == string.Empty)
+                                {
+                                    width = tmpValueWords.Last<Word>().Bounds.Right - w.Bounds.Left;
+                                }
+                                else
+                                {
+                                    var vl = tmpKeyWords.Last<Word>();
+                                    width = Keyline.Words[Keyline.Words.IndexOf(vl) + 1].Bounds.Left - vl.Bounds.Right;
+                                }
+                            }
+                            catch (ArgumentOutOfRangeException e)
+                            {
+                                width = w.Bounds.Right + 50;
+                            }
+                            pk.ValueBounds = new System.Drawing.Rectangle(x, y, width, w.Bounds.Height);
+
+
+                        }
                     }
                     else
                     {
-                        pk.ValueBounds = new System.Drawing.Rectangle(x1, valueLine.Bounds.Y, x2 - x1, w.Bounds.Height);
+                        //hladal som v stlpci
+                        if (!string.IsNullOrWhiteSpace(value))
+                        {
+                            pk.ValueBounds = new System.Drawing.Rectangle(w.Bounds.X, w.Bounds.Y, tmpValueWords.Last<Word>().Bounds.Right - w.Bounds.Left, w.Bounds.Height);
+                        }
+                        else
+                        {
+                            pk.ValueBounds = new System.Drawing.Rectangle(x1, valueLine.Bounds.Y, x2 - x1, w.Bounds.Height);
 
+                        }
                     }
                 }
+
+                pk.Confidence = string.Format("{0:N2}%", (conf / count));
+                _p.ListOfKeyPossitions.Add(pk);
             }
-
-            pk.Confidence = string.Format("{0:N2}%", (conf / count));
-            _p.ListOfKeyPossitions.Add(pk);
-
         }
 
         private List<Word> GetWordsForPositionSave(TextLine line, string value, ref float conf, ref int count, int x1 = 0, int x2 = 0)

@@ -5,6 +5,8 @@ using System.Text;
 using Tesseract;
 using OCR_BusinessLayer.Classes;
 using OpenCvSharp;
+using Bakalarska_praca.Dictioneries;
+using System.Linq;
 
 namespace OCR_BusinessLayer.Service
 {
@@ -23,7 +25,7 @@ namespace OCR_BusinessLayer.Service
             _lang = lang;
         }
 
-        public PreviewObject ProcessImage(FileToProcess file, IProgress<int> progress)
+        public PreviewObject ProcessImage(Mat image, IProgress<int> progress)
         {
             PreviewObject p = new PreviewObject();
             Image img = null;
@@ -32,9 +34,6 @@ namespace OCR_BusinessLayer.Service
                 using (engine = new TessBaseAPI(@".\tessdata", _lang, OcrEngineMode.TESSERACT_LSTM_COMBINED))
                 {
 
-                    _cvService = OpenCVImageService.GetInstance();
-                    _cvService.PrepareImage(file.Path, progress, _lang);
-                    Mat image = _cvService.Rotated;
                     try
                     {
                         img = OpenCvSharp.Extensions.BitmapConverter.ToBitmap(image);
@@ -71,14 +70,14 @@ namespace OCR_BusinessLayer.Service
             progress.Report(40);
             if (img != null)
             {
-                ProcessLines(p, file, progress);
+                ProcessLines(p,progress);
             }
 
             return p;
         }
 
 
-        public bool CheckImageForPatternAndGetDataFromIt(FileToProcess file, List<PossitionOfWord> pos, IProgress<int> progress, out PreviewObject prew, bool checkPattern = false)
+        public bool CheckImageForPatternAndGetDataFromIt(Mat image, List<PossitionOfWord> pos, IProgress<int> progress, out PreviewObject prew, bool checkPattern = false)
         {
 
             PreviewObject p = new PreviewObject();
@@ -89,12 +88,8 @@ namespace OCR_BusinessLayer.Service
                 p.ListOfKeyColumn = new List<Column>();
                 try
                 {
-                    using (engine = new TessBaseAPI(@".\tessdata", _lang, OcrEngineMode.TESSERACT_LSTM_COMBINED))
-                    {
-
-                        _cvService = OpenCVImageService.GetInstance();
-                        _cvService.PrepareImage(file.Path, progress, _lang);
-                        Mat image = _cvService.Rotated;
+                    using (engine = new TessBaseAPI(@".\tessdata", _lang, OcrEngineMode.TESSERACT_LSTM_COMBINED,PageSegmentationMode.AUTO_OSD))
+                    {                        
 
                         p.ListOfKeyPossitions = new List<PossitionOfWord>();
                         p.Lines = new List<TextLine>();
@@ -123,6 +118,11 @@ namespace OCR_BusinessLayer.Service
                                 rec.Height -= (rec.Y + rec.Height) - image.Rows;
                             Mat im = new Mat(image, rec);
 
+                            using (var window = new Window("erode", image: im, flags: WindowMode.AutoSize))
+                            {
+                                Cv2.WaitKey();
+                            }
+
                             engine.InitForAnalysePage();
                             engine.Init(null, _lang);
                             //engine.SetInputImage(pix);
@@ -135,10 +135,14 @@ namespace OCR_BusinessLayer.Service
                             if (checkPattern)
                             {
                                 var s = Common.RemoveDiacritism(_textLines[0].Text.Trim(CONSTANTS.charsToTrimLineForpossition));
-                                if (!s.Equals(Common.RemoveDiacritism(w.Key)))
+                                var k = GetKey(w.Key);
+
+
+                                if (!s.Equals(k))
                                 {
 
                                     isPattern = false;
+                                    break;
                                 }
                             }
                             else
@@ -150,6 +154,7 @@ namespace OCR_BusinessLayer.Service
                             p.ListOfKeyPossitions.Add(w);
                             p.Lines.AddRange(_textLines);
                             _textLines.Clear();
+
                         }
 
                         p.Confidence = string.Format("{0:N2}%", (engine.MeanTextConf) / 100);
@@ -252,11 +257,11 @@ namespace OCR_BusinessLayer.Service
 
         }
 
-        private void ProcessLines(PreviewObject p, FileToProcess file, IProgress<int> progress)
+        private void ProcessLines(PreviewObject p,IProgress<int> progress)
         {
             using (DictionaryService dict = new DictionaryService())
             {
-                dict.MakeObjectsFromLines(p, file, progress);
+                dict.MakeObjectsFromLines(p,progress);
             }
         }
 
@@ -271,6 +276,19 @@ namespace OCR_BusinessLayer.Service
             }
 
             return ((float)(conf / count)).ToString("P2");
+        }
+
+        private string GetKey(string key)
+        {
+            foreach (var col in Dictionary.GetInstance().columns)
+            {
+                if (key.Contains(col.Key))
+                {
+                    key.Replace(col.Key, "");
+                    break;
+                }
+            }
+            return Common.RemoveDiacritism(key);
         }
 
     }

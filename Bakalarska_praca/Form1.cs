@@ -80,12 +80,21 @@ namespace Bakalarska_praca
 
         private void FillCombo()
         {
-            var a = new Dictionary();
+            var a = Dictionary.GetInstance();
             Common.AddRangeNewOnly(a.header, a.columns);
-            Common.AddRangeNewOnly(a.header, a.clients);
+            
             cmbKey.DataSource = new BindingSource(a.header, null);
             cmbKey.DisplayMember = "Key";
             cmbKey.ValueMember = "Key";
+
+            var dic = new Dictionary<string,string>(a.clients);
+            dic.Add("Meno","Name");
+            dic.Add("Ulica", "Street");
+            dic.Add("Mesto", "PSCCity");
+            dic.Add("Štát", "State");
+            cmbClientInfo.DataSource = new BindingSource(dic, null);
+            cmbClientInfo.DisplayMember = "Key";
+            cmbClientInfo.ValueMember = "Key";
 
         }
 
@@ -256,6 +265,8 @@ namespace Bakalarska_praca
                 if (_countOfNewRect == 0)
                 {
                     _newPositions.Key = cmbKey.SelectedValue.ToString();
+                    if(cmbClientInfo.Visible)
+                        _newPositions.Key += " "+cmbClientInfo.SelectedValue.ToString();
                     _newPositions.Value = string.Empty;
 
                     _p.ListOfKeyPossitions.Add(_newPositions);
@@ -406,17 +417,25 @@ namespace Bakalarska_praca
                 return;
             }
 
-            var _cvService = OpenCVImageService.GetInstance();
-            _cvService.PrepareImage(_files[0]);
-            pictureBox1.Image = _cvService.bmp;
-            _newImage = _cvService.bmp;
+            pictureBox1.Image = new Bitmap(_files[0]);
+            _newImage = (Image)pictureBox1.Image.Clone();
             _p = new PreviewObject();
             _p.ListOfKeyPossitions = new List<PossitionOfWord>();
             _p.ListOfKeyColumn = new List<Column>();
             FillCombo();
         }
 
-
+        private void cmbKey_SelectedValueChanged(object sender, System.EventArgs e)
+        {
+            ComboBox cmb = (ComboBox)sender;
+            string value = cmb.SelectedValue.ToString();
+            var a = Dictionary.GetInstance();
+            if (value.Equals("Dodávateľ") || value.Equals("Odberateľ") || value.Equals("Konečný príjemca") || value.Equals("Poštová adresa") || 
+                value.Equals("Adresa") || value.Equals("Sídlo firmy") || value.Equals("Korešpondenčná adresa"))
+                cmbClientInfo.Visible = true;
+            else
+                cmbClientInfo.Visible = false;
+        }
     }
 
 }

@@ -25,6 +25,7 @@ namespace Bakalarska_praca
             var data = FileService.FindTrainedData("tessdata", CONSTANTS.trainedData);
             comboBox1.DataSource = data;
             comboBox1.SelectedIndex = data.IndexOf("slk");
+            btnGenerate.Enabled = false;
 
         }
 
@@ -53,6 +54,7 @@ namespace Bakalarska_praca
                 else
                 {
                     btnStart.Enabled = true;
+                    btnGenerate.Enabled = true;
                     if (_files.Count > 1)
                         lblFound.Text = $"{_files.Count} files found";
                     else
