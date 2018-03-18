@@ -60,14 +60,24 @@ namespace OCR_BusinessLayer.Service
             OpenCvSharp.Mat newImage = new OpenCvSharp.Mat();
             try
             {
-                Cv2.Threshold(_original, newImage, 127, 255, ThresholdTypes.Tozero);
+                Cv2.FastNlMeansDenoisingColored(_original, newImage);  
+
+                if (progress != null)
+                    progress.Report(10); 
+                
+                Cv2.Threshold(newImage, newImage, 200, 255, ThresholdTypes.Tozero);
+
                 if (progress != null)
                     progress.Report(10);
+
                 cBmp = OpenCvSharp.Extensions.BitmapConverter.ToBitmap(newImage);
+
                 DeskewImage(ref newImage);
                 if (progress != null)
                     progress.Report(10);
+
                 RotateImageByTextOrientation(ref newImage,lang);
+
                 if (progress != null)
                     progress.Report(10);
 
@@ -257,7 +267,7 @@ namespace OCR_BusinessLayer.Service
             List<Image> images = new List<Image>();
             GhostscriptVersionInfo gvi = null;
             GhostscriptRasterizer _rasterizer = null;
-            var finalPath = filePath.Remove(filePath.LastIndexOf('.') - 1);
+            var finalPath = Common.ModifyPath(filePath, "png");
 
             if (Environment.Is64BitProcess)
             {
@@ -278,14 +288,11 @@ namespace OCR_BusinessLayer.Service
 
                 for (int pageNumber = 1; pageNumber <= _rasterizer.PageCount; pageNumber++)
                 {
-                    string pageFilePath = finalPath+ "Page" + pageNumber.ToString("000") + ".png";
-
                     Image img = _rasterizer.GetPage(desired_x_dpi, desired_y_dpi, pageNumber);
                     images.Add(img);
 
                 }
                 _rasterizer.Close();
-                finalPath = finalPath + ".png";
                 MergeImages(images,finalPath);
             }
             catch (Exception ex)
@@ -325,7 +332,6 @@ namespace OCR_BusinessLayer.Service
 
         private void RotateImageByTextOrientation(ref Mat img,string lang)
         {
-            double a = 0.0;
             Orientation[] myThread = new Orientation[4];
             for (int i = 0; i < myThread.Length; i++)
             {

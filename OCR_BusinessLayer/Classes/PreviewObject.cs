@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -10,14 +11,46 @@ namespace OCR_BusinessLayer.Classes
     public class PreviewObject
     {
         public Image Img;
-        public string Confidence;
+
+        [Browsable(true)]
+        [ReadOnly(true)]
+        [Description("Example Displaying hint 2")]
+        [Category("Global info")]
+        [DisplayName("Confidence")]
+        public string Confidence { get; set; }
         public List<TextLine> Lines;
-        public string Path;
-        public string Lang;
+
+        [Browsable(true)]
+        [ReadOnly(true)]
+        [Description("Example Displaying hint 2")]
+        [Category("Global info")]
+        [DisplayName("Path")]
+        public string Path { get; set; }
+
+        [Browsable(true)]
+        [ReadOnly(true)]
+        [Description("Example Displaying hint 2")]
+        [Category("Global info")]
+        [DisplayName("Language")]
+        public string Lang { get; set; }
         public List<PossitionOfWord> ListOfKeyPossitions;
         public List<Column> ListOfKeyColumn;
-        public Evidence Evidence;
-        public List<Client> Clients;
+
+        [Browsable(true)]
+        [ReadOnly(false)]
+        [Description("Example Displaying hint 2")]
+        [Category("Evidence")]
+        [DisplayName("Evidence")]
+        [TypeConverter(typeof(ExpandableObjectConverter))]
+        [EditorBrowsable(EditorBrowsableState.Always)]
+        public Evidence Evidence { get; set; }
+
+        [Browsable(true)]
+        [ReadOnly(true)]
+        [Description("Example Displaying hint 2")]
+        [Category("Clients")]
+        [DisplayName("Clients")]
+        public List<Client> Clients { get; set; }
 
     }
 }

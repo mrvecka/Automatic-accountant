@@ -44,26 +44,24 @@ namespace Bakalarska_praca
                 btnRemove.Enabled = false;
                 _def = file;
                 pictureBox1.Image = (Bitmap)file.Img;
-                txtConfidence.Text = file.Confidence;
-                txtLang.Text = file.Lang;
                 _newImage = file.Img;
                 _p = file;
                 txtPathPattern.Visible = false;
                 btnNewFile.Visible = false;
+                propGrid.SelectedObject = file;
                 FillListView(file);
                 FillCombo();
             }
             else
             {
                 //idem vytvarat novy pattern
-                lblConfidence.Visible = false;
                 lblPatConfidence.Visible = false;
-                txtConfidence.Visible = false;
                 txtPartConfidence.Visible = false;
-                lblLanguage.Visible = false;
-                txtLang.Visible = false;
-
             }
+
+
+
+
         }
 
         private void FillListView(PreviewObject prew)
@@ -282,6 +280,9 @@ namespace Bakalarska_praca
             setRectangle();
             FillListView(_p);
 
+
+
+
         }
         private void pictureBox1_Paint(object sender, PaintEventArgs e)
         {
@@ -338,7 +339,7 @@ namespace Bakalarska_praca
             //    db.CreateTableIfNotExists(table);
             //}
 
-            string SQL = $"INSERT INTO OCR_2018.dbo.T003_Pattern(Lang) VALUES ('{_p.Lang}')";
+            string SQL = $"INSERT INTO OCR_2018.dbo.T003_Pattern(Lang,Resolution_X,Resolution_Y) VALUES ('{_p.Lang}','{_newImage.Width}','{_newImage.Height}')";
             db.Execute(SQL, Operation.INSERT);
             SQL = "SELECT TOP 1 * FROM OCR_2018.dbo.T003_Pattern ORDER BY Pattern_ID desc";
             SqlDataReader o = (SqlDataReader)db.Execute(SQL, Operation.SELECT);
@@ -435,6 +436,25 @@ namespace Bakalarska_praca
                 cmbClientInfo.Visible = true;
             else
                 cmbClientInfo.Visible = false;
+        }
+
+        private void propGrid_SelectedGridItemChanged(object sender, SelectedGridItemChangedEventArgs e)
+        {
+            PropertyGrid item = (PropertyGrid)sender;
+        }
+
+        private void propGrid_ControlAdded(object sender, ControlEventArgs e)
+        {
+
+        }
+
+        private void btnGenerateFromPattern_Click(object sender, System.EventArgs e)
+        {
+            if (_p != null)
+                FileService.GenerateTxtFile(_p);
+            else
+                MessageBox.Show("No data to import", "No data", MessageBoxButtons.OK);
+
         }
     }
 

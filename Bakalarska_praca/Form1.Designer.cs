@@ -9,11 +9,8 @@ namespace Bakalarska_praca
         /// </summary>
         private System.ComponentModel.IContainer components = null;
         private Button btnSave;
-        private TextBox txtConfidence;
         private Panel panel1;
         private PictureBox pictureBox1;
-        private Label lblConfidence;
-        private Label lblLanguage;
         private Panel panel3;
         private Panel panel4;
 
@@ -39,32 +36,30 @@ namespace Bakalarska_praca
         private void InitializeComponent()
         {
             this.btnSave = new System.Windows.Forms.Button();
-            this.txtConfidence = new System.Windows.Forms.TextBox();
             this.panel1 = new System.Windows.Forms.Panel();
             this.panel2 = new System.Windows.Forms.Panel();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.panel3 = new System.Windows.Forms.Panel();
             this.panel6 = new System.Windows.Forms.Panel();
+            this.propGrid = new System.Windows.Forms.PropertyGrid();
             this.dataGridValues = new System.Windows.Forms.DataGridView();
             this.key = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.value = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.panel5 = new System.Windows.Forms.Panel();
+            this.cmbClientInfo = new System.Windows.Forms.ComboBox();
             this.btnRemove = new System.Windows.Forms.Button();
             this.btnAdd = new System.Windows.Forms.Button();
             this.btnDefault = new System.Windows.Forms.Button();
             this.chkOnlyValue = new System.Windows.Forms.CheckBox();
             this.label4 = new System.Windows.Forms.Label();
             this.cmbKey = new System.Windows.Forms.ComboBox();
-            this.lblConfidence = new System.Windows.Forms.Label();
-            this.lblLanguage = new System.Windows.Forms.Label();
             this.panel4 = new System.Windows.Forms.Panel();
             this.btnNewFile = new System.Windows.Forms.Button();
             this.txtPathPattern = new System.Windows.Forms.TextBox();
             this.txtPartConfidence = new System.Windows.Forms.TextBox();
             this.lblPatConfidence = new System.Windows.Forms.Label();
-            this.txtLang = new System.Windows.Forms.TextBox();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
-            this.cmbClientInfo = new System.Windows.Forms.ComboBox();
+            this.btnGenerateFromPattern = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -85,14 +80,6 @@ namespace Bakalarska_praca
             this.btnSave.Text = "Save as pattern";
             this.btnSave.UseVisualStyleBackColor = true;
             this.btnSave.Click += new System.EventHandler(this.button1_Click);
-            // 
-            // txtConfidence
-            // 
-            this.txtConfidence.Location = new System.Drawing.Point(129, 6);
-            this.txtConfidence.Name = "txtConfidence";
-            this.txtConfidence.ReadOnly = true;
-            this.txtConfidence.Size = new System.Drawing.Size(67, 20);
-            this.txtConfidence.TabIndex = 2;
             // 
             // panel1
             // 
@@ -144,6 +131,7 @@ namespace Bakalarska_praca
             // 
             // panel6
             // 
+            this.panel6.Controls.Add(this.propGrid);
             this.panel6.Controls.Add(this.dataGridValues);
             this.panel6.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel6.Location = new System.Drawing.Point(0, 0);
@@ -151,18 +139,27 @@ namespace Bakalarska_praca
             this.panel6.Size = new System.Drawing.Size(468, 718);
             this.panel6.TabIndex = 2;
             // 
+            // propGrid
+            // 
+            this.propGrid.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.propGrid.Location = new System.Drawing.Point(0, 0);
+            this.propGrid.Name = "propGrid";
+            this.propGrid.Size = new System.Drawing.Size(468, 718);
+            this.propGrid.TabIndex = 1;
+            this.propGrid.SelectedGridItemChanged += new System.Windows.Forms.SelectedGridItemChangedEventHandler(this.propGrid_SelectedGridItemChanged);
+            this.propGrid.ControlAdded += new System.Windows.Forms.ControlEventHandler(this.propGrid_ControlAdded);
+            // 
             // dataGridValues
             // 
             this.dataGridValues.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridValues.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.key,
             this.value});
-            this.dataGridValues.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dataGridValues.Location = new System.Drawing.Point(0, 0);
+            this.dataGridValues.Location = new System.Drawing.Point(0, 281);
             this.dataGridValues.Name = "dataGridValues";
             this.dataGridValues.ReadOnly = true;
             this.dataGridValues.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dataGridValues.Size = new System.Drawing.Size(468, 718);
+            this.dataGridValues.Size = new System.Drawing.Size(237, 437);
             this.dataGridValues.TabIndex = 0;
             this.dataGridValues.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridValues_CellContentClick);
             // 
@@ -198,6 +195,16 @@ namespace Bakalarska_praca
             this.panel5.Name = "panel5";
             this.panel5.Size = new System.Drawing.Size(468, 69);
             this.panel5.TabIndex = 1;
+            // 
+            // cmbClientInfo
+            // 
+            this.cmbClientInfo.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbClientInfo.FormattingEnabled = true;
+            this.cmbClientInfo.Location = new System.Drawing.Point(92, 40);
+            this.cmbClientInfo.Name = "cmbClientInfo";
+            this.cmbClientInfo.Size = new System.Drawing.Size(131, 21);
+            this.cmbClientInfo.TabIndex = 11;
+            this.cmbClientInfo.Visible = false;
             // 
             // btnRemove
             // 
@@ -259,35 +266,14 @@ namespace Bakalarska_praca
             this.cmbKey.TabIndex = 0;
             this.cmbKey.SelectedValueChanged += new System.EventHandler(this.cmbKey_SelectedValueChanged);
             // 
-            // lblConfidence
-            // 
-            this.lblConfidence.AutoSize = true;
-            this.lblConfidence.Location = new System.Drawing.Point(33, 11);
-            this.lblConfidence.Name = "lblConfidence";
-            this.lblConfidence.Size = new System.Drawing.Size(90, 13);
-            this.lblConfidence.TabIndex = 8;
-            this.lblConfidence.Text = "Total confidence:";
-            // 
-            // lblLanguage
-            // 
-            this.lblLanguage.AutoSize = true;
-            this.lblLanguage.Location = new System.Drawing.Point(421, 9);
-            this.lblLanguage.Name = "lblLanguage";
-            this.lblLanguage.Size = new System.Drawing.Size(58, 13);
-            this.lblLanguage.TabIndex = 8;
-            this.lblLanguage.Text = "Language:";
-            // 
             // panel4
             // 
             this.panel4.BackColor = System.Drawing.Color.Transparent;
+            this.panel4.Controls.Add(this.btnGenerateFromPattern);
             this.panel4.Controls.Add(this.btnNewFile);
             this.panel4.Controls.Add(this.txtPathPattern);
             this.panel4.Controls.Add(this.txtPartConfidence);
             this.panel4.Controls.Add(this.lblPatConfidence);
-            this.panel4.Controls.Add(this.txtLang);
-            this.panel4.Controls.Add(this.lblConfidence);
-            this.panel4.Controls.Add(this.txtConfidence);
-            this.panel4.Controls.Add(this.lblLanguage);
             this.panel4.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel4.Location = new System.Drawing.Point(0, 0);
             this.panel4.Name = "panel4";
@@ -316,7 +302,7 @@ namespace Bakalarska_praca
             // 
             // txtPartConfidence
             // 
-            this.txtPartConfidence.Location = new System.Drawing.Point(323, 6);
+            this.txtPartConfidence.Location = new System.Drawing.Point(532, 6);
             this.txtPartConfidence.Name = "txtPartConfidence";
             this.txtPartConfidence.ReadOnly = true;
             this.txtPartConfidence.Size = new System.Drawing.Size(67, 20);
@@ -325,33 +311,25 @@ namespace Bakalarska_praca
             // lblPatConfidence
             // 
             this.lblPatConfidence.AutoSize = true;
-            this.lblPatConfidence.Location = new System.Drawing.Point(222, 10);
+            this.lblPatConfidence.Location = new System.Drawing.Point(431, 10);
             this.lblPatConfidence.Name = "lblPatConfidence";
             this.lblPatConfidence.Size = new System.Drawing.Size(95, 13);
             this.lblPatConfidence.TabIndex = 11;
             this.lblPatConfidence.Text = "Partial confidence:";
             // 
-            // txtLang
-            // 
-            this.txtLang.Location = new System.Drawing.Point(486, 6);
-            this.txtLang.Name = "txtLang";
-            this.txtLang.ReadOnly = true;
-            this.txtLang.Size = new System.Drawing.Size(100, 20);
-            this.txtLang.TabIndex = 9;
-            // 
             // openFileDialog1
             // 
             this.openFileDialog1.FileName = "openFileDialog1";
             // 
-            // cmbClientInfo
+            // btnGenerateFromPattern
             // 
-            this.cmbClientInfo.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbClientInfo.FormattingEnabled = true;
-            this.cmbClientInfo.Location = new System.Drawing.Point(92, 40);
-            this.cmbClientInfo.Name = "cmbClientInfo";
-            this.cmbClientInfo.Size = new System.Drawing.Size(131, 21);
-            this.cmbClientInfo.TabIndex = 11;
-            this.cmbClientInfo.Visible = false;
+            this.btnGenerateFromPattern.Location = new System.Drawing.Point(12, 6);
+            this.btnGenerateFromPattern.Name = "btnGenerateFromPattern";
+            this.btnGenerateFromPattern.Size = new System.Drawing.Size(126, 20);
+            this.btnGenerateFromPattern.TabIndex = 15;
+            this.btnGenerateFromPattern.Text = "Generate txt file";
+            this.btnGenerateFromPattern.UseVisualStyleBackColor = true;
+            this.btnGenerateFromPattern.Click += new System.EventHandler(this.btnGenerateFromPattern_Click);
             // 
             // Form1
             // 
@@ -379,8 +357,6 @@ namespace Bakalarska_praca
         }
 
         #endregion
-
-        private TextBox txtLang;
         private Button btnDefault;
         private Panel panel2;
         private DataGridView dataGridValues;
@@ -399,6 +375,8 @@ namespace Bakalarska_praca
         private TextBox txtPathPattern;
         private OpenFileDialog openFileDialog1;
         private ComboBox cmbClientInfo;
+        private PropertyGrid propGrid;
+        private Button btnGenerateFromPattern;
     }
 }
 

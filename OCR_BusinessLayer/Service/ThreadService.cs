@@ -38,10 +38,11 @@ namespace OCR_BusinessLayer.Service
                 await Task.Run(() =>
                 {
                     var _cvService = OpenCVImageService.GetInstance();
-                    _cvService.PrepareImage(s.Path, null, _lang);
+                    _cvService.PrepareImage(s.Path, progress, _lang);
                     Mat image = _cvService.Rotated;
-
-                    var id = CheckForPattern(tess, image);
+                    double ratioX = 1;
+                    double ratioY = 1;
+                    var id = CheckForPattern(tess, image, ref ratioX, ref ratioY);
                     if (id == -1)
                     {
                         PreviewObject p = tess.ProcessImage(image, progress);
@@ -52,7 +53,7 @@ namespace OCR_BusinessLayer.Service
                     {
                         PreviewObject prew;
                         //nasiel som pattern tak idem podla neho
-                        tess.CheckImageForPatternAndGetDataFromIt(image, GetKeysPossitions(id),progress,out prew);
+                        tess.CheckImageForPatternAndGetDataFromIt(image, GetKeysPossitions(id), progress, out prew, ratioX, ratioY);
                         prew.Path = s.Path;
                         _previewObjects.Add(prew);
                     }
@@ -63,24 +64,31 @@ namespace OCR_BusinessLayer.Service
             }
         }
 
-        private int CheckForPattern(TesseractService tess, Mat image)
+        private int CheckForPattern(TesseractService tess, Mat image, ref double ratioX, ref double ratioY)
         {
             Database db = new Database();
-            string SQL = "SELECT Pattern_ID FROM OCR_2018.dbo.T003_Pattern";
+            string SQL = "SELECT * FROM OCR_2018.dbo.T003_Pattern";
             SqlDataReader data = (SqlDataReader)db.Execute(SQL, Operation.SELECT);
-            List<int> patterns = new List<int>();
+            List<Pattern> patterns = new List<Pattern>();
             while (data.Read())
             {
-                patterns.Add((int)data[0]);
+                var pat = new Pattern();
+                pat.Patter_ID = (int)data[0];
+                pat.Lang = (string)data[1];
+                pat.Resolution_X = (int)data[2];
+                pat.Resolution_Y = (int)data[3];
+                patterns.Add(pat);
             }
             data.Close();
 
-            foreach (int id in patterns)
+            foreach (Pattern id in patterns)
             {
                 PreviewObject p;
-                if (tess.CheckImageForPatternAndGetDataFromIt(image, GetKeysPossitions(id, db, true),null,out p, true))
+                ratioX = image.Width / id.Resolution_X;
+                ratioY = image.Height / id.Resolution_Y;
+                if (tess.CheckImageForPatternAndGetDataFromIt(image, GetKeysPossitions(id.Patter_ID, db, true), null, out p, ratioX, ratioY, true))
                 {
-                    return id;
+                    return id.Patter_ID;
                 }
             }
 

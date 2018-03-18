@@ -167,6 +167,11 @@ namespace Bakalarska_praca
 
         private void button3_Click(object sender, EventArgs e)
         {
+            _previewObjects = _service.Preview;
+            if (_previewObjects.Count>0)
+                FileService.GenerateTxtFiles(_previewObjects);
+            else
+                MessageBox.Show("No data to import", "No data", MessageBoxButtons.OK);
 
         }
     }
