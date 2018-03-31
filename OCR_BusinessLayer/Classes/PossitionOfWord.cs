@@ -16,7 +16,7 @@ namespace OCR_BusinessLayer.Classes
         public Rectangle ValueBounds { get; set; }
         public bool IsActive { get; set; } = false;
         public string Confidence { get; set; } = "0.00";
-
+        public string DictionaryKey { get; set; }
 
         public PossitionOfWord(string k,Rectangle KB,string val,Rectangle VB)
         {

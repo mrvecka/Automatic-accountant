@@ -26,6 +26,7 @@ namespace Bakalarska_praca
             comboBox1.DataSource = data;
             comboBox1.SelectedIndex = data.IndexOf("slk");
             btnGenerate.Enabled = false;
+            button1.Focus();
 
         }
 
@@ -61,12 +62,15 @@ namespace Bakalarska_praca
                         lblFound.Text = $"{_files.Count} file found";
 
                     FillPanel();
+                    btnStart.Focus();
                 }
             }
             else
             {
                 MessageBox.Show("You don't have rights to that folder OR no files ware found!!!", "Invalid path", MessageBoxButtons.OK);
+                button1.Focus();
             }
+
 
         }
 

@@ -54,12 +54,18 @@ namespace Bakalarska_praca
             this.label4 = new System.Windows.Forms.Label();
             this.cmbKey = new System.Windows.Forms.ComboBox();
             this.panel4 = new System.Windows.Forms.Panel();
+            this.button1 = new System.Windows.Forms.Button();
+            this.lblSize = new System.Windows.Forms.Label();
+            this.sizer = new System.Windows.Forms.TrackBar();
+            this.btnGenerateFromPattern = new System.Windows.Forms.Button();
             this.btnNewFile = new System.Windows.Forms.Button();
             this.txtPathPattern = new System.Windows.Forms.TextBox();
             this.txtPartConfidence = new System.Windows.Forms.TextBox();
             this.lblPatConfidence = new System.Windows.Forms.Label();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
-            this.btnGenerateFromPattern = new System.Windows.Forms.Button();
+            this.tabControl1 = new System.Windows.Forms.TabControl();
+            this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.tabPage2 = new System.Windows.Forms.TabPage();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -68,6 +74,10 @@ namespace Bakalarska_praca
             ((System.ComponentModel.ISupportInitialize)(this.dataGridValues)).BeginInit();
             this.panel5.SuspendLayout();
             this.panel4.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.sizer)).BeginInit();
+            this.tabControl1.SuspendLayout();
+            this.tabPage1.SuspendLayout();
+            this.tabPage2.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnSave
@@ -87,9 +97,9 @@ namespace Bakalarska_praca
             this.panel1.Controls.Add(this.panel2);
             this.panel1.Controls.Add(this.panel3);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel1.Location = new System.Drawing.Point(0, 32);
+            this.panel1.Location = new System.Drawing.Point(0, 50);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(1185, 787);
+            this.panel1.Size = new System.Drawing.Size(1191, 769);
             this.panel1.TabIndex = 3;
             // 
             // panel2
@@ -102,7 +112,7 @@ namespace Bakalarska_praca
             this.panel2.Controls.Add(this.pictureBox1);
             this.panel2.Location = new System.Drawing.Point(0, 0);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(711, 784);
+            this.panel2.Size = new System.Drawing.Size(717, 766);
             this.panel2.TabIndex = 12;
             // 
             // pictureBox1
@@ -124,30 +134,28 @@ namespace Bakalarska_praca
             this.panel3.Controls.Add(this.panel6);
             this.panel3.Controls.Add(this.panel5);
             this.panel3.Dock = System.Windows.Forms.DockStyle.Right;
-            this.panel3.Location = new System.Drawing.Point(717, 0);
+            this.panel3.Location = new System.Drawing.Point(723, 0);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(468, 787);
+            this.panel3.Size = new System.Drawing.Size(468, 769);
             this.panel3.TabIndex = 11;
             // 
             // panel6
             // 
-            this.panel6.Controls.Add(this.propGrid);
-            this.panel6.Controls.Add(this.dataGridValues);
+            this.panel6.Controls.Add(this.tabControl1);
             this.panel6.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel6.Location = new System.Drawing.Point(0, 0);
             this.panel6.Name = "panel6";
-            this.panel6.Size = new System.Drawing.Size(468, 718);
+            this.panel6.Size = new System.Drawing.Size(468, 700);
             this.panel6.TabIndex = 2;
             // 
             // propGrid
             // 
             this.propGrid.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.propGrid.Location = new System.Drawing.Point(0, 0);
+            this.propGrid.Location = new System.Drawing.Point(3, 3);
             this.propGrid.Name = "propGrid";
-            this.propGrid.Size = new System.Drawing.Size(468, 718);
+            this.propGrid.Size = new System.Drawing.Size(454, 668);
             this.propGrid.TabIndex = 1;
             this.propGrid.SelectedGridItemChanged += new System.Windows.Forms.SelectedGridItemChangedEventHandler(this.propGrid_SelectedGridItemChanged);
-            this.propGrid.ControlAdded += new System.Windows.Forms.ControlEventHandler(this.propGrid_ControlAdded);
             // 
             // dataGridValues
             // 
@@ -155,11 +163,12 @@ namespace Bakalarska_praca
             this.dataGridValues.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.key,
             this.value});
-            this.dataGridValues.Location = new System.Drawing.Point(0, 281);
+            this.dataGridValues.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dataGridValues.Location = new System.Drawing.Point(3, 3);
             this.dataGridValues.Name = "dataGridValues";
             this.dataGridValues.ReadOnly = true;
             this.dataGridValues.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dataGridValues.Size = new System.Drawing.Size(237, 437);
+            this.dataGridValues.Size = new System.Drawing.Size(454, 668);
             this.dataGridValues.TabIndex = 0;
             this.dataGridValues.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridValues_CellContentClick);
             // 
@@ -191,7 +200,7 @@ namespace Bakalarska_praca
             this.panel5.Controls.Add(this.label4);
             this.panel5.Controls.Add(this.cmbKey);
             this.panel5.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel5.Location = new System.Drawing.Point(0, 718);
+            this.panel5.Location = new System.Drawing.Point(0, 700);
             this.panel5.Name = "panel5";
             this.panel5.Size = new System.Drawing.Size(468, 69);
             this.panel5.TabIndex = 1;
@@ -269,6 +278,9 @@ namespace Bakalarska_praca
             // panel4
             // 
             this.panel4.BackColor = System.Drawing.Color.Transparent;
+            this.panel4.Controls.Add(this.button1);
+            this.panel4.Controls.Add(this.lblSize);
+            this.panel4.Controls.Add(this.sizer);
             this.panel4.Controls.Add(this.btnGenerateFromPattern);
             this.panel4.Controls.Add(this.btnNewFile);
             this.panel4.Controls.Add(this.txtPathPattern);
@@ -277,13 +289,57 @@ namespace Bakalarska_praca
             this.panel4.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel4.Location = new System.Drawing.Point(0, 0);
             this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(1185, 32);
+            this.panel4.Size = new System.Drawing.Size(1191, 50);
             this.panel4.TabIndex = 12;
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(13, 26);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(125, 23);
+            this.button1.TabIndex = 18;
+            this.button1.Text = "button1";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Visible = false;
+            this.button1.Click += new System.EventHandler(this.button1_Click_1);
+            // 
+            // lblSize
+            // 
+            this.lblSize.AutoSize = true;
+            this.lblSize.Location = new System.Drawing.Point(342, 22);
+            this.lblSize.Name = "lblSize";
+            this.lblSize.Size = new System.Drawing.Size(36, 13);
+            this.lblSize.TabIndex = 17;
+            this.lblSize.Text = "100 %";
+            this.lblSize.Visible = false;
+            // 
+            // sizer
+            // 
+            this.sizer.LargeChange = 10;
+            this.sizer.Location = new System.Drawing.Point(154, 3);
+            this.sizer.Maximum = 130;
+            this.sizer.Minimum = 70;
+            this.sizer.Name = "sizer";
+            this.sizer.Size = new System.Drawing.Size(181, 45);
+            this.sizer.TabIndex = 16;
+            this.sizer.Value = 100;
+            this.sizer.Visible = false;
+            this.sizer.ValueChanged += new System.EventHandler(this.sizer_ValueChanged);
+            // 
+            // btnGenerateFromPattern
+            // 
+            this.btnGenerateFromPattern.Location = new System.Drawing.Point(12, 6);
+            this.btnGenerateFromPattern.Name = "btnGenerateFromPattern";
+            this.btnGenerateFromPattern.Size = new System.Drawing.Size(126, 20);
+            this.btnGenerateFromPattern.TabIndex = 15;
+            this.btnGenerateFromPattern.Text = "Generate txt file";
+            this.btnGenerateFromPattern.UseVisualStyleBackColor = true;
+            this.btnGenerateFromPattern.Click += new System.EventHandler(this.btnGenerateFromPattern_Click);
             // 
             // btnNewFile
             // 
             this.btnNewFile.Anchor = System.Windows.Forms.AnchorStyles.Right;
-            this.btnNewFile.Location = new System.Drawing.Point(1062, 4);
+            this.btnNewFile.Location = new System.Drawing.Point(1068, 13);
             this.btnNewFile.Name = "btnNewFile";
             this.btnNewFile.Size = new System.Drawing.Size(111, 23);
             this.btnNewFile.TabIndex = 14;
@@ -294,7 +350,7 @@ namespace Bakalarska_praca
             // txtPathPattern
             // 
             this.txtPathPattern.Anchor = System.Windows.Forms.AnchorStyles.Right;
-            this.txtPathPattern.Location = new System.Drawing.Point(612, 7);
+            this.txtPathPattern.Location = new System.Drawing.Point(618, 16);
             this.txtPathPattern.Name = "txtPathPattern";
             this.txtPathPattern.ReadOnly = true;
             this.txtPathPattern.Size = new System.Drawing.Size(443, 20);
@@ -321,26 +377,50 @@ namespace Bakalarska_praca
             // 
             this.openFileDialog1.FileName = "openFileDialog1";
             // 
-            // btnGenerateFromPattern
+            // tabControl1
             // 
-            this.btnGenerateFromPattern.Location = new System.Drawing.Point(12, 6);
-            this.btnGenerateFromPattern.Name = "btnGenerateFromPattern";
-            this.btnGenerateFromPattern.Size = new System.Drawing.Size(126, 20);
-            this.btnGenerateFromPattern.TabIndex = 15;
-            this.btnGenerateFromPattern.Text = "Generate txt file";
-            this.btnGenerateFromPattern.UseVisualStyleBackColor = true;
-            this.btnGenerateFromPattern.Click += new System.EventHandler(this.btnGenerateFromPattern_Click);
+            this.tabControl1.Controls.Add(this.tabPage1);
+            this.tabControl1.Controls.Add(this.tabPage2);
+            this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tabControl1.Location = new System.Drawing.Point(0, 0);
+            this.tabControl1.Name = "tabControl1";
+            this.tabControl1.SelectedIndex = 0;
+            this.tabControl1.Size = new System.Drawing.Size(468, 700);
+            this.tabControl1.TabIndex = 1;
+            // 
+            // tabPage1
+            // 
+            this.tabPage1.Controls.Add(this.propGrid);
+            this.tabPage1.Location = new System.Drawing.Point(4, 22);
+            this.tabPage1.Name = "tabPage1";
+            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage1.Size = new System.Drawing.Size(460, 674);
+            this.tabPage1.TabIndex = 0;
+            this.tabPage1.Text = "Properties";
+            this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // tabPage2
+            // 
+            this.tabPage2.Controls.Add(this.dataGridValues);
+            this.tabPage2.Location = new System.Drawing.Point(4, 22);
+            this.tabPage2.Name = "tabPage2";
+            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage2.Size = new System.Drawing.Size(460, 674);
+            this.tabPage2.TabIndex = 1;
+            this.tabPage2.Text = "Positions";
+            this.tabPage2.UseVisualStyleBackColor = true;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
-            this.ClientSize = new System.Drawing.Size(1185, 819);
+            this.ClientSize = new System.Drawing.Size(1191, 819);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.panel4);
             this.Name = "Form1";
             this.Text = "Tesseract test";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.panel1.ResumeLayout(false);
             this.panel2.ResumeLayout(false);
             this.panel2.PerformLayout();
@@ -352,6 +432,10 @@ namespace Bakalarska_praca
             this.panel5.PerformLayout();
             this.panel4.ResumeLayout(false);
             this.panel4.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.sizer)).EndInit();
+            this.tabControl1.ResumeLayout(false);
+            this.tabPage1.ResumeLayout(false);
+            this.tabPage2.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -377,6 +461,12 @@ namespace Bakalarska_praca
         private ComboBox cmbClientInfo;
         private PropertyGrid propGrid;
         private Button btnGenerateFromPattern;
+        private Label lblSize;
+        private Button button1;
+        private TrackBar sizer;
+        private TabControl tabControl1;
+        private TabPage tabPage1;
+        private TabPage tabPage2;
     }
 }
 

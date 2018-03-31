@@ -84,7 +84,7 @@ namespace OCR_BusinessLayer.Service
             PreviewObject p = new PreviewObject();
             if (pos.Count > 0)
             {
-                int step = 70 / pos.Count;
+                int step = 1;
                 bool isPattern = true;
                 p.ListOfKeyColumn = new List<Column>();
                 try
@@ -130,67 +130,65 @@ namespace OCR_BusinessLayer.Service
                         else
                         {
                             foreach (PossitionOfWord w in pos)
-                            {
-                                OpenCvSharp.Rect rec;
-                                // ak kontrolujem pattern tak pozeram len kluce
+                            {                               
+                                    OpenCvSharp.Rect rec;
+                                    // ak kontrolujem pattern tak pozeram len kluce
                                     rec = new Rect(w.KeyBounds.X, w.KeyBounds.Y, w.KeyBounds.Width, w.KeyBounds.Height);
 
 
-                                rec.X -= CONSTANTS.PATTERN_CHECK_XY_PROXIMITY;
-                                rec.Y -= CONSTANTS.PATTERN_CHECK_XY_PROXIMITY;
-                                rec.Width += CONSTANTS.PATTERN_CHECK_WIDTHHEIGHT_PROXIMITY; //ak pozeram ci je to patern tak potrebujem co najmensie
-                                rec.Height += CONSTANTS.PATTERN_CHECK_WIDTHHEIGHT_PROXIMITY;
+                                    rec.X -= CONSTANTS.PATTERN_CHECK_XY_PROXIMITY;
+                                    rec.Y -= CONSTANTS.PATTERN_CHECK_XY_PROXIMITY;
+                                    rec.Width += CONSTANTS.PATTERN_CHECK_WIDTHHEIGHT_PROXIMITY; //ak pozeram ci je to patern tak potrebujem co najmensie
+                                    rec.Height += CONSTANTS.PATTERN_CHECK_WIDTHHEIGHT_PROXIMITY;
 
-                                //nastavim pozicie vzhladom na rozlisenie pretoze mozem dostat rovnaku fakturu s inym rozlisenim
-                                rec.X = (int)(rec.X * ratioX);
-                                rec.Y = (int)(rec.Y * ratioY);
-                                rec.Width = (int)(rec.Width * ratioX);
-                                rec.Height = (int)(rec.Height * ratioY);
+                                    //nastavim pozicie vzhladom na rozlisenie pretoze mozem dostat rovnaku fakturu s inym rozlisenim
+                                    rec.X = (int)(rec.X * ratioX);
+                                    rec.Y = (int)(rec.Y * ratioY);
+                                    rec.Width = (int)(rec.Width * ratioX);
+                                    rec.Height = (int)(rec.Height * ratioY);
 
-                                //osetrim pozicie aby som sa nedostal mimo obrazka
-                                if (image.Cols < rec.X + rec.Width)
-                                    rec.Width -= (rec.X + rec.Width) - image.Cols;
-                                if (image.Rows < rec.Y + rec.Height)
-                                    rec.Height -= (rec.Y + rec.Height) - image.Rows;
-                                Mat im = new Mat(image, rec);
+                                    //osetrim pozicie aby som sa nedostal mimo obrazka
+                                    if (image.Cols < rec.X + rec.Width)
+                                        rec.Width -= (rec.X + rec.Width) - image.Cols;
+                                    if (image.Rows < rec.Y + rec.Height)
+                                        rec.Height -= (rec.Y + rec.Height) - image.Rows;
+                                    Mat im = new Mat(image, rec);
 
-                                using (var window = new Window("erode", image: im, flags: WindowMode.AutoSize))
-                                {
-                                    Cv2.WaitKey();
-                                }
+                                    engine.InitForAnalysePage();
+                                    engine.Init(null, _lang);
+                                    //engine.SetInputImage(pix);
+                                    engine.SetImage(new UIntPtr(BitConverter.ToUInt64(BitConverter.GetBytes(im.Data.ToInt64()), 0)), im.Size().Width, im.Size().Height, im.Channels(), (int)im.Step1());
+                                    engine.Recognize();
+                                    ResultIterator iterator = engine.GetIterator();
 
-                                engine.InitForAnalysePage();
-                                engine.Init(null, _lang);
-                                //engine.SetInputImage(pix);
-                                engine.SetImage(new UIntPtr(BitConverter.ToUInt64(BitConverter.GetBytes(im.Data.ToInt64()), 0)), im.Size().Width, im.Size().Height, im.Channels(), (int)im.Step1());
-                                engine.Recognize();
-                                ResultIterator iterator = engine.GetIterator();
-
-                                IterateFullPage(iterator, ref _textLines);
-                                iterator.Dispose();
-                                if (checkPattern)
-                                {
-                                    var s = Common.RemoveDiacritism(_textLines[0].Text.Trim(CONSTANTS.charsToTrimLineForpossition));
-                                    var k = GetKey(w.Key);
-
-
-                                    if (!s.Equals(k))
+                                    IterateFullPage(iterator, ref _textLines);
+                                    iterator.Dispose();
+                                    bool pat = false;
+                                    foreach (TextLine line in _textLines)
                                     {
-
-                                        isPattern = false;
-                                        break;
+                                        var s = Common.RemoveDiacritism(line.Text.Trim(CONSTANTS.charsToTrimLineForpossition));
+                                        var k = Common.RemoveDiacritism(w.Key);
+                                        if (SimilarityService.GetSimilarity(s,k) > 90 || s.Contains(k) || k.Contains(s))
+                                        {
+                                            pat = true;
+                                        }
+                                    
                                     }
-                                }
 
-                                w.Confidence = GetConfForLine(_textLines[0]);
-                                p.ListOfKeyPossitions.Add(w);
-                                p.Lines.AddRange(_textLines);
-                                _textLines.Clear();
+                                    if (!pat)
+                                    {
+                                        isPattern = false;
+                                            break;
+                                    }
 
+                                    w.Confidence = GetConfForLine(_textLines[0]);
+                                    p.ListOfKeyPossitions.Add(w);
+                                    p.Lines.AddRange(_textLines);
+                                    _textLines.Clear();
+                                
                             }
 
                         }
-
 
                         p.Confidence = string.Format("{0:N2}%", (engine.MeanTextConf) / 100);
                         p.Img = OpenCvSharp.Extensions.BitmapConverter.ToBitmap(image);

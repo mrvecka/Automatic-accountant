@@ -1,5 +1,6 @@
 ﻿using Bakalarska_praca.Dictioneries;
 using OCR_BusinessLayer.Classes;
+using OCR_BusinessLayer.Classes.Client;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -67,15 +68,10 @@ namespace OCR_BusinessLayer.Service
 
 				progress.Report(1);
 			}
-			ValidationService.Validate(_eud);
-			foreach (Client c in _listOfClients)
-			{
-				ValidationService.Validate(c);
-			}
-			_p.ListOfKeyColumn = new List<Column>();
-			_p.ListOfKeyColumn.AddRange(_listOfColumns);
+
+			_p.ListOfKeyColumn = new List<Column>(_listOfColumns);
 			_p.Evidence = _eud;
-			_p.Clients = new List<Client>(_listOfClients);
+			_p.Clients = new ClientCollection(_listOfClients) { Capacity =5};
 		}
 
 		private bool GoLikeColumn()
@@ -180,23 +176,22 @@ namespace OCR_BusinessLayer.Service
 							case 1:
 								client.Name = lineText;
 								col.FirstLineInColumn++;
-								SavePossitionToLists("Name", string.Empty, lineText, line, line, col.Text + " Meno");
+								SavePossitionToLists("Name", string.Empty, client.Name, line, line, col.Text + " Meno");
 								break;
 							case 2:
 								client.Street = lineText;
 								col.FirstLineInColumn++;
-								SavePossitionToLists("Street", string.Empty, lineText, line, line, col.Text + " Ulica");
+								SavePossitionToLists("Street", string.Empty, client.Street, line, line, col.Text + " Ulica");
 								break;
 							case 3:
 								client.PSCCity = lineText;
-								BreakDownPsc(client);
 								col.FirstLineInColumn++;
-								SavePossitionToLists("PSCCity", string.Empty, lineText, line, line, col.Text + " Psč");
+								SavePossitionToLists("PSCCity", string.Empty, client.PSCCity, line, line, col.Text + " Psč");
 								break;
 							case 4:
 								client.State = lineText;
 								col.FirstLineInColumn++;
-								SavePossitionToLists("State", string.Empty, lineText, line, line, col.Text + " Štát");
+								SavePossitionToLists("State", string.Empty, client.State, line, line, col.Text + " Štát");
 								break;
 
 						}
@@ -289,10 +284,14 @@ namespace OCR_BusinessLayer.Service
 				if (string.IsNullOrEmpty(stringKeyValue) && SETTINGS.GoInColumnForValue && _dic.valueInColumn.Contains(key.Value))
 					stringKeyValue = FindValueInColumn(line, stringKey, key.Key, ref saved);
 
-				if (!saved)
-					SavePossitionToLists(key.Key, stringKey.Trim(CONSTANTS.charsToTrimLineForpossition), stringKeyValue.Trim(CONSTANTS.charsToTrimLineForpossition), line, line);
+				stringKeyValue = stringKeyValue.Trim(CONSTANTS.charsToTrimLineForpossition);
 
-				SaveData(ref keyFound, isColumn, type, key, data, stringKeyValue, ref lineText, firstCharIndex);
+
+				stringKeyValue = SaveData(ref keyFound, isColumn, type, key, data, stringKeyValue, ref lineText, firstCharIndex);
+
+				if (!saved)
+					SavePossitionToLists(key.Value, stringKey.Trim(CONSTANTS.charsToTrimLineForpossition), stringKeyValue, line, line);
+
 				if (data.GetType() == typeof(Evidence))
 				{
 					float fakeConf = 0;
@@ -322,7 +321,7 @@ namespace OCR_BusinessLayer.Service
 		/// <param name="stringKeyValue">Value to key</param>
 		/// <param name="lineText">Text in line, after save key and stringKeyValue is removed from lineText</param>
 		/// <param name="firstCharIndex">Start of replacing</param>
-		private void SaveData(ref bool keyFound, bool isColumn, Type type, KeyValuePair<string, string> key,
+		private string SaveData(ref bool keyFound, bool isColumn, Type type, KeyValuePair<string, string> key,
 								Object data, string stringKeyValue, ref string lineText, int firstCharIndex)
 		{
 			PropertyInfo prop;
@@ -334,12 +333,10 @@ namespace OCR_BusinessLayer.Service
 			prop = type.GetProperty(key.Value);
 			if (prop.GetValue(data) == null)
 			{
-
 				prop.SetValue(data, stringKeyValue, null);
-                if (key.Value.Equals("ICDPH"))
-                    BreakDownICDPH((Client)data);
 			}
 			lineText = lineText.Replace(lineText.Substring(firstCharIndex), string.Empty);
+			return (string)prop.GetValue(data);
 		}
 
 		private void SavePossitionToLists(string key, string stringkey, string value, TextLine Keyline, TextLine valueLine, string colText = "", int x1 = 0, int x2 = 0)
@@ -428,6 +425,7 @@ namespace OCR_BusinessLayer.Service
 				}
 
 				pk.Confidence = string.Format("{0:N2}%", (conf / count));
+				pk.DictionaryKey = key;
 				_p.ListOfKeyPossitions.Add(pk);
 			}
 		}
@@ -879,57 +877,5 @@ namespace OCR_BusinessLayer.Service
 				GetDataFromLine(line, ref otherText, _dic.header, _eud.GetType(), _eud, false, null);
 
 		}
-
-
-		private void BreakDownPsc(Client client)
-		{
-
-			if (!string.IsNullOrEmpty(client.PSCCity))
-			{
-				string psc = client.PSCCity;
-				Regex rgx = new Regex(@"\d{5}", RegexOptions.IgnoreCase);
-				MatchCollection matches = rgx.Matches(psc);
-				if (matches.Count > 0)
-				{
-					client.PSC = matches[0].Value;
-					client.City = psc.Replace(client.PSC, "");
-				}
-				else
-				{
-					rgx = new Regex(@"\d{3} ?\d{2}", RegexOptions.IgnoreCase);
-					matches = rgx.Matches(psc);
-					if (matches.Count > 0)
-					{
-						client.PSC = matches[0].Value;
-						client.City = psc.Replace(client.PSC, "");
-					}
-					else
-					{
-						client.PSC = string.Empty;
-						client.City = string.Empty;
-					}
-				}
-
-			}
-
-		}
-
-        private void BreakDownICDPH(Client client)
-        {
-            if (string.IsNullOrEmpty(client.ICDPH))
-            {
-                string ic = client.ICDPH;
-                Regex rgx = new Regex(@"[A-Za-z]{2}", RegexOptions.IgnoreCase);
-                MatchCollection matches = rgx.Matches(ic);
-                if (matches.Count > 0)
-                {
-                    client.ICDPHStateCode = matches[0].Value;
-                }
-                else
-                {
-                    client.ICDPHStateCode = string.Empty;
-                }            
-            }
-        }
 	}
 }

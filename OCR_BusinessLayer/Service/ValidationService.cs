@@ -1,107 +1,78 @@
 ﻿using OCR_BusinessLayer.Classes;
+using OCR_BusinessLayer.Classes.Client;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
 namespace OCR_BusinessLayer.Service
 {
-    public class ValidationService
+
+    public class ValidationServiceEvidence 
     {
-        private static List<char> numbersOnly;
-
-        public static void Validate( Evidence e)
+        public static void ValidateEvidence(Evidence e)
         {
-            Initialization();
-            ValidateEvidence( e);
+            Validate_VariabilSymbol(e);
+            Validate_KonstSymbol(e);
+            Validate_SpecSymbol(e);
+            Validate_EvidenceNumber(e);
+            Validate_DeliveryNumber(e);
+            Validate_OrderNumber(e);
+            Validate_Transpport(e);
+            Validate_ClientNumber(e);
+            Validate_DocumentCreateDate(e);
+            Validate_DateOfTax(e);
+            Validate_PlaceOfSupply(e);
+            Validate_PlaceOfDelivery(e);
+            Validate_DateOfPayment(e);
+            Validate_DateOfCreate(e);
+            Validate_RefundMethode(e);
+            Validate_CreatorName(e);
+            Validate_DateOfDelivery(e);
+            Validate_DateOfOrder(e);
+
+            Validate_Amount(e);
+            Validate_BaseLower(e);
+            Validate_BaseHigher(e);
+            Validate_BaseZero(e);
+            Validate_BaseNotContain(e);
+            Validate_RateLower(e);
+            Validate_RateHigher(e);
+            Validate_AmountLower(e);
+            Validate_AmountHigher(e);
         }
-
-        public static void Validate(Client c)
-        {
-            Initialization();
-            ValidateClient(c);
-        }
-
-        private static void ValidateEvidence( Evidence e)
-        {
-            Validate_ValiabilSymbol( e);
-            Validate_KonstSymbol( e);
-            Validate_EvidenceNumber( e);
-            Validate_DeliveryNumber( e);
-            Validate_OrderNumber( e);
-            Validate_ClientNumber( e);
-            Validate_CreatorName( e);
-            Validate_PlaceOfSupply( e);
-            Validate_PlaceOfDelivery( e);
-            Validate_RefundMethode( e);
-            Validate_Transpport( e);
-            Validate_DocumentCreateDate( e);
-            Validate_DateOfTax( e);
-            Validate_DateOfPayment( e);
-            Validate_DateOfCreate( e);
-            Validate_DateOfDelivery( e);
-            Validate_DateOfOrder( e);
-        }
-
-        private static void ValidateClient(Client c)
-        {
-            Validate_Name( c);
-            Validate_Street( c);
-            Validate_PSC( c);
-            Validate_State( c);
-            Validate_ICO(c);
-            Validate_DIC( c);
-            Validate_ICDPH( c);
-            Validate_Phone( c);
-            Validate_Email( c);
-            Validate_Transport( c);
-            Validate_Bank( c);
-            Validate_AccountNumber( c);
-            Validate_BankCode( c);
-            Validate_IBAN( c);
-            Validate_SWIFT( c);
-            Validate_Web( c);
-        }
-
-        #region Initialization
-
-        private static void Initialization()
-        {
-            numbersOnly = new List<char>() { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
-        }
-
-#endregion
-
-
-        #region Validations Evidence
-
-        private static void Validate_ValiabilSymbol( Evidence e)
+        public static string Validate_VariabilSymbol(Evidence e)
         {
             string symbol = string.Empty;
             if (e.VariabilSymbol != null)
             {
                 symbol = e.VariabilSymbol.Trim(CONSTANTS.charsToTrimLine);
-                symbol = NumbersOnly(symbol);
-                
+                symbol = ValidationHelper.NumbersOnly(symbol);
+
             }
-            e.VariabilSymbol = symbol;
+            return symbol;
         }
 
 
-        private static void Validate_KonstSymbol( Evidence e)
+        public static string Validate_KonstSymbol(Evidence e)
         {
             string symbol = string.Empty;
             if (e.KonstSymbol != null)
             {
                 symbol = e.KonstSymbol.Trim(CONSTANTS.charsToTrimLine);
-                symbol = NumbersOnly(symbol);
-                    if (symbol.Length > 4)
-                    {
-                        symbol = symbol.Substring(0, 4);
-                    }
+                symbol = ValidationHelper.NumbersOnly(symbol);
+                if (symbol.Length > 4)
+                {
+                    symbol = symbol.Substring(0, 4);
+                }
             }
-            e.KonstSymbol = symbol;
+            return symbol;
 
         }
-        private static void Validate_EvidenceNumber( Evidence e)
+
+        public static string Validate_SpecSymbol(Evidence e)
+        {
+            return e.SpecSymbol;
+        }
+        public static string Validate_EvidenceNumber(Evidence e)
         {
             string symbol = string.Empty;
             if (e.EvidenceNumber != null)
@@ -112,7 +83,7 @@ namespace OCR_BusinessLayer.Service
 
                     for (int i = 0; i < symbol.Length; i++)
                     {
-                        if ((symbol[i] >= 48 && symbol[i] <= 57) || (symbol[i] >= 65 && symbol[i] <= 90) || (symbol[i] >=97 && symbol[i] <=122) || symbol[i] == 45 || symbol[i] == 32)
+                        if ((symbol[i] >= 48 && symbol[i] <= 57) || (symbol[i] >= 65 && symbol[i] <= 90) || (symbol[i] >= 97 && symbol[i] <= 122) || symbol[i] == 45 || symbol[i] == 32)
                         {
                             continue;
                         }
@@ -124,104 +95,104 @@ namespace OCR_BusinessLayer.Service
                     }
                 }
             }
-            e.EvidenceNumber = symbol.Trim();
+            return symbol.Trim();
         }
 
-        private static void Validate_OrderNumber( Evidence e)
+        public static string Validate_OrderNumber(Evidence e)
         {
             string symbol = string.Empty;
             if (e.OrderNumber != null)
             {
                 symbol = e.OrderNumber.Trim(CONSTANTS.charsToTrimLine);
-                symbol = NumbersOnly(symbol);
+                symbol = ValidationHelper.NumbersOnly(symbol);
             }
-            e.OrderNumber = symbol;
+            return symbol;
 
         }
 
-        private static void Validate_DeliveryNumber( Evidence e)
+        public static string Validate_DeliveryNumber(Evidence e)
         {
             string symbol = string.Empty;
             if (e.DeliveryNumber != null)
             {
                 symbol = e.DeliveryNumber.Trim(CONSTANTS.charsToTrimLine);
-                symbol = NumbersOnly(symbol);
+                symbol = ValidationHelper.NumbersOnly(symbol);
             }
-            e.DeliveryNumber = symbol;
+            return symbol;
 
         }
 
-        private static void Validate_ClientNumber( Evidence e)
+        public static string Validate_ClientNumber(Evidence e)
         {
             string symbol = string.Empty;
             if (e.ClientNumber != null)
             {
                 symbol = e.ClientNumber.Trim(CONSTANTS.charsToTrimLine);
-                symbol = NumbersOnly(symbol);
+                symbol = ValidationHelper.NumbersOnly(symbol);
             }
-            e.ClientNumber = symbol;
+            return symbol;
 
         }
 
-        private static void Validate_Transpport( Evidence e)
+        public static string Validate_Transpport(Evidence e)
         {
             string symbol = string.Empty;
             if (e.Transport != null)
             {
                 symbol = e.Transport.Trim(CONSTANTS.charsToTrimLine);
-                symbol = LettersSpacesOnly(symbol);
+                symbol = ValidationHelper.LettersSpacesOnly(symbol);
             }
-            e.Transport = symbol;
+            return symbol;
 
         }
 
-        private static void Validate_PlaceOfSupply( Evidence e)
+        public static string Validate_PlaceOfSupply(Evidence e)
         {
             string symbol = string.Empty;
             if (e.PlaceOfSupply != null)
             {
                 symbol = e.PlaceOfSupply.Trim(CONSTANTS.charsToTrimLine);
-                symbol = LettersSpacesOnly(symbol);
+                symbol = ValidationHelper.LettersSpacesOnly(symbol);
             }
-            e.PlaceOfSupply = symbol;
+            return symbol;
 
         }
 
-        private static void Validate_PlaceOfDelivery( Evidence e)
+        public static string Validate_PlaceOfDelivery(Evidence e)
         {
             string symbol = string.Empty;
             if (e.PlaceOfDelivery != null)
             {
                 symbol = e.PlaceOfDelivery.Trim(CONSTANTS.charsToTrimLine);
-                symbol = LettersSpacesOnly(symbol);
+                symbol = ValidationHelper.LettersSpacesOnly(symbol);
             }
-            e.PlaceOfDelivery = symbol;
+            return symbol;
 
         }
 
-        private static void Validate_RefundMethode( Evidence e)
+        public static string Validate_RefundMethode(Evidence e)
         {
             string symbol = string.Empty;
             if (e.RefundMethode != null)
             {
                 symbol = e.RefundMethode.Trim(CONSTANTS.charsToTrimLine);
-                symbol = LettersSpacesOnly(symbol);
+                symbol = ValidationHelper.LettersSpacesOnly(symbol);
             }
-            e.RefundMethode = symbol;
+            return symbol;
 
         }
-        private static void Validate_CreatorName( Evidence e)
+        public static string Validate_CreatorName(Evidence e)
         {
             string symbol = string.Empty;
             if (e.CreatorName != null)
             {
                 symbol = e.CreatorName.Trim(CONSTANTS.charsToTrimLine);
-                symbol = LettersSpacesOnly(symbol);
+                symbol = ValidationHelper.LettersSpacesOnly(symbol);
             }
-            e.CreatorName = symbol;
+            return symbol;
 
         }
-        private static void Validate_DocumentCreateDate( Evidence e)
+        public static string Validate_DocumentCreateDate(Evidence e)
         {
             string symbol = string.Empty;
             if (e.DocumentCreateDate != null)
@@ -229,13 +200,13 @@ namespace OCR_BusinessLayer.Service
                 symbol = e.DocumentCreateDate.Trim(CONSTANTS.charsToTrimLine);
                 if (!string.IsNullOrEmpty(symbol))
                 {
-                    symbol = ValidateDate(symbol);
+                    symbol = ValidationHelper.ValidateDate(symbol);
                 }
             }
-            e.DocumentCreateDate = symbol;
+            return symbol;
 
         }
-        private static void Validate_DateOfTax( Evidence e)
+        public static string Validate_DateOfTax(Evidence e)
         {
             string symbol = string.Empty;
             if (e.DateOfTax != null)
@@ -243,13 +214,13 @@ namespace OCR_BusinessLayer.Service
                 symbol = e.DateOfTax.Trim(CONSTANTS.charsToTrimLine);
                 if (!string.IsNullOrEmpty(symbol))
                 {
-                    symbol = ValidateDate(symbol);
+                    symbol = ValidationHelper.ValidateDate(symbol);
                 }
             }
-            e.DateOfTax = symbol;
+            return symbol;
 
         }
-        private static void Validate_DateOfPayment( Evidence e)
+        public static string Validate_DateOfPayment(Evidence e)
         {
             string symbol = string.Empty;
             if (e.DateOfPayment != null)
@@ -257,13 +228,13 @@ namespace OCR_BusinessLayer.Service
                 symbol = e.DateOfPayment.Trim(CONSTANTS.charsToTrimLine);
                 if (!string.IsNullOrEmpty(symbol))
                 {
-                    symbol = ValidateDate(symbol);
+                    symbol = ValidationHelper.ValidateDate(symbol);
                 }
             }
-            e.DateOfPayment = symbol;
+            return symbol;
 
         }
-        private static void Validate_DateOfCreate( Evidence e)
+        public static string Validate_DateOfCreate(Evidence e)
         {
             string symbol = string.Empty;
             if (e.DateOfCreate != null)
@@ -271,13 +242,13 @@ namespace OCR_BusinessLayer.Service
                 symbol = e.DateOfCreate.Trim(CONSTANTS.charsToTrimLine);
                 if (!string.IsNullOrEmpty(symbol))
                 {
-                    symbol = ValidateDate(symbol);
+                    symbol = ValidationHelper.ValidateDate(symbol);
                 }
             }
-            e.DateOfCreate = symbol;
+            return symbol;
 
         }
-        private static void Validate_DateOfDelivery( Evidence e)
+        public static string Validate_DateOfDelivery(Evidence e)
         {
             string symbol = string.Empty;
             if (e.DateOfDelivery != null)
@@ -285,13 +256,13 @@ namespace OCR_BusinessLayer.Service
                 symbol = e.DateOfDelivery.Trim(CONSTANTS.charsToTrimLine);
                 if (!string.IsNullOrEmpty(symbol))
                 {
-                    symbol = ValidateDate(symbol);
+                    symbol = ValidationHelper.ValidateDate(symbol);
                 }
             }
-            e.DateOfDelivery = symbol;
+            return symbol;
 
         }
-        private static void Validate_DateOfOrder( Evidence e)
+        public static string Validate_DateOfOrder(Evidence e)
         {
             string symbol = string.Empty;
             if (e.DateOfOrder != null)
@@ -299,80 +270,168 @@ namespace OCR_BusinessLayer.Service
                 symbol = e.DateOfOrder.Trim(CONSTANTS.charsToTrimLine);
                 if (!string.IsNullOrEmpty(symbol))
                 {
-                    symbol = ValidateDate(symbol);
+                    symbol = ValidationHelper.ValidateDate(symbol);
                 }
             }
-            e.DateOfOrder = symbol;
+            return symbol;
 
         }
+        public static string Validate_Amount(Evidence e)
+        {
+            return e.Amount;
+        }
+
+        public static string Validate_BaseLower(Evidence e)
+        {
+            return e.BaseLower;
+        }
+
+        public static string Validate_BaseHigher(Evidence e)
+        {
+            return e.BaseHigher;
+        }
+
+        public static string Validate_BaseZero(Evidence e)
+        {
+            return e.BaseZero;
+        }
+
+        public static string Validate_BaseNotContain(Evidence e)
+        {
+            return e.BaseNotContain;
+        }
+
+        public static string Validate_RateLower(Evidence e)
+        {
+            return e.RateLower;
+        }
+
+        public static string Validate_RateHigher(Evidence e)
+        {
+            return e.RateHigher;
+        }
+
+        public static string Validate_AmountLower(Evidence e)
+        {
+            return e.AmountLower;
+        }
+
+        public static string Validate_AmountHigher(Evidence e)
+        {
+            return e.AmountHigher;
+        }
+    }
 
 
+    public class ValidationServiceClient
+    {
 
-        #endregion
+        public static void ValidateClient(Client c)
+        {
+            Validate_ClientID(c);
+            Validate_Name( c);
+            Validate_Street( c);
+            Validate_PSCCity( c);
+            Validate_PSC(c);
+            Validate_City(c);
+            Validate_State( c);
+            Validate_ICO(c);
+            Validate_DIC( c);
+            Validate_ICDPH( c);
+            Validate_ICDPHStateCode(c);
+            Validate_Phone( c);
+            Validate_Email( c);
+            Validate_Transport( c);
+            Validate_Bank( c);
+            Validate_AccountNumber( c);
+            Validate_BankCode( c);
+            Validate_IBAN( c);
+            Validate_SWIFT( c);
+            Validate_ClientNumber(c);
+            Validate_Fax(c);
+            Validate_Web( c);
+            Validate_BankCode(c);
+        }
 
         #region Validations Client
 
-        private static void Validate_Name( Client c)
+        public static string Validate_ClientID(Client c)
+        {
+            return c.ClientID;
+        }
+
+        public static string Validate_Name( Client c)
         {
             string symbol = string.Empty;
             if (c.Name != null)
             {
                 symbol = c.Name.Trim(CONSTANTS.charsToTrimLine);
-                symbol = LettersSpacesOnly(symbol);
+                symbol = ValidationHelper.LettersSpacesOnly(symbol);
             }
-            c.Name = symbol;
+            return symbol;
         }
-        private static void Validate_Street( Client c)
+        public static string Validate_Street( Client c)
         {
             string symbol = string.Empty;
             if (c.Street != null)
             {
                 symbol = c.Street.Trim(CONSTANTS.charsToTrimLine);
             }
-            c.Street = symbol;
+            return symbol;
         }
-        private static void Validate_PSC( Client c)
+        public static string Validate_PSCCity( Client c)
         {
             string symbol = string.Empty;
             if (c.PSCCity != null)
             {
                 symbol = c.PSCCity.Trim(CONSTANTS.charsToTrimLine);
             }
-            c.PSCCity = symbol;
+            BreakDownPsc(c, symbol);
+            return symbol;
         }
-        private static void Validate_State( Client c)
+
+        public static string Validate_PSC(Client c)
+        {
+            return c.PSC;
+        }
+        public static string Validate_City(Client c)
+        {
+            return c.City;
+        }
+
+        public static string Validate_State( Client c)
         {
             string symbol = string.Empty;
             if (c.State != null)
             {
                 symbol = c.State.Trim(CONSTANTS.charsToTrimLine);
             }
-            c.State = symbol;
+            return symbol;
         }
 
-        private static void Validate_ICO(Client c)
+        public static string Validate_ICO(Client c)
         {
             string symbol = string.Empty;
             if (c.ICO != null)
             {
                 symbol = c.ICO.Trim(CONSTANTS.charsToTrimLine);
-                symbol = NumbersOnly(symbol);
+                symbol = ValidationHelper.NumbersOnly(symbol);
             }
-            c.ICO = symbol;
+            return symbol;
         }
 
-        private static void Validate_DIC( Client c)
+        public static string Validate_DIC( Client c)
         {
             string symbol = string.Empty;
             if (c.DIC != null)
             {
                 symbol = c.DIC.Trim(CONSTANTS.charsToTrimLine);
-                symbol = NumbersOnly(symbol);
+                symbol = ValidationHelper.NumbersOnly(symbol);
             }
-            c.DIC = symbol;
+            return symbol;
         }
 
-        private static void Validate_ICDPH( Client c)
+        public static string Validate_ICDPH( Client c)
         {
             string symbol = string.Empty;
             int countOfLetters = 0;
@@ -381,11 +440,11 @@ namespace OCR_BusinessLayer.Service
                 symbol = c.ICDPH.Trim(CONSTANTS.charsToTrimLine);
                 for (int i = 0; i < symbol.Length; i++)
                 {
-                    if (ContainOnlyLetters(symbol[i].ToString()))
+                    if (ValidationHelper.ContainOnlyLetters(symbol[i].ToString()))
                     {
                         countOfLetters++;
                     }
-                    else if (numbersOnly.Contains(symbol[i]))
+                    else if (ValidationHelper.numbersOnly.Contains(symbol[i]))
                     {
                         continue;
                     }
@@ -400,10 +459,16 @@ namespace OCR_BusinessLayer.Service
                 }
 
             }
-            c.ICDPH = symbol;
+            BreakDownICDPH(c,symbol);
+            return symbol;
         }
 
-        private static void Validate_Phone( Client c)
+        public static string Validate_ICDPHStateCode(Client c)
+        {
+            return c.ICDPHStateCode;
+        }
+
+        public static string Validate_Phone( Client c)
         {
            
             string symbol = string.Empty;
@@ -421,10 +486,10 @@ namespace OCR_BusinessLayer.Service
                 }
 
             }
-            c.Phone = symbol;
+            return symbol;
         }
 
-        private static void Validate_Email( Client c)
+        public static string Validate_Email( Client c)
         {
 
             string symbol = string.Empty;
@@ -442,36 +507,36 @@ namespace OCR_BusinessLayer.Service
                 }
 
             }
-            c.Email = symbol;
+            return symbol;
         }
 
-        private static void Validate_Transport( Client c)
+        public static string Validate_Transport( Client c)
         {
 
             string symbol = string.Empty;
             if (c.Transport != null)
             {
                 symbol = c.Transport.Trim(CONSTANTS.charsToTrimLine);
-                symbol = LettersSpacesOnly(symbol);
+                symbol = ValidationHelper.LettersSpacesOnly(symbol);
 
             }
-            c.Transport = symbol;
+            return symbol;
         }
 
 
-        private static void Validate_Bank( Client c)
+        public static string Validate_Bank( Client c)
         {
             string symbol = string.Empty;
             if (c.Bank != null)
             {
                 symbol = c.Bank.Trim(CONSTANTS.charsToTrimLine);
-                symbol = LettersSpacesDotsOnly(symbol);
+                symbol = ValidationHelper.LettersSpacesDotsOnly(symbol);
 
             }
-            c.Bank = symbol;
+            return symbol;
         }
 
-        private static void Validate_AccountNumber( Client c)
+        public static string Validate_AccountNumber( Client c)
         {
             string symbol = string.Empty;
             if (c.AccountNumber != null)
@@ -479,7 +544,7 @@ namespace OCR_BusinessLayer.Service
                 symbol = c.AccountNumber.Trim(CONSTANTS.charsToTrimAccountNumber);
                 for (int i = 0; i < symbol.Length; i++)
                 {
-                    if (numbersOnly.Contains(symbol[i]))
+                    if (ValidationHelper.numbersOnly.Contains(symbol[i]))
                     {
                         continue;
                     }
@@ -496,21 +561,21 @@ namespace OCR_BusinessLayer.Service
                 }
 
             }
-            c.AccountNumber = symbol;
+            return symbol;
         }
-        private static void Validate_BankCode( Client c)
+        public static string Validate_BankCode( Client c)
         {
             string symbol = string.Empty;
             if (c.BankCode != null)
             {
                 symbol = c.BankCode.Trim(CONSTANTS.charsToTrimAccountNumber);
-                symbol = NumbersOnly(symbol);
+                symbol = ValidationHelper.NumbersOnly(symbol);
 
             }
-            c.BankCode = symbol;
+            return symbol;
         }
 
-        private static void Validate_IBAN( Client c)
+        public static string Validate_IBAN( Client c)
         {
             string symbol = string.Empty;
             int countOfLetters = 0;
@@ -519,11 +584,11 @@ namespace OCR_BusinessLayer.Service
                 symbol = c.IBAN.Trim(CONSTANTS.charsToTrimAccountNumber);
                 for (int i = 0; i < symbol.Length; i++)
                 {
-                    if (ContainOnlyLetters(symbol[i].ToString()))
+                    if (ValidationHelper.ContainOnlyLetters(symbol[i].ToString()))
                     {
                         countOfLetters++;
                     }
-                    else if (numbersOnly.Contains(symbol[i]))
+                    else if (ValidationHelper.numbersOnly.Contains(symbol[i]))
                     {
                         continue;
                     }
@@ -538,34 +603,43 @@ namespace OCR_BusinessLayer.Service
                 }
 
             }
-            c.IBAN = symbol;
+            return symbol;
         }
 
-        private static void Validate_SWIFT( Client c)
+        public static string Validate_SWIFT( Client c)
         {
             string symbol = string.Empty;
             if (c.SWIFT != null)
             {
                 symbol = c.SWIFT.Trim(CONSTANTS.charsToTrimAccountNumber);
-                symbol = LettersOnly(symbol);
+                symbol = ValidationHelper.LettersOnly(symbol);
                 symbol = symbol.Substring(0, 8);
             }
-            c.SWIFT = symbol;
+            return symbol;
+        }
+        public static string Validate_ClientNumber(Client c)
+        {
+            return c.ClientNumber;
         }
 
-        private static void Validate_Web( Client c)
+        public static string Validate_Fax(Client c)
+        {
+            return c.Fax;
+        }
+
+        public static string Validate_Web( Client c)
         {
             string symbol = string.Empty;
             if (c.Web != null)
             {
                 symbol = c.Web.Trim(CONSTANTS.charsToTrimAccountNumber);
-                symbol = LettersDotsOnly(symbol);
+                symbol = ValidationHelper.LettersDotsOnly(symbol);
                 if (symbol[0] != 'w')
                 {
                     symbol = "www" + symbol;
                 }
             }
-            c.Web = symbol;
+            return symbol;
         }
 
 
@@ -576,159 +650,59 @@ namespace OCR_BusinessLayer.Service
 
         #region Help Function
 
-        private static string NumbersOnly(string symbol)
+        
+
+        private static void BreakDownPsc(Client c,string psc)
         {
-            if (!string.IsNullOrWhiteSpace(symbol))
+
+            if (!string.IsNullOrEmpty(psc))
             {
-                for (int i = 0; i < symbol.Length; i++)
+
+                Regex rgx = new Regex(@"\d{5}", RegexOptions.IgnoreCase);
+                MatchCollection matches = rgx.Matches(psc);
+                if (matches.Count > 0)
                 {
-                    if (numbersOnly.Contains(symbol[i]))
+                    c.PSC = matches[0].Value;
+                    c.City = psc.Replace(c.PSC, "");
+                }
+                else
+                {
+                    rgx = new Regex(@"\d{3} ?\d{2}", RegexOptions.IgnoreCase);
+                    matches = rgx.Matches(psc);
+                    if (matches.Count > 0)
                     {
-                        continue;
+                        c.PSC = matches[0].Value;
+                        c.City = psc.Replace(c.PSC, "");
                     }
                     else
                     {
-                        symbol = symbol.Remove(i, 1);
-                        i--;
+                        c.PSC = string.Empty;
+                        c.City = string.Empty;
                     }
                 }
+
             }
-            return symbol.Trim();
+
         }
-
-
-
-        private static string LettersOnly(string symbol)
+        private static void BreakDownICDPH(Client c,string icdph)
         {
-            for (int i = 0; i < symbol.Length; i++)
+            if (string.IsNullOrEmpty(icdph))
             {
-                if ((symbol[i] >= 65 && symbol[i] <= 90) || (symbol[i] >= 97 && symbol[i] <= 122))
+
+                Regex rgx = new Regex(@"[A-Za-z]{2}", RegexOptions.IgnoreCase);
+                MatchCollection matches = rgx.Matches(icdph);
+                if (matches.Count > 0)
                 {
-                    continue;
+                    c.ICDPHStateCode = matches[0].Value;
                 }
                 else
                 {
-                    symbol = symbol.Remove(i, 1);
-                    i--;
+                    c.ICDPHStateCode = string.Empty;
                 }
             }
-            return symbol.Trim();
-        }
-
-        private static string LettersSpacesOnly(string symbol)
-        {
-            for (int i = 0; i < symbol.Length; i++)
-            {
-                if ((symbol[i] >= 65 && symbol[i] <= 90) || (symbol[i] >= 97 && symbol[i] <= 122) || symbol[i] == 32)
-                {
-                    continue;
-                }
-                else
-                {
-                    symbol = symbol.Remove(i, 1);
-                    i--;
-                }
-            }
-            return symbol.Trim();
-        }
-
-        private static string LettersDotsOnly(string symbol)
-        {
-            for (int i = 0; i < symbol.Length; i++)
-            {
-                if ((symbol[i] >= 65 && symbol[i] <= 90) || (symbol[i] >= 97 && symbol[i] <= 122) || symbol[i] == 46)
-                {
-                    continue;
-                }
-                else
-                {
-                    symbol = symbol.Remove(i, 1);
-                    i--;
-                }
-            }
-            return symbol.Trim();
-        }
-
-        private static string LettersSpacesDotsOnly(string symbol)
-        {
-            for (int i = 0; i < symbol.Length; i++)
-            {
-                if ((symbol[i] >= 65 && symbol[i] <= 90) || (symbol[i] >= 97 && symbol[i] <= 122) || symbol[i] == 32 || symbol[i] == 46)
-                {
-                    continue;
-                }
-                else
-                {
-                    symbol = symbol.Remove(i, 1);
-                    i--;
-                }
-            }
-            return symbol.Trim();
         }
 
 
-        private static string ValidateDate(string symbol)
-        {
-            string date = string.Empty;
-            //120314
-            // 12032014 or 12.03.14 or 12 03 14
-            //12.03. 14
-            // 12 03 2014
-            // 12.03. 2014
-
-            //day
-            int index = symbol.IndexOfAny(numbersOnly.ToArray());
-            var s = string.Empty;
-            if (index != -1)
-            {
-                s = symbol.Substring(index, 2);
-                date += s;
-                date += ".";
-                symbol = symbol.Replace(s, string.Empty);
-            }
-
-            // month
-            index = symbol.IndexOfAny(numbersOnly.ToArray()); // ak mam mesiac napr 01 a rok 2011 tak mi to vymaze aj z roku
-            if (index != -1)
-            {
-                s = symbol.Substring(index, 2);
-                date += s;
-                date += ". ";
-                symbol = symbol.Replace(s, string.Empty);
-            }
-
-            //year
-            index = symbol.IndexOfAny(numbersOnly.ToArray());
-            if (index != -1)
-            {
-                s = symbol.Substring(index);
-                if (s.Length == 2)
-                {
-                    date += "20";
-                }
-                date += s;
-            }
-
-
-            return date;
-        }
-
-
-        private static bool ContainOnlyLetters(string text)
-        {
-            for (int i = 0; i < text.Length; i++)
-            {
-                if ((text[i] >= 65 && text[i] <= 90) || (text[i] >= 97 && text[i] <= 122))
-                {
-                    continue;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-            return true;
-        }
 
         #endregion
 

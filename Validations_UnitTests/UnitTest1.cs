@@ -13,7 +13,7 @@ namespace Validations_UnitTests
         {
             Evidence e = new Evidence();
             e.VariabilSymbol = " /1526g456";
-            ValidationService.Validate( e);
+            ValidationServiceEvidence.ValidateEvidence( e);
 
             Assert.AreEqual("1526456", e.VariabilSymbol);
 
@@ -24,7 +24,7 @@ namespace Validations_UnitTests
         {
             Evidence e = new Evidence();
             e.KonstSymbol = " /1526g456";
-            ValidationService.Validate( e);
+            ValidationServiceEvidence.ValidateEvidence( e);
 
             Assert.AreEqual("1526", e.KonstSymbol);
 
@@ -35,7 +35,7 @@ namespace Validations_UnitTests
         {
             Evidence e = new Evidence();
             e.EvidenceNumber = " /1526g456";
-            ValidationService.Validate( e);
+            ValidationServiceEvidence.ValidateEvidence( e);
 
             Assert.AreEqual("1526g456", e.EvidenceNumber);
 
@@ -45,7 +45,7 @@ namespace Validations_UnitTests
         {
             Evidence e = new Evidence();
             e.EvidenceNumber = "=FV-1526456";
-            ValidationService.Validate( e);
+            ValidationServiceEvidence.ValidateEvidence( e);
 
             Assert.AreEqual("FV-1526456", e.EvidenceNumber);
 
@@ -55,7 +55,7 @@ namespace Validations_UnitTests
         {
             Evidence e = new Evidence();
             e.EvidenceNumber = "=FV 1526456";
-            ValidationService.Validate( e);
+            ValidationServiceEvidence.ValidateEvidence( e);
 
             Assert.AreEqual("FV 1526456", e.EvidenceNumber);
 
@@ -66,7 +66,7 @@ namespace Validations_UnitTests
         {
             Evidence e = new Evidence();
             e.DocumentCreateDate = " '/12062018";
-            ValidationService.Validate( e);
+            ValidationServiceEvidence.ValidateEvidence( e);
 
             Assert.AreEqual("12.06. 2018", e.DocumentCreateDate);
 
@@ -76,7 +76,7 @@ namespace Validations_UnitTests
         {
             Evidence e = new Evidence();
             e.DocumentCreateDate = " '/12.06.2018";
-            ValidationService.Validate( e);
+            ValidationServiceEvidence.ValidateEvidence( e);
 
             Assert.AreEqual("12.06. 2018", e.DocumentCreateDate);
 
@@ -86,7 +86,7 @@ namespace Validations_UnitTests
         {
             Evidence e = new Evidence();
             e.DocumentCreateDate = " '/12.06. 2018";
-            ValidationService.Validate( e);
+            ValidationServiceEvidence.ValidateEvidence( e);
 
             Assert.AreEqual("12.06. 2018", e.DocumentCreateDate);
 
@@ -96,7 +96,7 @@ namespace Validations_UnitTests
         {
             Evidence e = new Evidence();
             e.DocumentCreateDate = " '/120618";
-            ValidationService.Validate( e);
+            ValidationServiceEvidence.ValidateEvidence( e);
 
             Assert.AreEqual("12.06. 2018", e.DocumentCreateDate);
 
@@ -106,7 +106,7 @@ namespace Validations_UnitTests
         {
             Evidence e = new Evidence();
             e.DocumentCreateDate = " '/12 06 18";
-            ValidationService.Validate( e);
+            ValidationServiceEvidence.ValidateEvidence( e);
 
             Assert.AreEqual("12.06. 2018", e.DocumentCreateDate);
 

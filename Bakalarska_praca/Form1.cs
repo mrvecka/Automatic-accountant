@@ -1,12 +1,16 @@
 ﻿using Bakalarska_praca.Dictioneries;
 using OCR_BusinessLayer;
 using OCR_BusinessLayer.Classes;
+using OCR_BusinessLayer.Classes.Client;
 using OCR_BusinessLayer.Service;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data.OleDb;
 using System.Data.SqlClient;
 using System.Drawing;
+using System.Linq;
+using System.Reflection;
 using System.Windows.Forms;
 using static OCR_BusinessLayer.CONSTANTS;
 
@@ -26,7 +30,8 @@ namespace Bakalarska_praca
         private bool _drawingNewRect = false;
         private bool _canDraw = false;
         private int _countOfNewRect = 0;
-        private PreviewObject _p;
+        private static PreviewObject _p;
+        public static PreviewObject Prew{ get { return _p; } }
         private PossitionOfWord _newPositions;
         private Rectangle _newRect;
         private Rectangle _oldRect;
@@ -34,6 +39,7 @@ namespace Bakalarska_praca
         private int _deltaY = 0;
         private System.Drawing.Graphics _newGraphics;
         private Pen _myPenword;
+        private double resizeValue = 0.0;
 
         public Form1(PreviewObject file)
         {
@@ -49,6 +55,8 @@ namespace Bakalarska_praca
                 txtPathPattern.Visible = false;
                 btnNewFile.Visible = false;
                 propGrid.SelectedObject = file;
+                ClientCollectionEditor.CollectionChanged += new EventHandler(OnMeasuredParamsChanged);
+
                 FillListView(file);
                 FillCombo();
             }
@@ -57,8 +65,8 @@ namespace Bakalarska_praca
                 //idem vytvarat novy pattern
                 lblPatConfidence.Visible = false;
                 txtPartConfidence.Visible = false;
-            }
 
+            }
 
 
 
@@ -115,9 +123,9 @@ namespace Bakalarska_praca
         private void AddRectangle(PossitionOfWord key)
         {
 
-            txtPartConfidence.Text = key.Confidence.ToString();
             if (key != null)
             {
+                txtPartConfidence.Text = key.Confidence.ToString();
                 ClearImageAndText();
                 System.Drawing.Image img = (System.Drawing.Image)_newImage.Clone();
                 _newGraphics = System.Drawing.Graphics.FromImage(img);
@@ -352,9 +360,9 @@ namespace Bakalarska_praca
             int rows = 0;
             foreach (PossitionOfWord p in _p.ListOfKeyPossitions)
             {
-                SQL = "INSERT INTO OCR_2018.dbo.T004_Possitions(Pattern_ID,Word_Key,Word_Value,K_X,K_Y,K_Width,K_Height,V_X,V_Y,V_Width,V_Height)" +
+                SQL = "INSERT INTO OCR_2018.dbo.T004_Possitions(Pattern_ID,Word_Key,Word_Value,K_X,K_Y,K_Width,K_Height,V_X,V_Y,V_Width,V_Height,Dictionary_Key)" +
                              $" Values({id},'{Common.SQLString(p.Key)}','{Common.SQLString(p.Value)}',{p.KeyBounds.X},{p.KeyBounds.Y},{p.KeyBounds.Width},{p.KeyBounds.Height}," +
-                                                       $"{p.ValueBounds.X},{p.ValueBounds.Y},{p.ValueBounds.Width},{p.ValueBounds.Height});";
+                                                       $"{p.ValueBounds.X},{p.ValueBounds.Y},{p.ValueBounds.Width},{p.ValueBounds.Height},{p.DictionaryKey});";
                 object d = db.Execute(SQL, Operation.INSERT);
                 if (d.GetType() != typeof(SqlDataReader))
                 {
@@ -418,11 +426,16 @@ namespace Bakalarska_praca
                 return;
             }
 
+            ClientCollectionEditor.CollectionChanged += new EventHandler(OnMeasuredParamsChanged);
+
+
             pictureBox1.Image = new Bitmap(_files[0]);
             _newImage = (Image)pictureBox1.Image.Clone();
             _p = new PreviewObject();
-            _p.ListOfKeyPossitions = new List<PossitionOfWord>();
-            _p.ListOfKeyColumn = new List<Column>();
+            _p.Path = txtPathPattern.Text;
+
+            propGrid.SelectedObject = _p;
+
             FillCombo();
         }
 
@@ -441,12 +454,40 @@ namespace Bakalarska_praca
         private void propGrid_SelectedGridItemChanged(object sender, SelectedGridItemChangedEventArgs e)
         {
             PropertyGrid item = (PropertyGrid)sender;
-        }
+            if (item.SelectedGridItem != null)
+            {
+                List<PropertyInfo> evInfo = new List<PropertyInfo>(typeof(Evidence).GetProperties());
+                List<PropertyInfo> clInfo = new List<PropertyInfo>(typeof(Client).GetProperties());
 
-        private void propGrid_ControlAdded(object sender, ControlEventArgs e)
+                var propInfoEV = evInfo.Where(c => c.Name == item?.SelectedGridItem?.PropertyDescriptor?.Name).FirstOrDefault();
+                if (propInfoEV == null)
+                {
+                    //v evidencii som nenasiel tak sa pozriem do clienta
+                    var propInfoCL = clInfo.Where(c => c.Name == item?.SelectedGridItem?.PropertyDescriptor?.Name).FirstOrDefault();
+                    if (propInfoCL == null)
+                        return;
+                    else
+                    {
+                        if (item.SelectedGridItem.Value != null)
+                            FindRelatedRectAndDraw(propInfoCL.Name, item.SelectedGridItem.Value.ToString());
+                    }
+                }
+                else
+                {
+                    if (item.SelectedGridItem.Value != null)
+                        FindRelatedRectAndDraw(propInfoEV.Name,item.SelectedGridItem.Value.ToString());
+                }
+
+            }
+            
+        }
+        private void FindRelatedRectAndDraw(string name, string val)
         {
-
+            var pos = _p.ListOfKeyPossitions.Where(c => (c.DictionaryKey == name) && (c.Value == val)).FirstOrDefault();
+            AddRectangle(pos);
         }
+
+
 
         private void btnGenerateFromPattern_Click(object sender, System.EventArgs e)
         {
@@ -455,6 +496,53 @@ namespace Bakalarska_praca
             else
                 MessageBox.Show("No data to import", "No data", MessageBoxButtons.OK);
 
+        }
+
+        private void sizer_ValueChanged(object sender, System.EventArgs e)
+        {
+            var track = (TrackBar)sender;
+
+            if ((double)track.Value / 100 != 1)
+            {
+                lblSize.Text = track.Value.ToString() + " %";
+                var img = (Bitmap)pictureBox1.Image;
+                int width;
+                int height;
+                if (resizeValue != 0.0 && resizeValue < 100 && resizeValue < track.Value) // som pod 100 a zvacsujem
+                {
+                    width = (int)(img.Width / ((double)track.Value / 100));
+                    height = (int)(img.Height / ((double)track.Value / 100));
+                }
+                else
+                {
+                    width = (int)(img.Width * ((double)track.Value / 100));
+                    height = (int)(img.Height * ((double)track.Value / 100));
+                }
+
+                pictureBox1.Image = OpenCVImageService.ResizeImage(img, width, height);
+            }
+
+            resizeValue = track.Value;
+        }
+
+        private void button1_Click_1(object sender, System.EventArgs e)
+        {
+            var cv = OpenCVImageService.GetInstance();
+            cv.PrepareImage(txtPathPattern.Text);
+            pictureBox1.Image = cv.bmp;
+        }
+
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            ClientCollectionEditor.CollectionChanged -= new EventHandler(OnMeasuredParamsChanged);
+
+
+
+        }
+
+        void OnMeasuredParamsChanged(object sender, EventArgs e)
+        {
+            this.propGrid.Refresh();
         }
     }
 

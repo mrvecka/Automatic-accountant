@@ -1,13 +1,12 @@
 ﻿using Ghostscript.NET;
 using Ghostscript.NET.Rasterizer;
 using OpenCvSharp;
-using SautinSoft;
+using OpenCvSharp.Util;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
-using System.Threading;
 
 namespace OCR_BusinessLayer.Service
 {
@@ -60,11 +59,11 @@ namespace OCR_BusinessLayer.Service
             OpenCvSharp.Mat newImage = new OpenCvSharp.Mat();
             try
             {
-                Cv2.FastNlMeansDenoisingColored(_original, newImage);  
+                Cv2.FastNlMeansDenoisingColored(_original, newImage);
 
                 if (progress != null)
-                    progress.Report(10); 
-                
+                    progress.Report(10);
+
                 Cv2.Threshold(newImage, newImage, 200, 255, ThresholdTypes.Tozero);
 
                 if (progress != null)
@@ -76,7 +75,7 @@ namespace OCR_BusinessLayer.Service
                 if (progress != null)
                     progress.Report(10);
 
-                RotateImageByTextOrientation(ref newImage,lang);
+                RotateImageByTextOrientation(ref newImage, lang);
 
                 if (progress != null)
                     progress.Report(10);
@@ -90,6 +89,47 @@ namespace OCR_BusinessLayer.Service
                 throw new Exception(e.Message + $"There is a problem in image preparing thread and can't continue! Image: {path}", e.InnerException);
             }
 
+        }
+
+        public static Bitmap ResizeImage(Bitmap img, int width, int height)
+        {
+            int channels;
+            switch (img.PixelFormat)
+            {
+                case PixelFormat.Format24bppRgb:
+                case PixelFormat.Format32bppRgb:
+                    channels = 3; break;
+                case PixelFormat.Format32bppArgb:
+                case PixelFormat.Format32bppPArgb:
+                    channels = 4; break;
+                case PixelFormat.Format8bppIndexed:
+                case PixelFormat.Format1bppIndexed:
+                    channels = 1; break;
+                default:
+                    throw new NotImplementedException();
+            }
+            try
+            {
+                Bitmap bmp = new Bitmap(width,height);
+                Mat dst = new Mat(img.Height,img.Width, MatType.CV_8UC(channels));
+                OpenCvSharp.Extensions.BitmapConverter.ToMat(img, dst);
+
+                Mat output = new Mat();
+                var resizedImageFloat = new Mat();
+                Cv2.Resize(dst, output, new OpenCvSharp.Size(width, height));
+                output.ConvertTo(resizedImageFloat, MatType.CV_8U);
+                var result = resizedImageFloat.Reshape(1, 1);
+
+                bmp = OpenCvSharp.Extensions.BitmapConverter.ToBitmap(resizedImageFloat);
+                return bmp;
+            }
+            catch (Exception e)
+            {
+                
+            }
+
+
+            return img;
         }
 
         private OpenCvSharp.Mat GetRotatedImage()
@@ -245,7 +285,7 @@ namespace OCR_BusinessLayer.Service
             cDCount = (int)(2 * (cBmp.Width + cBmp.Height) / cDStep);
             cHMatrix = new int[cDCount * cSteps];
         }
-        public double GetAlpha(int Index)
+        private double GetAlpha(int Index)
         {
             return cAlphaStart + Index * cAlphaStep;
         }
@@ -257,12 +297,9 @@ namespace OCR_BusinessLayer.Service
             var bmpData = bmp.LockBits(rect, System.Drawing.Imaging.ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
             return bmp1 != null && bmpData.Stride > 0;
 
-
-
-
         }
 
-        public string CreatePicturesFromPdf(string filePath)
+        private string CreatePicturesFromPdf(string filePath)
         {
             List<Image> images = new List<Image>();
             GhostscriptVersionInfo gvi = null;
@@ -293,7 +330,7 @@ namespace OCR_BusinessLayer.Service
 
                 }
                 _rasterizer.Close();
-                MergeImages(images,finalPath);
+                MergeImages(images, finalPath);
             }
             catch (Exception ex)
             {
@@ -330,7 +367,7 @@ namespace OCR_BusinessLayer.Service
             bitmap.Save(finalPath);
         }
 
-        private void RotateImageByTextOrientation(ref Mat img,string lang)
+        private void RotateImageByTextOrientation(ref Mat img, string lang)
         {
             Orientation[] myThread = new Orientation[4];
             for (int i = 0; i < myThread.Length; i++)
@@ -342,17 +379,17 @@ namespace OCR_BusinessLayer.Service
                 continue;
 
             Orientation max = myThread[0];
-            
+
             for (int i = 1; i < myThread.Length; i++)
             {
                 if (myThread[i].Confidence > max.Confidence)
                     max = myThread[i];
             }
-            
+
 
             RotateImage(img, ref img, max.Angle, 1);
 
- 
+
         }
 
 

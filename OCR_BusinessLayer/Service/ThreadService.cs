@@ -108,11 +108,6 @@ namespace OCR_BusinessLayer.Service
                 SQL = $"SELECT TOP 5 * FROM OCR_2018.dbo.T004_Possitions WHERE Pattern_ID = {id} AND (Word_Key NOT LIKE '%Meno%' OR Word_Key NOT LIKE '%Ulica%' OR " +
                     $"Word_Key NOT LIKE '%Psč%' OR Word_Key NOT LIKE '%Štát%') AND K_X != 0 AND K_Y != 0";
 
-                /*
-                   OR Word_Key NOT LIKE '%Dodávateľ%' OR Word_Key NOT LIKE '%Odberateľ%' OR " +
-                   $"Word_Key NOT LIKE '%Konečný príjemca%' OR Word_Key NOT LIKE '%Poštová adresa%' OR Word_Key NOT LIKE '%Adresa%' OR Word_Key NOT LIKE '%Sídlo firmy%' OR " +
-                   $"Word_Key NOT LIKE '%Korešpondenčná adresa%'
-                */
             }
             else
             {
@@ -126,6 +121,7 @@ namespace OCR_BusinessLayer.Service
                 pos.Value = data[3].ToString();
                 pos.KeyBounds = new System.Drawing.Rectangle((int)data[4], (int)data[5], (int)data[6], (int)data[7]);
                 pos.ValueBounds = new System.Drawing.Rectangle((int)data[8], (int)data[9], (int)data[10], (int)data[11]);
+                pos.DictionaryKey = data[12].ToString();
                 list.Add(pos);
             }
             data.Close();
