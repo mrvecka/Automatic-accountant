@@ -34,12 +34,12 @@ namespace OCR_BusinessLayer
 			for (int index = 0; index < stringFormD.Length; index++)
 			{
 				if (System.Globalization.CharUnicodeInfo.GetUnicodeCategory(stringFormD[index]) != System.Globalization.UnicodeCategory.NonSpacingMark)
-			        retVal.Append(stringFormD[index]);
+					retVal.Append(stringFormD[index]);
 
 			}
 
-            return retVal.ToString().Normalize(System.Text.NormalizationForm.FormC);
-        }
+			return retVal.ToString().Normalize(System.Text.NormalizationForm.FormC);
+		}
 
 
 		/// <summary>
@@ -79,7 +79,7 @@ namespace OCR_BusinessLayer
 		/// <returns></returns>
 		public static string ModifyPath(string path, string extension)
 		{
-			var s = path.Remove(path.LastIndexOf('.')-1);
+			var s = path.Remove(path.LastIndexOf('.'));
 			s += "." + extension;
 			return s;
 		}

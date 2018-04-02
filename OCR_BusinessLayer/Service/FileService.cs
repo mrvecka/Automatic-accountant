@@ -94,38 +94,63 @@ namespace OCR_BusinessLayer.Service
 
         public static bool GenerateTxtFile(PreviewObject item)
         {
-            //string tab = "\t";
-            //string newLine = "\n";
-            //Client dod = item.Clients.Where(d => d.ClientID == "Dodávateľ").First();
-            //Client odb = item.Clients.Where(d => d.ClientID == "Odberateľ").First();
-            //Client pos = item.Clients.Where(d => (d.ClientID == "Poštová adresa")|| (d.ClientID == "Adresa") || (d.ClientID == "Korešpondenčná adresa")).First();
-            //Client kon = item.Clients.Where(d => d.ClientID == "Konečný príjemca").First();
+            string tab = "\t";
+            string newLine = Environment.NewLine;
+            Client dod = new Client();
+            Client odb = new Client();
+            Client pos = new Client();
+            Client kon = new Client();                                                                     
 
-            //if (dod == null) dod = new Client();
-            //if (odb == null) odb = new Client();
-            //if (pos == null) pos = new Client();
-            //if (kon == null) kon = new Client();
+            foreach (Client c in item.Clients)
+            {
+                if (Common.RemoveDiacritism(c.ClientID).Equals("Dodavatel"))
+                {
+                    dod = c;
+                    continue;
+                }
+                else if (Common.RemoveDiacritism(c.ClientID).Equals("Odberatel"))
+                {
+                    odb = c;
+                    continue;
+                }
+                else if (Common.RemoveDiacritism(c.ClientID).Equals("Postova adresa") || Common.RemoveDiacritism(c.ClientID).Equals("Adresa") || Common.RemoveDiacritism(c.ClientID).Equals("Korespondencna adresa"))
+                {
+                    pos = c;
+                    continue;
+                }
+                else if (Common.RemoveDiacritism(c.ClientID).Equals("Konecny prijemca"))
+                {
+                    kon = c;
+                    continue;
+                }
+            }
 
-            //string date = item.Evidence.DateOfCreate == "" ? item.Evidence.DocumentCreateDate : item.Evidence.DateOfCreate; 
-            //string textToFile = $"R00{tab}T01{tab}{dod.Name}{tab}{dod.ICO}{tab}{dod.Street}{tab}{dod.PSC}{tab}{dod.City}{newLine}";
-            //textToFile += $"R01{tab}{item.Evidence.OrderNumber}{tab}{odb.Name}{tab}{odb.ICO}{tab}{date}{tab}{item.Evidence.DateOfPayment}{tab}{item.Evidence.DateOfTax}{tab}";//DUZP
-            //textToFile += $"{item.Evidence.BaseLower}{tab}{item.Evidence.BaseHeigher}{tab}{item.Evidence.BaseZero}{tab}{item.Evidence.BaseNotContain}{tab}{item.Evidence.RateLower}{tab}{item.Evidence.RateHeigher}{tab}{item.Evidence.AmountLower}{tab}{item.Evidence.AmountHeigher}{tab}{tab}{item.Evidence.Amount}{tab}{tab}{tab}{tab}{tab}{tab}{tab}{tab}";//prevadzka patri pred posledny tab
-            //textToFile += $"{odb.Street}{tab}{odb.PSC}{tab}{odb.City}{tab}{odb.DIC}{tab}{tab}{tab}{tab}{tab}{tab}{item.Evidence.EvidenceNumber}{tab}";//cislo objednavky
-            //textToFile += $"{item.Evidence.CreatorName}{tab}{item.Evidence.KonstSymbol}{tab}{item.Evidence.VariabilSymbol}{tab}{item.Evidence.SpecSymbol}{tab}";//specificky symbol
-            //textToFile += $"{item.Evidence.RefundMethode}{tab}{item.Evidence.Transport}{tab}EUR{tab}1{tab}1{tab}{item.Evidence.Amount}{tab}{odb.State}{tab}{odb.ICDPHStateCode}{tab}{odb.ICDPH}{tab}";//49 IC DPH
-            //textToFile += $"{dod.AccountNumber}{tab}{dod.Bank}{tab}{odb.State}{tab}{tab}{tab}{dod.SWIFT}{tab}{dod.IBAN}{tab}{dod.ICDPHStateCode}{tab}{dod.ICDPH}{tab}{dod.State}{tab}";//60 dodavatel stat
-            //textToFile += $"{tab}{tab}{tab}{tab}{tab}{tab}{tab}{tab}{item.Evidence.DateOfCreate}{tab}{tab}{item.Evidence.VariabilSymbol}{tab}";// 71 variabiny symbol
-            //textToFile += $"{tab}{pos.Name}{tab}{tab}{tab}{pos.Street}{tab}{pos.PSC}{tab}{pos.City}{tab}{tab}{tab}{tab}{item.Evidence.CreatorName}{tab}{dod.Phone}{tab}";// 84 telefon
-            //textToFile += $"{tab}{tab}{odb.IBAN}{tab}{odb.AccountNumber}{newLine}";
+            if (dod == null) dod = new Client();
+            if (odb == null) odb = new Client();
+            if (pos == null) pos = new Client();
+            if (kon == null) kon = new Client();
 
-            //CreateFile(Common.ModifyPath(item.Path,"txt"),textToFile);
+            string date = item?.Evidence?.DateOfCreate == "" ? item?.Evidence?.DocumentCreateDate : item?.Evidence?.DateOfCreate;
+            string textToFileR00 = $@"R00{tab}T01{tab}{dod?.Name}{tab}{dod?.ICO}{tab}{dod?.Street}{tab}{dod?.PSC}{tab}{dod?.City}{newLine}";
+            textToFileR00 += $"R01{tab}{item?.Evidence?.OrderNumber}{tab}{odb?.Name}{tab}{odb?.ICO}{tab}{date}{tab}{item?.Evidence?.DateOfPayment}{tab}{item?.Evidence?.DateOfTax}{tab}";//DUZP
+            textToFileR00 += $"{item?.Evidence?.BaseLower}{tab}{item?.Evidence?.BaseHigher}{tab}{item?.Evidence?.BaseZero}{tab}{item?.Evidence?.BaseNotContain}{tab}{item?.Evidence?.RateLower}{tab}{item?.Evidence?.RateHigher}{tab}{item?.Evidence?.AmountLower}{tab}{item?.Evidence?.AmountHigher}{tab}{tab}{item?.Evidence?.Amount}{tab}{tab}{tab}{tab}{tab}{tab}{tab}{tab}";//prevadzka patri pred posledny tab
+            textToFileR00 += $"{odb?.Street}{tab}{odb?.PSC}{tab}{odb?.City}{tab}{odb?.DIC}{tab}{tab}{tab}{tab}{tab}{tab}{item?.Evidence?.EvidenceNumber}{tab}";//cislo objednavky
+            textToFileR00 += $"{item?.Evidence?.CreatorName}{tab}{item?.Evidence?.KonstSymbol}{tab}{item?.Evidence?.VariabilSymbol}{tab}{item?.Evidence?.SpecSymbol}{tab}";//specificky symbol
+            textToFileR00 += $"{item?.Evidence?.RefundMethode}{tab}{item?.Evidence?.Transport}{tab}EUR{tab}1{tab}1{tab}{item?.Evidence?.Amount}{tab}{odb?.State}{tab}{odb?.ICDPHStateCode}{tab}{odb?.ICDPH}{tab}";//49 IC DPH
+            textToFileR00 += $"{dod?.AccountNumber}{tab}{dod?.Bank}{tab}{odb?.State}{tab}{tab}{tab}{dod?.SWIFT}{tab}{dod?.IBAN}{tab}{dod?.ICDPHStateCode}{tab}{dod?.ICDPH}{tab}{dod?.State}{tab}";//60 dodavatel stat
+            textToFileR00 += $"{tab}{tab}{tab}{tab}{tab}{tab}{tab}{tab}{item?.Evidence?.DateOfCreate}{tab}{tab}{item?.Evidence?.VariabilSymbol}{tab}";// 71 variabiny symbol
+            textToFileR00 += $"{tab}{pos?.Name}{tab}{tab}{tab}{pos?.Street}{tab}{pos?.PSC}{tab}{pos?.City}{tab}{tab}{tab}{tab}{item?.Evidence?.CreatorName}{tab}{dod?.Phone}{tab}";// 84 telefon
+            textToFileR00 += $@"{tab}{tab}{odb?.IBAN}{tab}{odb?.AccountNumber}{newLine}";
+
+            CreateFile(Common.ModifyPath(item.Path, "txt"), textToFileR00);
 
             return true;
         }
 
-        private static void CreateFile(string path,string text)
+        private static void CreateFile(string path,string R00)
         {
-            System.IO.File.WriteAllText(path, text);
+            System.IO.File.WriteAllText(path, R00);
+
         }
 
 

@@ -30,6 +30,7 @@ namespace Bakalarska_praca
         private bool _drawingNewRect = false;
         private bool _canDraw = false;
         private int _countOfNewRect = 0;
+        private bool _onlyValue = false;
         private static PreviewObject _p;
         public static PreviewObject Prew{ get { return _p; } }
         private PossitionOfWord _newPositions;
@@ -253,15 +254,15 @@ namespace Bakalarska_praca
                 }
                 _drawingNewRect = false;
 
-                if (!chkOnlyValue.Checked && _countOfNewRect == 2)
+                if (!_onlyValue && _countOfNewRect == 2)
                 {
                     _newPositions.KeyBounds = _newRect;
                 }
-                else if (!chkOnlyValue.Checked && _countOfNewRect == 1)
+                else if (!_onlyValue && _countOfNewRect == 1)
                 {
                     _newPositions.ValueBounds = _newRect;
                 }
-                else if (chkOnlyValue.Checked && _countOfNewRect == 1)
+                else if (_onlyValue && _countOfNewRect == 1)
                 {
                     _newPositions.ValueBounds = _newRect;
                 }
@@ -274,7 +275,10 @@ namespace Bakalarska_praca
                     if(cmbClientInfo.Visible)
                         _newPositions.Key += " "+cmbClientInfo.SelectedValue.ToString();
                     _newPositions.Value = string.Empty;
-
+                    if (cmbClientInfo.Visible)
+                        _newPositions.DictionaryKey = ((KeyValuePair<string,string>)cmbClientInfo.SelectedItem).Value;
+                    else
+                        _newPositions.DictionaryKey = ((KeyValuePair<string, string>)cmbKey.SelectedItem).Value;
                     _p.ListOfKeyPossitions.Add(_newPositions);
                     AddRectangle(_newPositions);
                     _newPositions = null;
@@ -347,7 +351,7 @@ namespace Bakalarska_praca
             //    db.CreateTableIfNotExists(table);
             //}
 
-            string SQL = $"INSERT INTO OCR_2018.dbo.T003_Pattern(Lang,Resolution_X,Resolution_Y) VALUES ('{_p.Lang}','{_newImage.Width}','{_newImage.Height}')";
+            string SQL = $"INSERT INTO OCR_2018.dbo.T003_Pattern(Lang,Resolution_X,Resolution_Y) VALUES ('{_p.Lang.Substring(0,3)}','{_newImage.Width}','{_newImage.Height}')";
             db.Execute(SQL, Operation.INSERT);
             SQL = "SELECT TOP 1 * FROM OCR_2018.dbo.T003_Pattern ORDER BY Pattern_ID desc";
             SqlDataReader o = (SqlDataReader)db.Execute(SQL, Operation.SELECT);
@@ -362,7 +366,7 @@ namespace Bakalarska_praca
             {
                 SQL = "INSERT INTO OCR_2018.dbo.T004_Possitions(Pattern_ID,Word_Key,Word_Value,K_X,K_Y,K_Width,K_Height,V_X,V_Y,V_Width,V_Height,Dictionary_Key)" +
                              $" Values({id},'{Common.SQLString(p.Key)}','{Common.SQLString(p.Value)}',{p.KeyBounds.X},{p.KeyBounds.Y},{p.KeyBounds.Width},{p.KeyBounds.Height}," +
-                                                       $"{p.ValueBounds.X},{p.ValueBounds.Y},{p.ValueBounds.Width},{p.ValueBounds.Height},{p.DictionaryKey});";
+                                                       $"{p.ValueBounds.X},{p.ValueBounds.Y},{p.ValueBounds.Width},{p.ValueBounds.Height},'{p.DictionaryKey}');";
                 object d = db.Execute(SQL, Operation.INSERT);
                 if (d.GetType() != typeof(SqlDataReader))
                 {
@@ -400,12 +404,24 @@ namespace Bakalarska_praca
 
         private void btnAdd_Click(object sender, System.EventArgs e)
         {
-            MessageBox.Show("If \"Only value\" is selected draw just one rectangle on value position else draw first rectangle on key position and second on value position.", "Positioning wizard", MessageBoxButtons.OK);
-            _canDraw = true;
-            _countOfNewRect = chkOnlyValue.Checked ? 1 : 2;
-            panel4.Enabled = false;
-            panel5.Enabled = false;
-            panel6.Enabled = false;
+            if (MessageBox.Show("If \"Only value\" is selected draw just one rectangle on value position else draw first rectangle on key position and second on value position.", "Positioning wizard", MessageBoxButtons.OK) == DialogResult.OK)
+            {
+                _canDraw = true;
+               var s = (KeyValuePair<string, string>)cmbClientInfo.SelectedItem;
+                if (cmbClientInfo.Visible && (s.Value == "Name" || s.Value == "Street" || s.Value == "PSCCity" || s.Value == "State"))
+                {
+                    _countOfNewRect = 1;
+                    _onlyValue = true;
+                }
+                else
+                {
+                    _countOfNewRect = 2;
+                    _onlyValue = false;
+                }
+                panel4.Enabled = false;
+                panel5.Enabled = false;
+                panel6.Enabled = false;
+            }
         }
 
         private void button2_Click(object sender, System.EventArgs e)

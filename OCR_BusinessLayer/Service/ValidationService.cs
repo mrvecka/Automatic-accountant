@@ -350,7 +350,6 @@ namespace OCR_BusinessLayer.Service
             Validate_ClientNumber(c);
             Validate_Fax(c);
             Validate_Web( c);
-            Validate_BankCode(c);
         }
 
         #region Validations Client
@@ -550,7 +549,7 @@ namespace OCR_BusinessLayer.Service
                     }
                     else if (symbol[i] == 47)
                     {
-                        c.BankCode = symbol.Substring(i, 4);
+                        c.BankCode = symbol.Substring(i, 5);
                     }
                     else
                     {

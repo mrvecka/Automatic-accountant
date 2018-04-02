@@ -41,7 +41,10 @@ namespace Bakalarska_praca
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.panel3 = new System.Windows.Forms.Panel();
             this.panel6 = new System.Windows.Forms.Panel();
+            this.tabControl1 = new System.Windows.Forms.TabControl();
+            this.tabPage1 = new System.Windows.Forms.TabPage();
             this.propGrid = new System.Windows.Forms.PropertyGrid();
+            this.tabPage2 = new System.Windows.Forms.TabPage();
             this.dataGridValues = new System.Windows.Forms.DataGridView();
             this.key = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.value = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -50,7 +53,6 @@ namespace Bakalarska_praca
             this.btnRemove = new System.Windows.Forms.Button();
             this.btnAdd = new System.Windows.Forms.Button();
             this.btnDefault = new System.Windows.Forms.Button();
-            this.chkOnlyValue = new System.Windows.Forms.CheckBox();
             this.label4 = new System.Windows.Forms.Label();
             this.cmbKey = new System.Windows.Forms.ComboBox();
             this.panel4 = new System.Windows.Forms.Panel();
@@ -63,21 +65,18 @@ namespace Bakalarska_praca
             this.txtPartConfidence = new System.Windows.Forms.TextBox();
             this.lblPatConfidence = new System.Windows.Forms.Label();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
-            this.tabControl1 = new System.Windows.Forms.TabControl();
-            this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.tabPage2 = new System.Windows.Forms.TabPage();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.panel3.SuspendLayout();
             this.panel6.SuspendLayout();
+            this.tabControl1.SuspendLayout();
+            this.tabPage1.SuspendLayout();
+            this.tabPage2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridValues)).BeginInit();
             this.panel5.SuspendLayout();
             this.panel4.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.sizer)).BeginInit();
-            this.tabControl1.SuspendLayout();
-            this.tabPage1.SuspendLayout();
-            this.tabPage2.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnSave
@@ -148,6 +147,28 @@ namespace Bakalarska_praca
             this.panel6.Size = new System.Drawing.Size(468, 700);
             this.panel6.TabIndex = 2;
             // 
+            // tabControl1
+            // 
+            this.tabControl1.Controls.Add(this.tabPage1);
+            this.tabControl1.Controls.Add(this.tabPage2);
+            this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tabControl1.Location = new System.Drawing.Point(0, 0);
+            this.tabControl1.Name = "tabControl1";
+            this.tabControl1.SelectedIndex = 0;
+            this.tabControl1.Size = new System.Drawing.Size(468, 700);
+            this.tabControl1.TabIndex = 1;
+            // 
+            // tabPage1
+            // 
+            this.tabPage1.Controls.Add(this.propGrid);
+            this.tabPage1.Location = new System.Drawing.Point(4, 22);
+            this.tabPage1.Name = "tabPage1";
+            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage1.Size = new System.Drawing.Size(460, 674);
+            this.tabPage1.TabIndex = 0;
+            this.tabPage1.Text = "Properties";
+            this.tabPage1.UseVisualStyleBackColor = true;
+            // 
             // propGrid
             // 
             this.propGrid.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -156,6 +177,17 @@ namespace Bakalarska_praca
             this.propGrid.Size = new System.Drawing.Size(454, 668);
             this.propGrid.TabIndex = 1;
             this.propGrid.SelectedGridItemChanged += new System.Windows.Forms.SelectedGridItemChangedEventHandler(this.propGrid_SelectedGridItemChanged);
+            // 
+            // tabPage2
+            // 
+            this.tabPage2.Controls.Add(this.dataGridValues);
+            this.tabPage2.Location = new System.Drawing.Point(4, 22);
+            this.tabPage2.Name = "tabPage2";
+            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage2.Size = new System.Drawing.Size(460, 674);
+            this.tabPage2.TabIndex = 1;
+            this.tabPage2.Text = "Positions";
+            this.tabPage2.UseVisualStyleBackColor = true;
             // 
             // dataGridValues
             // 
@@ -196,7 +228,6 @@ namespace Bakalarska_praca
             this.panel5.Controls.Add(this.btnSave);
             this.panel5.Controls.Add(this.btnAdd);
             this.panel5.Controls.Add(this.btnDefault);
-            this.panel5.Controls.Add(this.chkOnlyValue);
             this.panel5.Controls.Add(this.label4);
             this.panel5.Controls.Add(this.cmbKey);
             this.panel5.Dock = System.Windows.Forms.DockStyle.Bottom;
@@ -245,16 +276,6 @@ namespace Bakalarska_praca
             this.btnDefault.Text = "Reset to default";
             this.btnDefault.UseVisualStyleBackColor = true;
             this.btnDefault.Click += new System.EventHandler(this.btn_default_Click);
-            // 
-            // chkOnlyValue
-            // 
-            this.chkOnlyValue.AutoSize = true;
-            this.chkOnlyValue.Location = new System.Drawing.Point(9, 42);
-            this.chkOnlyValue.Name = "chkOnlyValue";
-            this.chkOnlyValue.Size = new System.Drawing.Size(76, 17);
-            this.chkOnlyValue.TabIndex = 4;
-            this.chkOnlyValue.Text = "Only value";
-            this.chkOnlyValue.UseVisualStyleBackColor = true;
             // 
             // label4
             // 
@@ -377,39 +398,6 @@ namespace Bakalarska_praca
             // 
             this.openFileDialog1.FileName = "openFileDialog1";
             // 
-            // tabControl1
-            // 
-            this.tabControl1.Controls.Add(this.tabPage1);
-            this.tabControl1.Controls.Add(this.tabPage2);
-            this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tabControl1.Location = new System.Drawing.Point(0, 0);
-            this.tabControl1.Name = "tabControl1";
-            this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(468, 700);
-            this.tabControl1.TabIndex = 1;
-            // 
-            // tabPage1
-            // 
-            this.tabPage1.Controls.Add(this.propGrid);
-            this.tabPage1.Location = new System.Drawing.Point(4, 22);
-            this.tabPage1.Name = "tabPage1";
-            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(460, 674);
-            this.tabPage1.TabIndex = 0;
-            this.tabPage1.Text = "Properties";
-            this.tabPage1.UseVisualStyleBackColor = true;
-            // 
-            // tabPage2
-            // 
-            this.tabPage2.Controls.Add(this.dataGridValues);
-            this.tabPage2.Location = new System.Drawing.Point(4, 22);
-            this.tabPage2.Name = "tabPage2";
-            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(460, 674);
-            this.tabPage2.TabIndex = 1;
-            this.tabPage2.Text = "Positions";
-            this.tabPage2.UseVisualStyleBackColor = true;
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -427,15 +415,15 @@ namespace Bakalarska_praca
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.panel3.ResumeLayout(false);
             this.panel6.ResumeLayout(false);
+            this.tabControl1.ResumeLayout(false);
+            this.tabPage1.ResumeLayout(false);
+            this.tabPage2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridValues)).EndInit();
             this.panel5.ResumeLayout(false);
             this.panel5.PerformLayout();
             this.panel4.ResumeLayout(false);
             this.panel4.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.sizer)).EndInit();
-            this.tabControl1.ResumeLayout(false);
-            this.tabPage1.ResumeLayout(false);
-            this.tabPage2.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -452,7 +440,6 @@ namespace Bakalarska_praca
         private ComboBox cmbKey;
         private Button btnRemove;
         private Button btnAdd;
-        private CheckBox chkOnlyValue;
         private Label label4;
         private Panel panel6;
         private Button btnNewFile;

@@ -38,7 +38,6 @@ namespace OCR_BusinessLayer.Service
 			_p = p;
 			_dic = Dictionary.GetInstance();
 			_eud = new Evidence();
-			Type type = _eud.GetType();
 			_listOfColumns = new List<Column>();
 			_TempListOfColumn = new List<Column>();
 			_listOfClients = new List<Client>();
@@ -62,7 +61,7 @@ namespace OCR_BusinessLayer.Service
 					continue;
 				}
 				string t = line.Text;
-				GetDataFromLine(line, ref t, _dic.header, type, _eud);
+				GetDataFromLine(line, ref t, _dic.header, _eud);
 
 
 
@@ -91,7 +90,7 @@ namespace OCR_BusinessLayer.Service
 		/// <param name="type">Type of object where the found data will be stored</param>
 		/// <param name="data">Object for data</param>
 		/// <returns></returns>
-		private bool GetDataFromLine(TextLine line, ref string lineText, Dictionary<string, string> dictionary, Type type, Object data, bool isColumn = false, Column col = null, bool lookingForRight = false)
+		private bool GetDataFromLine(TextLine line, ref string lineText, Dictionary<string, string> dictionary, Object data, bool isColumn = false, Column col = null, bool lookingForRight = false)
 		{
 			int firstCharindex;
 			int keyLength;
@@ -111,13 +110,13 @@ namespace OCR_BusinessLayer.Service
 					similarity = SimilarityService.GetSimilarity(key.Key.ToLower(), stringKey.ToLower());
 					if (similarity > CONSTANTS.SIMILARITY && !IsInMiddleOfWord(lineText, firstCharindex, keyLength, key.Key[0], key.Key[key.Key.Length - 1], stringKey))
 					{
-						if (col != null && type == _eud.GetType())
+						if (col != null && data.GetType() == _eud.GetType())
 						{
 							// aktualny stlpec skoncil
 							col.Completed = true;
 							col.Bottom = line.Words[0].Bounds.Top;
 						}
-						res = jahoda(line, key, stringKey, ref lineText, firstCharindex, dictionary, type, data, ref keyFound, lookingForRight, ref isColumn, col);
+						res = jahoda(line, key, stringKey, ref lineText, firstCharindex, dictionary, data, ref keyFound, lookingForRight, ref isColumn, col);
 						if (res == CONSTANTS.Result.Continue) { break; }
 						else if (res == CONSTANTS.Result.True) { return true; }
 						else if (res == CONSTANTS.Result.False) { return false; }
@@ -150,21 +149,21 @@ namespace OCR_BusinessLayer.Service
 			if (isColumn && !keyFound && col != null && col.FirstLineInColumn > 4)
 			{
 				// skus iny slovnik
-				if (type == _eud.GetType())
+				if (data.GetType() == _eud.GetType())
 				{
 					foreach (Column c in _listOfColumns)
-						GetDataFromLine(line, ref lineText, _dic.clients, c.GetType(), _listOfClients[c.Id - 1], false, col, false);
+						GetDataFromLine(line, ref lineText, _dic.clients, _listOfClients[c.Id - 1], false, col, false);
 				}
 				else
 				{
-					GetDataFromLine(line, ref lineText, _dic.header, _eud.GetType(), _eud, false, col, false);
+					GetDataFromLine(line, ref lineText, _dic.header, _eud, false, col, false);
 				}
 
 			}
 
 			if (isColumn && col != null && !keyFound)
 			{
-				GetDataFromLine(line, ref lineText, _dic.header, _eud.GetType(), _eud, false, col, false);
+				GetDataFromLine(line, ref lineText, _dic.header, _eud, false, col, false);
 				if (_keysInRow == 0)
 				{
 					Client client = (Client)data;
@@ -211,7 +210,7 @@ namespace OCR_BusinessLayer.Service
 
 
 		private CONSTANTS.Result jahoda(TextLine line, KeyValuePair<string, string> key, string stringKey, ref string lineText, int firstCharIndex,
-										Dictionary<string, string> dictionary, Type type, Object data, ref bool keyFound, bool lookingForRight,
+										Dictionary<string, string> dictionary, Object data, ref bool keyFound, bool lookingForRight,
 										ref bool isColumn, Column col)
 		{
 			string stringKeyValue = string.Empty;
@@ -245,14 +244,14 @@ namespace OCR_BusinessLayer.Service
 				if (!(string.IsNullOrEmpty(s) || s.Length < 5)) // uz aktualny riadok moze byt stlpec tak to tu poriesim
 				{
 					s = s.Replace(stringKey, string.Empty);
-					GetDataFromLine(line, ref s, dictionary, type, n, true, column, false); // ak mam za klucovym slovom (Odberatel) nejaky text a nie su tam ine klucove slova
+					GetDataFromLine(line, ref s, dictionary, n, true, column, false); // ak mam za klucovym slovom (Odberatel) nejaky text a nie su tam ine klucove slova
 				}
 
 				return CONSTANTS.Result.Break;
 			}
 
 			keyFound = true;
-			if (isColumn && type == _eud.GetType())
+			if (isColumn && data.GetType() == _eud.GetType())
 			{
 				stringKeyValue = line.Text.Substring(firstCharIndex + stringKey.Length);
 			}
@@ -260,7 +259,7 @@ namespace OCR_BusinessLayer.Service
 			{
 				stringKeyValue = lineText.Substring(firstCharIndex + stringKey.Length);
 			}
-			if (!isColumn && _listOfClients.Count > 0 && type == _listOfClients[0]?.GetType())
+			if (!isColumn && _listOfClients.Count > 0 && data.GetType() == _listOfClients[0]?.GetType())
 			{
 				isColumn = true;
 			}
@@ -272,7 +271,7 @@ namespace OCR_BusinessLayer.Service
 											   entry => entry.Value);
 			dict.Remove(key.Key);
 			stringKeyValue = stringKeyValue.Trim(CONSTANTS.charsToTrimLine);
-			if (!GetDataFromLine(line, ref stringKeyValue, dict, type, data, isColumn, col))
+			if (!GetDataFromLine(line, ref stringKeyValue, dict, data, isColumn, col))
 			{
 				//keyFound = false; // ak mam v riadku dve a viac klucovych slov tak to nastavim na false aby mi to v predchadzajucom volani vbehlo sem a nastavila sa hodnota 
 				if (_dic.canDeleteKeys.Contains(key.Value))
@@ -287,7 +286,7 @@ namespace OCR_BusinessLayer.Service
 				stringKeyValue = stringKeyValue.Trim(CONSTANTS.charsToTrimLineForpossition);
 
 
-				stringKeyValue = SaveData(ref keyFound, isColumn, type, key, data, stringKeyValue, ref lineText, firstCharIndex);
+				stringKeyValue = SaveData(ref keyFound, isColumn, key, data, stringKeyValue, ref lineText, firstCharIndex);
 
 				if (!saved)
 					SavePossitionToLists(key.Value, stringKey.Trim(CONSTANTS.charsToTrimLineForpossition), stringKeyValue, line, line);
@@ -321,16 +320,16 @@ namespace OCR_BusinessLayer.Service
 		/// <param name="stringKeyValue">Value to key</param>
 		/// <param name="lineText">Text in line, after save key and stringKeyValue is removed from lineText</param>
 		/// <param name="firstCharIndex">Start of replacing</param>
-		private string SaveData(ref bool keyFound, bool isColumn, Type type, KeyValuePair<string, string> key,
+		private string SaveData(ref bool keyFound, bool isColumn, KeyValuePair<string, string> key,
 								Object data, string stringKeyValue, ref string lineText, int firstCharIndex)
 		{
 			PropertyInfo prop;
-			if (isColumn && type == _eud.GetType())
+			if (isColumn && data.GetType() == _eud.GetType())
 			{
 				keyFound = true;
 			}
 
-			prop = type.GetProperty(key.Value);
+			prop = data.GetType().GetProperty(key.Value);
 			if (prop.GetValue(data) == null)
 			{
 				prop.SetValue(data, stringKeyValue, null);
@@ -695,7 +694,7 @@ namespace OCR_BusinessLayer.Service
 			if (!SetRightXByExistingColumn(col))
 			{
 				line = line.Substring(line.IndexOf(stringKey) + stringKey.Length);
-				if (GetDataFromLine(a, ref line, _dic.header, _eud.GetType(), _eud, false, null, true))
+				if (GetDataFromLine(a, ref line, _dic.header, _eud, false, null, true))
 				{
 					int len = _pair.Key.IndexOf(" ");
 					if (len == -1)
@@ -720,7 +719,7 @@ namespace OCR_BusinessLayer.Service
 				}
 				else
 				{
-					GetDataFromLine(a, ref line, _dic.clients, n.GetType(), n, false, null, true); // pozri ci dany text patri klientovi
+					GetDataFromLine(a, ref line, _dic.clients, n, false, null, true); // pozri ci dany text patri klientovi
 					col.Right = _p.Img.Width;
 				}
 			}
@@ -860,9 +859,7 @@ namespace OCR_BusinessLayer.Service
 
 					if (!string.IsNullOrWhiteSpace(text))
 					{
-						Type type = client.GetType();
-						GetDataFromLine(line, ref text, _dic.clients, type, client, true, col);
-
+						GetDataFromLine(line, ref text, _dic.clients, client, true, col);
 					}
 
 					if (!string.IsNullOrEmpty(colText))
@@ -874,7 +871,7 @@ namespace OCR_BusinessLayer.Service
 			}
 			otherText = otherText.Trim(CONSTANTS.charsToTrim);
 			if (!string.IsNullOrEmpty(otherText) || otherText.Length > 3)
-				GetDataFromLine(line, ref otherText, _dic.header, _eud.GetType(), _eud, false, null);
+				GetDataFromLine(line, ref otherText, _dic.header, _eud, false, null);
 
 		}
 	}
