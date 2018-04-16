@@ -330,10 +330,9 @@ namespace OCR_BusinessLayer.Service
 			}
 
 			prop = data.GetType().GetProperty(key.Value);
-			if (prop.GetValue(data) == null)
-			{
+
 				prop.SetValue(data, stringKeyValue, null);
-			}
+			
 			lineText = lineText.Replace(lineText.Substring(firstCharIndex), string.Empty);
 			return (string)prop.GetValue(data);
 		}
@@ -547,6 +546,9 @@ namespace OCR_BusinessLayer.Service
 		{
 			string sub = string.Empty;
 			int length = 0;
+			if (text.Length == stringKey.Length)
+				return false;
+
 			if (firstChar == 0)
 			{
 				if (text.Length - firstChar >= keyLength + 1)

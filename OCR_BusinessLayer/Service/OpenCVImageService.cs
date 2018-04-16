@@ -90,7 +90,11 @@ namespace OCR_BusinessLayer.Service
 
         public void PrepareImageForGoogle(string path, IProgress<int> progress = null, string lang = "slk")
         {
-            Mat newImage = Cv2.ImRead(path);
+            Mat original = Cv2.ImRead(path);
+            Mat newImage = new Mat();
+
+            Cv2.Threshold(original, newImage, 200, 255, ThresholdTypes.Tozero);
+
             cBmp = OpenCvSharp.Extensions.BitmapConverter.ToBitmap(newImage);
             DeskewImage(ref newImage);
             if (progress != null)
