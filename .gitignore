@@ -259,3 +259,5 @@ paket-files/
 # Python Tools for Visual Studio (PTVS)
 __pycache__/
 *.pyc
+/OCR_BusinessLayer/lib/GoogleVision/OCR Api 1-fd24826faf62.json
+/OCR_BusinessLayer/tessdata/fra.traineddata

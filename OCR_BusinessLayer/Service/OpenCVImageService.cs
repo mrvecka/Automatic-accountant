@@ -59,12 +59,8 @@ namespace OCR_BusinessLayer.Service
             OpenCvSharp.Mat newImage = new OpenCvSharp.Mat();
             try
             {
-                Cv2.FastNlMeansDenoisingColored(_original, newImage);
 
-                if (progress != null)
-                    progress.Report(10);
-
-                Cv2.Threshold(newImage, newImage, 200, 255, ThresholdTypes.Tozero);
+                Cv2.Threshold(_original, newImage, 200, 255, ThresholdTypes.Tozero);
 
                 if (progress != null)
                     progress.Report(10);
@@ -76,6 +72,7 @@ namespace OCR_BusinessLayer.Service
                     progress.Report(10);
 
                 RotateImageByTextOrientation(ref newImage, lang);
+
 
                 if (progress != null)
                     progress.Report(10);
@@ -89,6 +86,22 @@ namespace OCR_BusinessLayer.Service
                 throw new Exception(e.Message + $"There is a problem in image preparing thread and can't continue! Image: {path}", e.InnerException);
             }
 
+        }
+
+        public void PrepareImageForGoogle(string path, IProgress<int> progress = null, string lang = "slk")
+        {
+            Mat newImage = Cv2.ImRead(path);
+            cBmp = OpenCvSharp.Extensions.BitmapConverter.ToBitmap(newImage);
+            DeskewImage(ref newImage);
+            if (progress != null)
+                progress.Report(10);
+
+            RotateImageByTextOrientation(ref newImage, lang);
+            Rotated = newImage;
+            bmp = OpenCvSharp.Extensions.BitmapConverter.ToBitmap(Rotated);
+
+            if (progress != null)
+                progress.Report(10);
         }
 
         public static Bitmap ResizeImage(Bitmap img, int width, int height)
@@ -337,7 +350,6 @@ namespace OCR_BusinessLayer.Service
                 finalPath = string.Empty;
                 if (_rasterizer != null)
                     _rasterizer.Close();
-                string inner = ex.InnerException != null ? ex.InnerException.ToString() : null;
                 throw new Exception("Failed to initialize GhostScript!", ex.InnerException);
 
             }

@@ -2,7 +2,7 @@
 {
     public class SETTINGS
     {
-        public static bool GoInColumnForValue = true;
+        public static bool UseGoogleVision = false;
 
     }
 }

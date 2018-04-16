@@ -280,7 +280,7 @@ namespace OCR_BusinessLayer.Service
 				}
 				bool saved = false;
 				stringKeyValue = stringKeyValue.Trim(CONSTANTS.charsToTrimLine);
-				if (string.IsNullOrEmpty(stringKeyValue) && SETTINGS.GoInColumnForValue && _dic.valueInColumn.Contains(key.Value))
+				if (string.IsNullOrEmpty(stringKeyValue) &&  _dic.valueInColumn.Contains(key.Value))
 					stringKeyValue = FindValueInColumn(line, stringKey, key.Key, ref saved);
 
 				stringKeyValue = stringKeyValue.Trim(CONSTANTS.charsToTrimLineForpossition);

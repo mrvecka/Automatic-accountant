@@ -57,12 +57,13 @@ namespace Bakalarska_praca
                 btnNewFile.Visible = false;
                 propGrid.SelectedObject = file;
                 ClientCollectionEditor.CollectionChanged += new EventHandler(OnMeasuredParamsChanged);
-
+                this.Text = "Image preview";
                 FillListView(file);
                 FillCombo();
             }
             else
             {
+                this.Text = "Pattern creation";
                 //idem vytvarat novy pattern
                 lblPatConfidence.Visible = false;
                 txtPartConfidence.Visible = false;

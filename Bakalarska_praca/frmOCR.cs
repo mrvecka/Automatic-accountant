@@ -21,12 +21,15 @@ namespace Bakalarska_praca
         {
             InitializeComponent();
             _filesToProcess = new List<FileToProcess>();
-            txtPath.Text = @"C:\Users\Lukáš\Pictures\2018-02-01 faktura\vyskusane";
+            txtPath.Text = @"C:\Users\Lukáš\Pictures\2018-02-01 faktura\faktury\faktury";
             var data = FileService.FindTrainedData("tessdata", CONSTANTS.trainedData);
             comboBox1.DataSource = data;
             comboBox1.SelectedIndex = data.IndexOf("slk");
             btnGenerate.Enabled = false;
             button1.Focus();
+
+            if (CheckGoogleJsonKey())
+                checkGoogle.Enabled = true;
 
         }
 
@@ -78,6 +81,7 @@ namespace Bakalarska_praca
         {
 
             DisableControls();
+            SETTINGS.UseGoogleVision = checkGoogle.Checked;
             //prepare service
             _service = new ThreadService(_filesToProcess,comboBox1.SelectedItem.ToString());
             await _service.StartService();
@@ -86,7 +90,6 @@ namespace Bakalarska_praca
             btnStart.Enabled = true;
             comboBox1.Enabled = true;
             button1.Enabled = true;
-            button2.Enabled = true;
             btnGenerate.Enabled = true;
         }
 
@@ -163,7 +166,6 @@ namespace Bakalarska_praca
             btnStart.Enabled = false;
             comboBox1.Enabled = false;
             button1.Enabled = false;
-            button2.Enabled = false;
             _filesToProcess.ForEach(c => c.ProgressBar.Value = 0);
             _filesToProcess.ForEach(c => c.Button.Enabled = false);
 
@@ -177,6 +179,11 @@ namespace Bakalarska_praca
             else
                 MessageBox.Show("No data to import", "No data", MessageBoxButtons.OK);
 
+        }
+
+        private bool CheckGoogleJsonKey()
+        {
+            return FileService.CheckGoogleJson();
         }
     }
 }

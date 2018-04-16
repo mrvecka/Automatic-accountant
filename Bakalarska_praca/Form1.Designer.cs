@@ -407,7 +407,7 @@ namespace Bakalarska_praca
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.panel4);
             this.Name = "Form1";
-            this.Text = "Tesseract test";
+            this.Text = "Image preview";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.panel1.ResumeLayout(false);
             this.panel2.ResumeLayout(false);

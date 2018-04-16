@@ -34,11 +34,12 @@
             this.lblFound = new System.Windows.Forms.Label();
             this.btnStart = new System.Windows.Forms.Button();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.btnGenerate = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.pnlMain = new System.Windows.Forms.Panel();
-            this.btnGenerate = new System.Windows.Forms.Button();
+            this.checkGoogle = new System.Windows.Forms.CheckBox();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -85,6 +86,7 @@
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.checkGoogle);
             this.panel1.Controls.Add(this.btnGenerate);
             this.panel1.Controls.Add(this.button2);
             this.panel1.Controls.Add(this.label1);
@@ -99,6 +101,16 @@
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(784, 511);
             this.panel1.TabIndex = 4;
+            // 
+            // btnGenerate
+            // 
+            this.btnGenerate.Location = new System.Drawing.Point(438, 35);
+            this.btnGenerate.Name = "btnGenerate";
+            this.btnGenerate.Size = new System.Drawing.Size(113, 23);
+            this.btnGenerate.TabIndex = 9;
+            this.btnGenerate.Text = "Generate import file";
+            this.btnGenerate.UseVisualStyleBackColor = true;
+            this.btnGenerate.Click += new System.EventHandler(this.button3_Click);
             // 
             // button2
             // 
@@ -142,15 +154,16 @@
             this.pnlMain.Size = new System.Drawing.Size(710, 420);
             this.pnlMain.TabIndex = 4;
             // 
-            // btnGenerate
+            // checkGoogle
             // 
-            this.btnGenerate.Location = new System.Drawing.Point(438, 35);
-            this.btnGenerate.Name = "btnGenerate";
-            this.btnGenerate.Size = new System.Drawing.Size(113, 23);
-            this.btnGenerate.TabIndex = 9;
-            this.btnGenerate.Text = "Generate import file";
-            this.btnGenerate.UseVisualStyleBackColor = true;
-            this.btnGenerate.Click += new System.EventHandler(this.button3_Click);
+            this.checkGoogle.AutoSize = true;
+            this.checkGoogle.Enabled = false;
+            this.checkGoogle.Location = new System.Drawing.Point(200, 41);
+            this.checkGoogle.Name = "checkGoogle";
+            this.checkGoogle.Size = new System.Drawing.Size(113, 17);
+            this.checkGoogle.TabIndex = 10;
+            this.checkGoogle.Text = "Use Google Vision";
+            this.checkGoogle.UseVisualStyleBackColor = true;
             // 
             // frmOCR
             // 
@@ -161,7 +174,7 @@
             this.MaximumSize = new System.Drawing.Size(800, 550);
             this.MinimumSize = new System.Drawing.Size(800, 550);
             this.Name = "frmOCR";
-            this.Text = "frmOCR";
+            this.Text = "Application for automatic accounting";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.frmOCR_FormClosed);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
@@ -182,5 +195,6 @@
         private System.Windows.Forms.ComboBox comboBox1;
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.Button btnGenerate;
+        private System.Windows.Forms.CheckBox checkGoogle;
     }
 }

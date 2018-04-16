@@ -60,10 +60,6 @@ namespace OCR_BusinessLayer.Service
                 throw new Exception(e.Message, e.InnerException);
             }
             progress.Report(40);
-            if (img != null)
-            {
-                ProcessLines(p, progress);
-            }
 
             return p;
         }
@@ -131,16 +127,19 @@ namespace OCR_BusinessLayer.Service
                             rec.Height += CONSTANTS.PATTERN_CHECK_WIDTHHEIGHT_PROXIMITY;
 
                             //nastavim pozicie vzhladom na rozlisenie pretoze mozem dostat rovnaku fakturu s inym rozlisenim
-                            rec.X = (int)(rec.X * ratioX);
-                            rec.Y = (int)(rec.Y * ratioY);
-                            rec.Width = (int)(rec.Width * ratioX);
-                            rec.Height = (int)(rec.Height * ratioY);
+                            if (ratioX != 0 && ratioY != 0)
+                            {
+                                rec.X = (int)(rec.X * ratioX);
+                                rec.Y = (int)(rec.Y * ratioY);
+                                rec.Width = (int)(rec.Width * ratioX);
+                                rec.Height = (int)(rec.Height * ratioY);
+                            }
 
                             //osetrim pozicie aby som sa nedostal mimo obrazka
                             if (image.Cols < rec.X + rec.Width)
                                 rec.Width -= (rec.X + rec.Width) - image.Cols;
                             if (image.Rows < rec.Y + rec.Height)
-                                rec.Height -= (rec.Y + rec.Height) - image.Rows;
+                                rec.Height =  image.Rows;
                             Mat im = new Mat(image, rec);
 
                             conf = RunTesseract(im);
@@ -272,11 +271,10 @@ namespace OCR_BusinessLayer.Service
         private int RunTesseract(Mat img)
         {
             int conf = 0;
-            using (TessBaseAPI engine = new TessBaseAPI(@".\tessdata", _lang, OcrEngineMode.TESSERACT_LSTM_COMBINED, PageSegmentationMode.AUTO_OSD))
+            using (TessBaseAPI engine = new TessBaseAPI(@".\tessdata", _lang, OcrEngineMode.TESSERACT_LSTM_COMBINED))
             {
                 engine.InitForAnalysePage();
                 engine.Init(null, _lang);
-                //engine.SetInputImage(pix);
                 engine.SetImage(new UIntPtr(BitConverter.ToUInt64(BitConverter.GetBytes(img.Data.ToInt64()), 0)), img.Size().Width, img.Size().Height, img.Channels(), (int)img.Step1());
                 engine.Recognize();
                 ResultIterator iterator = engine.GetIterator();
@@ -368,14 +366,6 @@ namespace OCR_BusinessLayer.Service
 
             text = ss.ToString();
 
-        }
-
-        private void ProcessLines(PreviewObject p, IProgress<int> progress)
-        {
-            using (DictionaryService dict = new DictionaryService())
-            {
-                dict.MakeObjectsFromLines(p, progress);
-            }
         }
 
         private string GetConfForLine(TextLine line)
