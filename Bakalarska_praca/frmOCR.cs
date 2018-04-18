@@ -82,8 +82,9 @@ namespace Bakalarska_praca
 
             DisableControls();
             SETTINGS.UseGoogleVision = checkGoogle.Checked;
+            SetLang(comboBox1.SelectedItem.ToString());
             //prepare service
-            _service = new ThreadService(_filesToProcess,comboBox1.SelectedItem.ToString());
+            _service = new ThreadService(_filesToProcess);
             await _service.StartService();
             _previewObjects = _service.Preview;
             btnStart.Enabled = true;
@@ -184,6 +185,29 @@ namespace Bakalarska_praca
         private bool CheckGoogleJsonKey()
         {
             return FileService.CheckGoogleJson();
+        }
+
+        private void SetLang(string lang)
+        {
+            switch (lang)
+            {
+                case "slk":
+                    SETTINGS.TesseractLang = lang;
+                    SETTINGS.GoogleLang = "sk";
+                    break;
+                case "eng":
+                    SETTINGS.TesseractLang = lang;
+                    SETTINGS.GoogleLang = "en";
+                    break;
+                case "ces":
+                    SETTINGS.TesseractLang = lang;
+                    SETTINGS.GoogleLang = "cs";
+                    break;
+                default:
+                    SETTINGS.TesseractLang = "slk";
+                    SETTINGS.GoogleLang = "sk";
+                    break;
+            }
         }
     }
 }

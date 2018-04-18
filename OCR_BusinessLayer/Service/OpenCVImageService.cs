@@ -60,7 +60,8 @@ namespace OCR_BusinessLayer.Service
             try
             {
 
-                Cv2.Threshold(_original, newImage, 200, 255, ThresholdTypes.Tozero);
+                Cv2.Threshold(_original, newImage, 200, 255, ThresholdTypes.Binary);
+                newImage.SaveImage("afterTreshold.png");
 
                 if (progress != null)
                     progress.Report(10);
@@ -90,10 +91,7 @@ namespace OCR_BusinessLayer.Service
 
         public void PrepareImageForGoogle(string path, IProgress<int> progress = null, string lang = "slk")
         {
-            Mat original = Cv2.ImRead(path);
-            Mat newImage = new Mat();
-
-            Cv2.Threshold(original, newImage, 200, 255, ThresholdTypes.Tozero);
+            Mat newImage = Cv2.ImRead(path);
 
             cBmp = OpenCvSharp.Extensions.BitmapConverter.ToBitmap(newImage);
             DeskewImage(ref newImage);

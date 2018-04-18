@@ -608,7 +608,7 @@ namespace OCR_BusinessLayer.Service
         public static string Validate_SWIFT( Client c)
         {
             string symbol = string.Empty;
-            if (c.SWIFT != null)
+            if (!string.IsNullOrEmpty(c.SWIFT))
             {
                 symbol = c.SWIFT.Trim(CONSTANTS.charsToTrimAccountNumber);
                 symbol = ValidationHelper.LettersOnly(symbol);

@@ -15,14 +15,12 @@ namespace OCR_BusinessLayer.Service
     {
         private List<FileToProcess> _filesToProcess;
         private List<PreviewObject> _previewObjects;
-        private string _lang = string.Empty;
         public List<PreviewObject> Preview { get { return _previewObjects; } }
 
-        public ThreadService(List<FileToProcess> filesTorocess, string lang)
+        public ThreadService(List<FileToProcess> filesTorocess)
         {
             _filesToProcess = filesTorocess;
             _previewObjects = new List<PreviewObject>();
-            _lang = lang;
         }
 
         public async Task StartService()
@@ -44,13 +42,13 @@ namespace OCR_BusinessLayer.Service
                     if (SETTINGS.UseGoogleVision)
                     {
                         Annotate anotate = new Annotate();
-                        _cvService.PrepareImageForGoogle(s.Path, progress, _lang);
+                        _cvService.PrepareImageForGoogle(s.Path, progress, SETTINGS.TesseractLang);
                         
-                        await anotate.GetText(_cvService.Rotated, _lang, "TEXT_DETECTION");
+                        await anotate.GetText(_cvService.Rotated, SETTINGS.GoogleLang, "TEXT_DETECTION");
                         var response = anotate.Response;
                         PreviewObject p = new PreviewObject();
                         p.Path = s.Path;
-                        p.Lang = _lang;
+                        p.Lang = SETTINGS.TesseractLang;
                         p.Img = _cvService.bmp;
                         p.Lines = MakeLinesFromWord(response);
                         ProcessLines(p, progress);
@@ -59,8 +57,8 @@ namespace OCR_BusinessLayer.Service
                     }
                     else
                     {
-                        TesseractService tess = new TesseractService(_lang);
-                        _cvService.PrepareImage(s.Path, progress, _lang);
+                        TesseractService tess = new TesseractService(SETTINGS.TesseractLang);
+                        _cvService.PrepareImage(s.Path, progress, SETTINGS.TesseractLang);
                         Mat image = _cvService.Rotated;
                         double ratioX = 1;
                         double ratioY = 1;
@@ -207,6 +205,11 @@ namespace OCR_BusinessLayer.Service
                 l.Text = GetTextForLine(l);
                 l.Bounds = new System.Drawing.Rectangle(x,y,x2-x,l.Bounds.Bottom-y);
                 return true;
+            });
+
+            lines.Sort(delegate (TextLine l1, TextLine l2)
+            {
+                return l1.Bounds.Y.CompareTo(l2.Bounds.Y);
             });
 
             return lines;

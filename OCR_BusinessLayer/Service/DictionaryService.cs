@@ -116,7 +116,7 @@ namespace OCR_BusinessLayer.Service
 							col.Completed = true;
 							col.Bottom = line.Words[0].Bounds.Top;
 						}
-						res = jahoda(line, key, stringKey, ref lineText, firstCharindex, dictionary, data, ref keyFound, lookingForRight, ref isColumn, col);
+						res = PrepareToSave(line, key, stringKey, ref lineText, firstCharindex, dictionary, data, ref keyFound, lookingForRight, ref isColumn, col);
 						if (res == CONSTANTS.Result.Continue) { break; }
 						else if (res == CONSTANTS.Result.True) { return true; }
 						else if (res == CONSTANTS.Result.False) { return false; }
@@ -209,7 +209,7 @@ namespace OCR_BusinessLayer.Service
 		}
 
 
-		private CONSTANTS.Result jahoda(TextLine line, KeyValuePair<string, string> key, string stringKey, ref string lineText, int firstCharIndex,
+		private CONSTANTS.Result PrepareToSave(TextLine line, KeyValuePair<string, string> key, string stringKey, ref string lineText, int firstCharIndex,
 										Dictionary<string, string> dictionary, Object data, ref bool keyFound, bool lookingForRight,
 										ref bool isColumn, Column col)
 		{
@@ -722,7 +722,7 @@ namespace OCR_BusinessLayer.Service
 				else
 				{
 					GetDataFromLine(a, ref line, _dic.clients, n, false, null, true); // pozri ci dany text patri klientovi
-					col.Right = _p.Img.Width;
+					col.Right = _p.Img.Width/2;
 				}
 			}
 
