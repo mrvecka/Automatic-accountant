@@ -452,7 +452,6 @@ namespace Bakalarska_praca
             _p.Path = txtPathPattern.Text;
 
             propGrid.SelectedObject = _p;
-
             FillCombo();
         }
 

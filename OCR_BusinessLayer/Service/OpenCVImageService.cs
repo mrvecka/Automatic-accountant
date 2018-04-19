@@ -60,9 +60,8 @@ namespace OCR_BusinessLayer.Service
             try
             {
 
-                Cv2.Threshold(_original, newImage, 200, 255, ThresholdTypes.Binary);
-                newImage.SaveImage("afterTreshold.png");
-
+                //Cv2.Threshold(_original, newImage, 200, 255, ThresholdTypes.Binary);
+                newImage = _original;
                 if (progress != null)
                     progress.Report(10);
 

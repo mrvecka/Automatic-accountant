@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Bakalarska_praca.Dictioneries
 {
-    public class Dictionary
+    public class Dictionary : ICloneable
     {
         public Dictionary<string,string> header;
         public Dictionary<string, string> columns;
@@ -165,5 +165,9 @@ namespace Bakalarska_praca.Dictioneries
 
         }
 
+        public object Clone()
+        {
+            return new Dictionary();
+        }
     }
 }
