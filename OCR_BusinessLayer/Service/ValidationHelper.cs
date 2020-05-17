@@ -122,7 +122,7 @@ namespace OCR_BusinessLayer.Service
             }
 
             // month
-            index = symbol.IndexOfAny(numbersOnly.ToArray()); // ak mam mesiac napr 01 a rok 2011 tak mi to vymaze aj z roku
+            index = symbol.IndexOfAny(numbersOnly.ToArray());
             if (index != -1)
             {
                 s = symbol.Substring(index, 2);

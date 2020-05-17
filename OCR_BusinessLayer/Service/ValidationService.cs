@@ -175,7 +175,7 @@ namespace OCR_BusinessLayer.Service
             string symbol = string.Empty;
             if (e.RefundMethode != null)
             {
-                symbol = e.RefundMethode.Trim(CONSTANTS.charsToTrimLine);
+                symbol = e.RefundMethod.Trim(CONSTANTS.charsToTrimLine);
                 symbol = ValidationHelper.LettersSpacesOnly(symbol);
             }
             return symbol;

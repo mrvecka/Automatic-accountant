@@ -10,7 +10,7 @@
         public int Top { get; set; }
         public int FirstLineInColumn { get; set; } = 1;
         public bool Completed { get; set; } = false;
-        public bool Blocked { get; set; } = false; // ak sa stlpec nachadza nad inym tak je true
+        public bool Blocked { get; set; } = false; // true if column is above another column
 
         public Column(){}
 

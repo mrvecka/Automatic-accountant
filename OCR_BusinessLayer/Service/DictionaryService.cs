@@ -101,18 +101,18 @@ namespace OCR_BusinessLayer.Service
             CONSTANTS.Result res = CONSTANTS.Result.Continue;
             foreach (KeyValuePair<string, string> key in dictionary)
             {
-                firstCharindex = lineText.ToLower().IndexOf(key.Key.Substring(0, 1).ToLower()); // index prveho vyskytu prveho znaku z kluca 
-                keyLength = key.Key.Length; // dlzka kluca
-                while ((keyLength + firstCharindex) <= lineText.Length && firstCharindex != -1) // ak je kluc vacsi ako text nie je to on a idem prec
+                firstCharindex = lineText.ToLower().IndexOf(key.Key.Substring(0, 1).ToLower()); //  index of the first occurrence of the first character of the key
+                keyLength = key.Key.Length; // length of the key
+                while ((keyLength + firstCharindex) <= lineText.Length && firstCharindex != -1) // if the key is longet than found text it si not the text i'm looking for, go to next text
                 {
 
-                    stringKey = lineText.Substring(firstCharindex, keyLength); // toto by mal byt kluc z textu ktory som rozpoznal
+                    stringKey = lineText.Substring(firstCharindex, keyLength); // this is the text i got from OC
                     similarity = SimilarityService.GetSimilarity(key.Key.ToLower(), stringKey.ToLower());
                     if (similarity > CONSTANTS.SIMILARITY && !IsInMiddleOfWord(lineText, firstCharindex, keyLength, key.Key[0], key.Key[key.Key.Length - 1], stringKey))
                     {
                         if (col != null && data.GetType() == _eud.GetType())
                         {
-                            // aktualny stlpec skoncil
+                            // current column ended
                             col.Completed = true;
                             col.Bottom = line.Words[0].Bounds.Top;
                         }
@@ -128,7 +128,7 @@ namespace OCR_BusinessLayer.Service
                         int index = s.IndexOf(key.Key.Substring(0, 1).ToLower());
                         if (index == 0 && IndexIsNull || index == -1)
                         {
-                            // zacyklil som sa alebo som nic nenasiel tak idem na dalsi kluc
+                            // nothing has been found, move to the next key
                             break;
                         }
                         if (index == 0)
@@ -148,7 +148,7 @@ namespace OCR_BusinessLayer.Service
 
             if (isColumn && !keyFound && col != null && col.FirstLineInColumn > 4)
             {
-                // skus iny slovnik
+                // try different dictionary
                 if (data.GetType() == _eud.GetType())
                 {
                     foreach (Column c in _listOfColumns)
@@ -222,7 +222,7 @@ namespace OCR_BusinessLayer.Service
             }
             if (_dic.columns.ContainsKey(key.Key))
             {
-                // je to stlpec
+                // it is a column
                 _columnsCount++;
                 Column column = GetColumnParam(_columnsCount, stringKey, line);
                 column.Text = key.Key;
@@ -241,10 +241,10 @@ namespace OCR_BusinessLayer.Service
                 lineText = lineText.Replace(key.Key, string.Empty);
                 _listOfClients.Add(n);
                 s = s.Trim(CONSTANTS.charsToTrim);
-                if (!(string.IsNullOrEmpty(s) || s.Length < 5)) // uz aktualny riadok moze byt stlpec tak to tu poriesim
+                if (!(string.IsNullOrEmpty(s) || s.Length < 5)) // current column could be a column => check it
                 {
                     s = s.Replace(stringKey, string.Empty);
-                    GetDataFromLine(line, ref s, dictionary, n, true, column, false); // ak mam za klucovym slovom (Odberatel) nejaky text a nie su tam ine klucove slova
+                    GetDataFromLine(line, ref s, dictionary, n, true, column, false); // key word followed by (Odberatel)
                 }
 
                 return CONSTANTS.Result.Break;
@@ -265,15 +265,15 @@ namespace OCR_BusinessLayer.Service
             }
 
             _keysInRow++;
-            // nasiel som nejaky kluc v riadku, toto by mala byt jeho hodnota ale moze obsahovat este nejaky iny kluc tak sa radsej pozriem                                                       
-            // pozriem sa ci je este nejaky kluc za nim, ak ano tak opakujem ak nie tak dany string je hodnota
+            // there were key in the row, this should be it's value but it could contain more keys => check for another keys
+            //if there are keys behind current key, look for more key, othervise this is it's value
             var dict = dictionary.ToDictionary(entry => entry.Key,
                                                entry => entry.Value);
             dict.Remove(key.Key);
             stringKeyValue = stringKeyValue.Trim(CONSTANTS.charsToTrimLine);
             if (!GetDataFromLine(line, ref stringKeyValue, dict, data, isColumn, col))
             {
-                //keyFound = false; // ak mam v riadku dve a viac klucovych slov tak to nastavim na false aby mi to v predchadzajucom volani vbehlo sem a nastavila sa hodnota 
+
                 if (_dic.canDeleteKeys.Contains(key.Value))
                 {
                     _keysToDelete.Add(key.Value);
@@ -375,7 +375,7 @@ namespace OCR_BusinessLayer.Service
                     var w = tmpValueWords.First<Word>();
                     if (Keyline == valueLine)
                     {
-                        //nie je to stlpec
+                        // not a column
                         if (!string.IsNullOrWhiteSpace(value))
                         {
                             pk.ValueBounds = new System.Drawing.Rectangle(w.Bounds.X, w.Bounds.Y, tmpValueWords.Last<Word>().Bounds.Right - w.Bounds.Left, w.Bounds.Height);
@@ -409,7 +409,7 @@ namespace OCR_BusinessLayer.Service
                     }
                     else
                     {
-                        //hladal som v stlpci
+                        // was looking in column
                         if (!string.IsNullOrWhiteSpace(value))
                         {
                             pk.ValueBounds = new System.Drawing.Rectangle(w.Bounds.X, w.Bounds.Y, tmpValueWords.Last<Word>().Bounds.Right - w.Bounds.Left, w.Bounds.Height);
@@ -728,7 +728,7 @@ namespace OCR_BusinessLayer.Service
                 }
                 else
                 {
-                    GetDataFromLine(a, ref line, _dic.clients, n, false, null, true); // pozri ci dany text patri klientovi
+                    GetDataFromLine(a, ref line, _dic.clients, n, false, null, true); // check if current text belongs to client
                     if (col.Left < _p.Img.Width / 2)
                     {
                         col.Right = _p.Img.Width/2;

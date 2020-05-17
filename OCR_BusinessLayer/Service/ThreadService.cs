@@ -73,7 +73,7 @@ namespace OCR_BusinessLayer.Service
                         else
                         {
                             PreviewObject prew;
-                            //nasiel som pattern tak idem podla neho
+                            // pattern found => use it
                             tess.CheckImageForPatternAndGetDataFromIt(image, GetKeysPossitions(id), progress, out prew, ratioX, ratioY);
                             prew.Path = s.Path;
                             _previewObjects.Add(prew);

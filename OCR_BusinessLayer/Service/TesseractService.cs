@@ -95,11 +95,11 @@ namespace OCR_BusinessLayer.Service
                                 p.ListOfKeyColumn.Add(new Column(w.Value, w.ValueBounds.Left, w.ValueBounds.Right, w.ValueBounds.Bottom, w.ValueBounds.Top));
 
 
-                            var line = GetLineForValueBounds(w); // toto je zle, berie to dobry riadok alebo riadok pod
+                            var line = GetLineForValueBounds(w);
                             string text = Common.GetWordsForColumn(new Column("", w.ValueBounds.Left, w.ValueBounds.Right, 0, 0), line);
                             w.Value = text.Trim(CONSTANTS.charsToTrimLineForpossition);
 
-                            var key = Common.RemoveDiacritism(w.Key);//Dodavatel ICO
+                            var key = Common.RemoveDiacritism(w.Key);
                             SaveDataToPreviewObject(key,w,p);
 
 
@@ -117,16 +117,16 @@ namespace OCR_BusinessLayer.Service
                         foreach (PossitionOfWord w in pos)
                         {
                             OpenCvSharp.Rect rec;
-                            // ak kontrolujem pattern tak pozeram len kluce
+                            // if checking pattern, check only the keys
                             rec = new Rect(w.KeyBounds.X, w.KeyBounds.Y, w.KeyBounds.Width, w.KeyBounds.Height);
 
 
                             rec.X -= CONSTANTS.PATTERN_CHECK_XY_PROXIMITY;
                             rec.Y -= CONSTANTS.PATTERN_CHECK_XY_PROXIMITY;
-                            rec.Width += CONSTANTS.PATTERN_CHECK_WIDTHHEIGHT_PROXIMITY; //ak pozeram ci je to patern tak potrebujem co najmensie
+                            rec.Width += CONSTANTS.PATTERN_CHECK_WIDTHHEIGHT_PROXIMITY; //if checking for patterns, boundung box should be as small as it's possible 
                             rec.Height += CONSTANTS.PATTERN_CHECK_WIDTHHEIGHT_PROXIMITY;
 
-                            //nastavim pozicie vzhladom na rozlisenie pretoze mozem dostat rovnaku fakturu s inym rozlisenim
+                            // set positions according to document size, bacuase i can get same document but with different size
                             if (ratioX != 0 && ratioY != 0)
                             {
                                 rec.X = (int)(rec.X * ratioX);
@@ -135,7 +135,7 @@ namespace OCR_BusinessLayer.Service
                                 rec.Height = (int)(rec.Height * ratioY);
                             }
 
-                            //osetrim pozicie aby som sa nedostal mimo obrazka
+                            // hceck max/min positions
                             if (image.Cols < rec.X + rec.Width)
                                 rec.Width -= (rec.X + rec.Width) - image.Cols;
                             if (image.Rows < rec.Y + rec.Height)
@@ -220,7 +220,7 @@ namespace OCR_BusinessLayer.Service
                 }
             }
 
-            // je to hodnota pre obejkt Evidence
+            // it's an Evidence value
 
             Type typeE = prew.Evidence.GetType();
             PropertyInfo propE = typeE.GetProperty(w.DictionaryKey);
@@ -238,7 +238,7 @@ namespace OCR_BusinessLayer.Service
             var lineLower = _textLines.Where(l => (l.Bounds.Top > w.ValueBounds.Top)).FirstOrDefault();
             var lineHigher = _textLines.Where(l => (l.Bounds.Top < w.ValueBounds.Top)).LastOrDefault();
 
-            //zistim prekrytie vzhladom na riadok nad hodnotou
+            // get overlap according to row above
             var topExceed = Math.Abs(w.ValueBounds.Y - lineLower.Bounds.Y);
             var bottomExceed = 0;
             if (lineLower.Bounds.Bottom < w.ValueBounds.Bottom)
@@ -249,7 +249,7 @@ namespace OCR_BusinessLayer.Service
 
             var overlayLower = 100.00 - ((float)exceedContent / fullContent) * 100.00;
 
-            //zistim prekrytie vzhladom na riadok pod hodnotou
+            // get overlap according to row below
             var topExceed2 = Math.Abs(w.ValueBounds.Y - lineHigher.Bounds.Y);
             var bottomExceed2 = 0;
             if (lineHigher.Bounds.Bottom < w.ValueBounds.Bottom)

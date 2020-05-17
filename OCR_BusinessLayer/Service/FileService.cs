@@ -113,14 +113,14 @@ namespace OCR_BusinessLayer.Service
 
             string date = item?.Evidence?.DateOfCreate == "" ? item?.Evidence?.DocumentCreateDate : item?.Evidence?.DateOfCreate;
           
-            string textToFileR00 = $"R01{tab}{item?.Evidence?.OrderNumber}{tab}{odb?.Name}{tab}{odb?.ICO}{tab}{date}{tab}{item?.Evidence?.DateOfPayment}{tab}{item?.Evidence?.DateOfTax}{tab}";//DUZP
-            textToFileR00 += $"{item?.Evidence?.BaseLower}{tab}{item?.Evidence?.BaseHigher}{tab}{item?.Evidence?.BaseZero}{tab}{item?.Evidence?.BaseNotContain}{tab}{item?.Evidence?.RateLower}{tab}{item?.Evidence?.RateHigher}{tab}{item?.Evidence?.AmountLower}{tab}{item?.Evidence?.AmountHigher}{tab}{tab}{item?.Evidence?.Amount}{tab}{tab}{tab}{tab}{tab}{tab}{tab}{tab}";//prevadzka patri pred posledny tab
-            textToFileR00 += $"{odb?.Street}{tab}{odb?.PSC}{tab}{odb?.City}{tab}{odb?.DIC}{tab}{tab}{tab}{tab}{tab}{tab}{item?.Evidence?.EvidenceNumber}{tab}";//cislo objednavky
-            textToFileR00 += $"{item?.Evidence?.CreatorName}{tab}{item?.Evidence?.KonstSymbol}{tab}{item?.Evidence?.VariabilSymbol}{tab}{item?.Evidence?.SpecSymbol}{tab}";//specificky symbol
-            textToFileR00 += $"{item?.Evidence?.RefundMethode}{tab}{item?.Evidence?.Transport}{tab}EUR{tab}1{tab}1{tab}{item?.Evidence?.Amount}{tab}{odb?.State}{tab}{odb?.ICDPHStateCode}{tab}{odb?.ICDPH}{tab}";//49 IC DPH
-            textToFileR00 += $"{dod?.AccountNumber}{tab}{dod?.Bank}{tab}{odb?.State}{tab}{tab}{tab}{dod?.SWIFT}{tab}{dod?.IBAN}{tab}{dod?.ICDPHStateCode}{tab}{dod?.ICDPH}{tab}{dod?.State}{tab}";//60 dodavatel stat
-            textToFileR00 += $"{tab}{tab}{tab}{tab}{tab}{tab}{tab}{tab}{item?.Evidence?.DateOfCreate}{tab}{tab}{item?.Evidence?.VariabilSymbol}{tab}";// 71 variabiny symbol
-            textToFileR00 += $"{tab}{pos?.Name}{tab}{tab}{tab}{pos?.Street}{tab}{pos?.PSC}{tab}{pos?.City}{tab}{tab}{tab}{tab}{item?.Evidence?.CreatorName}{tab}{dod?.Phone}{tab}";// 84 telefon
+            string textToFileR00 = $"R01{tab}{item?.Evidence?.OrderNumber}{tab}{odb?.Name}{tab}{odb?.ICO}{tab}{date}{tab}{item?.Evidence?.DateOfPayment}{tab}{item?.Evidence?.DateOfTax}{tab}";
+            textToFileR00 += $"{item?.Evidence?.BaseLower}{tab}{item?.Evidence?.BaseHigher}{tab}{item?.Evidence?.BaseZero}{tab}{item?.Evidence?.BaseNotContain}{tab}{item?.Evidence?.RateLower}{tab}{item?.Evidence?.RateHigher}{tab}{item?.Evidence?.AmountLower}{tab}{item?.Evidence?.AmountHigher}{tab}{tab}{item?.Evidence?.Amount}{tab}{tab}{tab}{tab}{tab}{tab}{tab}{tab}";
+            textToFileR00 += $"{odb?.Street}{tab}{odb?.PSC}{tab}{odb?.City}{tab}{odb?.DIC}{tab}{tab}{tab}{tab}{tab}{tab}{item?.Evidence?.EvidenceNumber}{tab}";
+            textToFileR00 += $"{item?.Evidence?.CreatorName}{tab}{item?.Evidence?.KonstSymbol}{tab}{item?.Evidence?.VariabilSymbol}{tab}{item?.Evidence?.SpecSymbol}{tab}";
+            textToFileR00 += $"{item?.Evidence?.RefundMethode}{tab}{item?.Evidence?.Transport}{tab}EUR{tab}1{tab}1{tab}{item?.Evidence?.Amount}{tab}{odb?.State}{tab}{odb?.ICDPHStateCode}{tab}{odb?.ICDPH}{tab}";
+            textToFileR00 += $"{dod?.AccountNumber}{tab}{dod?.Bank}{tab}{odb?.State}{tab}{tab}{tab}{dod?.SWIFT}{tab}{dod?.IBAN}{tab}{dod?.ICDPHStateCode}{tab}{dod?.ICDPH}{tab}{dod?.State}{tab}";
+            textToFileR00 += $"{tab}{tab}{tab}{tab}{tab}{tab}{tab}{tab}{item?.Evidence?.DateOfCreate}{tab}{tab}{item?.Evidence?.VariabilSymbol}{tab}";
+            textToFileR00 += $"{tab}{pos?.Name}{tab}{tab}{tab}{pos?.Street}{tab}{pos?.PSC}{tab}{pos?.City}{tab}{tab}{tab}{tab}{item?.Evidence?.CreatorName}{tab}{dod?.Phone}{tab}";
             textToFileR00 += $@"{tab}{tab}{odb?.IBAN}{tab}{odb?.AccountNumber}{newLine}";
 
             
