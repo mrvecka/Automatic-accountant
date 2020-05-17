@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27130.2036
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OCR", "Bakalarska_praca\OCR.csproj", "{4B7DF536-8EE1-4F27-A50A-96EBCB074028}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OCR", "Automatic_accountant\OCR.csproj", "{4B7DF536-8EE1-4F27-A50A-96EBCB074028}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Validations_UnitTests", "Validations_UnitTests\Validations_UnitTests.csproj", "{3D8E4D15-391A-4203-B92B-30B31D1C024C}"
 EndProject

@@ -7,8 +7,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{4B7DF536-8EE1-4F27-A50A-96EBCB074028}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>Bakalarska_praca</RootNamespace>
-    <AssemblyName>Bakalarska_praca</AssemblyName>
+    <RootNamespace>Automatic_accountant</RootNamespace>
+    <AssemblyName>Automatic_accountant</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
